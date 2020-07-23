@@ -26,6 +26,7 @@ int main(void)
         std::cout << "error: glewInit() failed!\n";
     }
     
+    std::cout << glGetString(GL_VERSION) << '\n';
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
