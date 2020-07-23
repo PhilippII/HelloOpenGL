@@ -27,7 +27,10 @@ LDLIBS += $(shell pkg-config --libs gl)
 
 all: $(OUTDIR)/$(OUT)
 
-.PHONY: all clean
+run: $(OUTDIR)/$(OUT)
+	./$<
+
+.PHONY: all run clean
 
 $(OUTDIR)/$(OUT): $(OBJFILES) | $(OUTDIR)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJFILES) $(LDLIBS)
