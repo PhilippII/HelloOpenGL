@@ -52,8 +52,10 @@ $(DEPDIR):
 
 # generate header dependencies:
 $(DEPDIR)/%.d: $(SRCDIR)/%.$(CXXSFX) | $(DEPDIR)
-	$(CXX) -MM -MT "$(OBJDIR)/$*.o $@" -MF $@ $(CXXFLAGS) $<
+	$(CXX) -MM -MP -MT "$(OBJDIR)/$*.o $@" -MF $@ $(CXXFLAGS) $<
 #	-MM output dependencies, but do not include headers in system directories
+#	-MP add a phony target for each header in order to avoid errors if a header does not
+#		exist anymore
 #	-MT "$(OBJDIR)/$*.o $@" also include the dependency file itself in the targets in addition
 #		the object file (if one of the headers changes, the dependency file might be
 #		out of date itself, since the changed header might itself recursively include
