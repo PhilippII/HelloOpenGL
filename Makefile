@@ -39,13 +39,13 @@ clean:
 	rm -f $(DEPDIR)/*.d $(OBJDIR)/*.o $(OUTDIR)/$(OUT)
 
 $(OBJDIR):
-	mkdir -p $(OBJDIR)
+	mkdir -p $@
 
 $(OUTDIR):
-	mkdir -p $(OUTDIR)
+	mkdir -p $@
 
 $(DEPDIR):
-	mkdir -p $(DEPDIR)
+	mkdir -p $@
 
 # generate header dependencies:
 $(DEPDIR)/%.d: $(SRCDIR)/%.$(CXXSFX) | $(DEPDIR)
