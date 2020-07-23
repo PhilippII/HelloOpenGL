@@ -21,9 +21,13 @@ LDLIBS =
 CXXFLAGS += $(shell pkg-config --static --cflags glfw3)
 LDLIBS += $(shell pkg-config --static --libs glfw3)
 
-# gl (TODO: remove this when using glew or glad or similar):
-CXXFLAGS += $(shell pkg-config --cflags gl)
-LDLIBS += $(shell pkg-config --libs gl)
+# glew:
+CXXFLAGS += $(shell pkg-config --static --cflags glew)
+LDLIBS += $(shell pkg-config --static --libs glew)
+
+# gl (not needed anymore in combination with glew):
+# CXXFLAGS += $(shell pkg-config --cflags gl)
+# LDLIBS += $(shell pkg-config --libs gl)
 
 all: $(OUTDIR)/$(OUT)
 
