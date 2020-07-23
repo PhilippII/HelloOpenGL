@@ -12,17 +12,17 @@ DEPFILES = $(CXXFILES:$(SRCDIR)/%.$(CXXSFX)=$(DEPDIR)/%.d)
 OUT = main
 
 CXX = g++
-CFLAGS = -Wall -Wextra -Wconversion -Wshadow -Wcast-qual -Wwrite-strings -Wold-style-cast
-CFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR)
+CXXFLAGS = -Wall -Wextra -Wconversion -Wshadow -Wcast-qual -Wwrite-strings -Wold-style-cast
+CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR)
 LDFLAGS =
 LDLIBS =
 
 # glfw3:
-CFLAGS += $(shell pkg-config --static --cflags glfw3)
+CXXFLAGS += $(shell pkg-config --static --cflags glfw3)
 LDLIBS += $(shell pkg-config --static --libs glfw3)
 
 # gl (TODO: remove this when using glew or glad or similar):
-CFLAGS += $(shell pkg-config --cflags gl)
+CXXFLAGS += $(shell pkg-config --cflags gl)
 LDLIBS += $(shell pkg-config --libs gl)
 
 all: $(OUTDIR)/$(OUT)
@@ -33,7 +33,7 @@ $(OUTDIR)/$(OUT): $(OBJFILES) | $(OUTDIR)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJFILES) $(LDLIBS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.$(CXXSFX) | $(OBJDIR)
-	$(CXX) -c $(CFLAGS) -o $@ $<
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
 clean:
 	rm -f $(DEPDIR)/*.d $(OBJDIR)/*.o $(OUTDIR)/$(OUT)
@@ -49,7 +49,7 @@ $(DEPDIR):
 
 # generate header dependencies:
 $(DEPDIR)/%.d: $(SRCDIR)/%.$(CXXSFX) | $(DEPDIR)
-	$(CXX) -MM -MT "$(OBJDIR)/$*.o $@" -MF $@ $(CFLAGS) $<
+	$(CXX) -MM -MT "$(OBJDIR)/$*.o $@" -MF $@ $(CXXFLAGS) $<
 #	-MM output dependencies, but do not include headers in system directories
 #	-MT "$(OBJDIR)/$*.o $@" also include the dependency file itself in the targets in addition
 #		the object file (if one of the headers changes, the dependency file might be
