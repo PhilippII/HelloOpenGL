@@ -1,0 +1,9 @@
+GLFW:
+- also install glfw3-wayland?
+- glfw version 3.2.1 too old? (website recommends >= 3.3.2)
+	-> compile GLFW from source instead?
+- remove gl from $(pkg-config --libs ...) if we use extension loader library
+	(e.g. glad)
+
+
+
