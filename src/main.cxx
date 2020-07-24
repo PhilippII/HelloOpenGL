@@ -5,6 +5,11 @@
 
 int main(void)
 {
+    #ifdef DEBUG
+    std::cout << "DEBUG VERSION\n";
+    #else
+    std::cout << "RELEASE VERSION\n";
+    #endif
     GLFWwindow* window;
 
     /* Initialize the library */
