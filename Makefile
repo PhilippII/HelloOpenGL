@@ -1,9 +1,16 @@
 INCDIR = inc
 SRCDIR = src
-INTDIR = build/intermediates
+CONFIGDIR.release = build/release
+CONFIGDIR.debug = build/debug
+ifeq ($(CONFIG), release)
+CONFIGDIR = $(CONFIGDIR.release)
+else
+CONFIGDIR = $(CONFIGDIR.debug)
+endif
+INTDIR = $(CONFIGDIR)/intermediates
 OBJDIR = $(INTDIR)/obj
 DEPDIR = $(INTDIR)/.deps
-OUTDIR = build/run
+OUTDIR = $(CONFIGDIR)/run
 
 CXXSFX = cxx
 CXXFILES = $(wildcard $(SRCDIR)/*.$(CXXSFX))
@@ -14,6 +21,9 @@ OUT = main
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Wconversion -Wshadow -Wcast-qual -Wwrite-strings -Wold-style-cast
 CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR)
+ifeq ($(CONFIG), release)
+CXXFLAGS += -O2
+endif
 LDFLAGS =
 LDLIBS =
 
@@ -43,7 +53,8 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.$(CXXSFX) | $(OBJDIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
 clean:
-	rm -f $(DEPDIR)/*.d $(OBJDIR)/*.o $(OUTDIR)/$(OUT)
+	rm -f -r $(CONFIGDIR.debug) $(CONFIGDIR.release)
+#	rm -f $(DEPDIR)/*.d $(OBJDIR)/*.o $(OUTDIR)/$(OUT)
 
 $(OBJDIR):
 	mkdir -p $@
