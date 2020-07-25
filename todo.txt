@@ -9,6 +9,7 @@ GLFW:
 	- glBindBuffer(...) ?
 	- glEnableVertexAttribArray(...) ?
 	- glVertexAttribPointer(...) ?
+- clean up vertex buffers and co. at the end of the program
 
 
 
