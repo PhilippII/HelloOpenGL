@@ -18,7 +18,7 @@ static unsigned int compileShader(unsigned int type, const std::string& source) 
         char* message = static_cast<char*>(alloca(length * sizeof(char)));
         glGetShaderInfoLog(id, length, &length, message);
         std::cout << "Failed to compile "
-                << (type == GL_VERTEX_SHADER) ? "vertex" : "fragment"
+                << ((type == GL_VERTEX_SHADER) ? "vertex" : "fragment")
                 << " shader\n";
         std::cout << message << '\n';
         glDeleteShader(id);
