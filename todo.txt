@@ -3,6 +3,12 @@ GLFW:
 - glfw version 3.2.1 too old? (website recommends >= 3.3.2)
 	-> compile GLFW from source instead?
 - static vs. dynamic linking against glfw and glew. which is better?
+	-> and why does pkg-config --libs --static not include -Wl,-Bstatic -Wl,-Bdynamic ?
+- which of those functions do I need to call again for every frame when rendering multiple
+	3D-models (each from its own buffer)
+	- glBindBuffer(...) ?
+	- glEnableVertexAttribArray(...) ?
+	- glVertexAttribPointer(...) ?
 
 
 
