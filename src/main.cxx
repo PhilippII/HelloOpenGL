@@ -115,13 +115,15 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << '\n';
 
     float positions[12] = {
-        -.5f, -.5f,
-         .5f, -.5f,
-         .5f,  .5f,
+        -.5f, -.5f, // 0
+         .5f, -.5f, // 1
+         .5f,  .5f, // 2
+        -.5f,  .5f  // 3
+    };
 
-         .5f,  .5f,
-        -.5f,  .5f,
-        -.5f, -.5f
+    unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0
     };
 
     unsigned int buffer;
