@@ -9,7 +9,7 @@
 struct ShaderProgramSource {
     std::string VertexSource;
     std::string FragmentSource;
-}
+};
 
 static ShaderProgramSource ParseShader(const std::string& filepath) {
     std::ifstream stream(filepath);
@@ -129,27 +129,14 @@ int main(void)
     glEnableVertexAttribArray(posAttrIndex);
     glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0);
 
-    std::string vertexShader =
-            "#version 330 core\n"
-            "\n"
-            "layout(location = 0) in vec4 position;\n"
-            "\n"
-            "void main()\n"
-            "{\n"
-            "   gl_Position = position;\n"
-            "}\n";
-    std::string fragmentShader =
-            "#version 330 core\n"
-            "\n"
-            "layout(location = 0) out vec4 color;\n"
-            "\n"
-            "void main()\n"
-            "{\n"
-            "   color = vec4(1.0, 0.0, 0.0, 1.0);\n"
-            "}\n";
+    ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
+    std::cout << "VERTEX\n";
+    std::cout << source.VertexSource << '\n';
+    std::cout << "FRAGMENT\n";
+    std::cout << source.FragmentSource << '\n';
 
-    unsigned int shader = CreateShader(vertexShader, fragmentShader);
-    glUseProgram(shader);
+    // unsigned int shader = CreateShader(vertexShader, fragmentShader);
+    // glUseProgram(shader);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -166,7 +153,7 @@ int main(void)
         glfwPollEvents();
     }
 
-    glDeleteProgram(shader);
+    // glDeleteProgram(shader);
 
     glfwTerminate();
     return 0;
