@@ -1,2 +1,3 @@
 Makefile
+res/shaders/Basic.shader
 src/main.cxx
