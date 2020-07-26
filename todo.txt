@@ -10,6 +10,7 @@ GLFW:
 	- glEnableVertexAttribArray(...) ?
 	- glVertexAttribPointer(...) ?
 - clean up vertex buffers and co. at the end of the program
+- after reading chapters 9 + 10 in stroustrup look again at function ParseShader(...)
 
 
 
