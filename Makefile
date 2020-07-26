@@ -30,12 +30,12 @@ LDFLAGS =
 LDLIBS =
 
 # glfw3:
-CXXFLAGS += $(shell pkg-config --static --cflags glfw3)
-LDLIBS += $(shell pkg-config --static --libs glfw3)
+CXXFLAGS += $(shell pkg-config --cflags glfw3)
+LDLIBS += $(shell pkg-config --libs glfw3)
 
 # glew:
-CXXFLAGS += $(shell pkg-config --static --cflags glew)
-LDLIBS += $(shell pkg-config --static --libs glew)
+CXXFLAGS += $(shell pkg-config --cflags glew)
+LDLIBS += $(shell pkg-config --libs glew)
 
 # gl (not needed anymore in combination with glew):
 # CXXFLAGS += $(shell pkg-config --cflags gl)
