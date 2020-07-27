@@ -6,6 +6,18 @@
 #include <string>
 #include <sstream>
 
+static void GLClearError() {
+    while (glGetError() != GL_NO_ERROR);
+    // or just:
+    // while (glGetError());
+}
+
+static void GLCheckError() {
+    while (GLenum error = glGetError()) {
+        std::cout << "[OpenGL error] (" << error << ")\n";
+    }
+}
+
 struct ShaderProgramSource {
     std::string VertexSource;
     std::string FragmentSource;
