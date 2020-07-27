@@ -20,7 +20,7 @@
 #else
 #define GLCall(x) GLClearError();\
     x;\
-    myAssert(GLLogCall())
+    myAssert(GLLogCall(#x, __FILE__, __LINE__))
 #endif
 
 static void GLClearError() {
@@ -29,10 +29,11 @@ static void GLClearError() {
     // while (glGetError());
 }
 
-static bool GLLogCall() {
+static bool GLLogCall(const char* function, const char* file, int line) {
     bool success = true;
     while (GLenum error = glGetError()) {
-        std::cout << "[OpenGL error] (" << error << ")\n";
+        std::cout << "[OpenGL error] (" << error << "): " << function
+                  << " " << file << ":" << line << '\n';
         success = false;
     }
     return success;
