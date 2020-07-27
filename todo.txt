@@ -11,6 +11,8 @@ GLFW:
 	- glVertexAttribPointer(...) ?
 	-> and is the situation different when using glDrawArray(...) (no index buffer)
 		vs. when using glDrawElements(...) (with index buffer)
+	-> answer depends on whether we use Vertex Array Objects
+		see video 12 Vertex Arrays in OpenGL
 - clean up vertex buffers and co. at the end of the program
 - after reading chapters 9 + 10 in stroustrup look again at function ParseShader(...)
 - GLCall(...) macro is fragile
