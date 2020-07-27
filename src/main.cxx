@@ -6,14 +6,21 @@
 #include <string>
 #include <sstream>
 
-#include <cassert>
+// #include <cassert>
+#include <signal.h> // for SIGTRAP in myAssert
+
+#ifdef NDEBUG
+#define myAssert(x)
+#else
+#define myAssert(x) if (!(x)) raise(SIGTRAP)
+#endif
 
 #ifdef NDEBUG
 #define GLCall(x) x
 #else
 #define GLCall(x) GLClearError();\
     x;\
-    assert(GLLogCall())
+    myAssert(GLLogCall())
 #endif
 
 static void GLClearError() {
