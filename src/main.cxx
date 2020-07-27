@@ -8,6 +8,13 @@
 
 #include <cassert>
 
+#ifdef NDEBUG
+#define GLCall(x) x
+#else
+#define GLCall(x) GLClearError();\
+    x;\
+    assert(GLLogCall())
+#endif
 
 static void GLClearError() {
     while (glGetError() != GL_NO_ERROR);
@@ -168,9 +175,7 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        GLClearError();
-        glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr);
-        assert(GLLogCall());
+        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr));
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
