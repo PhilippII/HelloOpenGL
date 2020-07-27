@@ -165,6 +165,10 @@ int main(void)
         2, 3, 0
     };
 
+    unsigned int vao;
+    GLCall(glGenVertexArrays(1, &vao));
+    GLCall(glBindVertexArray(vao));
+
     unsigned int buffer;
     GLCall(glGenBuffers(1, &buffer));
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
