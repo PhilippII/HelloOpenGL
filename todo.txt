@@ -9,6 +9,8 @@ GLFW:
 	- glBindBuffer(...) ?
 	- glEnableVertexAttribArray(...) ?
 	- glVertexAttribPointer(...) ?
+	-> and is the situation different when using glDrawArray(...) (no index buffer)
+		vs. when using glDrawElements(...) (with index buffer)
 - clean up vertex buffers and co. at the end of the program
 - after reading chapters 9 + 10 in stroustrup look again at function ParseShader(...)
 
