@@ -104,10 +104,10 @@ static unsigned int CreateShader(const std::string& vertexShader, const std::str
 
 int main(void)
 {
-    #ifdef DEBUG
-    std::cout << "DEBUG VERSION\n";
-    #else
+    #ifdef NDEBUG
     std::cout << "RELEASE VERSION\n";
+    #else
+    std::cout << "DEBUG VERSION\n";
     #endif
     GLFWwindow* window;
 

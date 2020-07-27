@@ -22,9 +22,9 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -Wconversion -Wshadow -Wcast-qual -Wwrite-strings -Wold-style-cast
 CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR)
 ifeq ($(CONFIG), release)
-CXXFLAGS += -O2
+CXXFLAGS += -O2 -DNDEBUG
 else
-CXXFLAGS += -DDEBUG
+# CXXFLAGS += -DDEBUG
 endif
 LDFLAGS =
 LDLIBS =
