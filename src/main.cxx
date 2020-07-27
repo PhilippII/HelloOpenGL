@@ -177,6 +177,10 @@ int main(void)
     unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
     GLCall(glUseProgram(shader));
 
+    GLCall(int location = glGetUniformLocation(shader, "u_Color"));
+    myAssert(location != -1);
+    GLCall(glUniform4f(location, .2f, .3f, .8f, 1.0f));
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
