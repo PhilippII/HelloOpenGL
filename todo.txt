@@ -13,6 +13,14 @@ GLFW:
 		vs. when using glDrawElements(...) (with index buffer)
 - clean up vertex buffers and co. at the end of the program
 - after reading chapters 9 + 10 in stroustrup look again at function ParseShader(...)
-
+- GLCall(...) macro is fragile
+	-> e.g. 
+		if (...)
+			GLCall(x());
+		if (...)
+			GLClearError();
+			x();
+			myAssert(GLLocCall(...))
+		-> x() is not part of the if's body anymore!!
 
 
