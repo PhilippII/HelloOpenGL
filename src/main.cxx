@@ -202,8 +202,8 @@ int main(void)
     // initialize star:
     int n_spikes = 5;
     float dPhi = M_PI / n_spikes; // 2*M_PI / (2*n_spikes)
-    float phi_0 = -.5*M_PI;
-    std::vector<float> radii {.2, .4};
+    float phi_0 = .5 * M_PI - dPhi;
+    std::vector<float> radii {.1, .25};
     std::vector<float> starPositions;
     for (int i = 0; i < 2 * n_spikes; ++i) {
         float phi_i = phi_0 + i * dPhi;
