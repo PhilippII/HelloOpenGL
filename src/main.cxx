@@ -6,6 +6,10 @@
 #include <string>
 #include <sstream>
 
+#include <vector>
+
+#include <cmath> // M_PI and cos(...) sin(...)
+
 // #include <cassert>
 #include <signal.h> // for SIGTRAP in myAssert
 
@@ -196,7 +200,47 @@ int main(void)
     float increment = .05f;
 
     // initialize star:
-    // TODO:
+    int n_spikes = 5;
+    float dPhi = M_PI / n_spikes; // 2*M_PI / (2*n_spikes)
+    float phi_0 = -.5*M_PI;
+    std::vector<float> radii {.2, .4};
+    std::vector<float> starPositions;
+    for (int i = 0; i < 2 * n_spikes; ++i) {
+        float phi_i = phi_0 + i * dPhi;
+        float r = radii[i % 2];
+        starPositions.push_back(r * cos(phi_i));
+        starPositions.push_back(r * sin(phi_i));
+    }
+    starPositions.push_back(0.f); // center point x
+    starPositions.push_back(0.f); // center point y
+
+    std::vector<int> starIndices;
+    for (int i = 0; i < n_spikes; ++i) {
+        // inner triangle:
+        starIndices.push_back(2 * i);
+        starIndices.push_back((2 * i + 2) % (n_spikes * 2));
+        starIndices.push_back(n_spikes); // center point
+        // outer triangle:
+        starIndices.push_back(2 * i);
+        starIndices.push_back(2 * i + 1);
+        starIndices.push_back((2 * i + 2) % (n_spikes * 2));
+    }
+
+    unsigned int starVBO;
+    GLCall(glGenBuffers(1, &starVBO));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, starVBO));
+    GLCall(glBufferData(GL_ARRAY_BUFFER, starPositions.size() * sizeof(float), starPositions.data(), GL_STATIC_DRAW));
+
+    // unsigned int posAttrIndex = 0;
+    GLCall(glEnableVertexAttribArray(posAttrIndex));
+    GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0));
+
+    unsigned int starIBO;
+    GLCall(glGenBuffers(1, &starIBO));
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, starIBO));
+    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, starIndices.size() * sizeof(unsigned int), starIndices.data(), GL_STATIC_DRAW));
+
+
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -204,7 +248,7 @@ int main(void)
         /* Render here */
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
-        // draw rectangle:
+        // 1 draw rectangle:
         r += increment;
         if (r > 1.0) {
             r = 1.0;
@@ -215,11 +259,42 @@ int main(void)
             increment = +.05f;
         }
 
+        // 1.1 bind shader (+ set uniforms):
+        // TODO: bind shader
         GLCall(glUniform4f(location, r, .3f, .8f, 1.0f));
+
+        // 1.2 bind vbo:
+        GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
+
+        // 1.3 set up vertex layout:
+        GLCall(glEnableVertexAttribArray(posAttrIndex));
+        GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0));
+
+        // 1.4 bind ibo:
+        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+
+        // 1.5 draw:
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
-        // draw star:
-        // TODO
+
+        // 2 draw star:
+        // 2.1 bind shader (+ set uniforms):
+        // TODO: bind shader
+        GLCall(glUniform4f(location, .8f, .8f, .8f, 1.0f));
+
+        // 2.2 bind vbo:
+        GLCall(glBindBuffer(GL_ARRAY_BUFFER, starVBO));
+
+        // 2.3 set up vertex layout:
+        GLCall(glEnableVertexAttribArray(posAttrIndex));
+        GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0));
+
+        // 2.4 bind ibo:
+        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, starIBO));
+
+        // 2.5 draw:
+        GLCall(glDrawElements(GL_TRIANGLES, starIndices.size(), GL_UNSIGNED_INT, nullptr));
+
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
