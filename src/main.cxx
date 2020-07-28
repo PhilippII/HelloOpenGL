@@ -153,6 +153,11 @@ int main(void)
     
     std::cout << glGetString(GL_VERSION) << '\n';
 
+    unsigned int globalVao;
+    GLCall(glGenVertexArrays(1, &globalVao));
+    GLCall(glBindVertexArray(globalVao));
+
+    // initialize rectangle:
     float positions[12] = {
         -.5f, -.5f, // 0
          .5f, -.5f, // 1
@@ -165,9 +170,6 @@ int main(void)
         2, 3, 0
     };
 
-    unsigned int vao;
-    GLCall(glGenVertexArrays(1, &vao));
-    GLCall(glBindVertexArray(vao));
 
     unsigned int buffer;
     GLCall(glGenBuffers(1, &buffer));
@@ -193,12 +195,16 @@ int main(void)
     float r = .0f;
     float increment = .05f;
 
+    // initialize star:
+    // TODO:
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
+        // draw rectangle:
         r += increment;
         if (r > 1.0) {
             r = 1.0;
@@ -211,6 +217,9 @@ int main(void)
 
         GLCall(glUniform4f(location, r, .3f, .8f, 1.0f));
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+
+        // draw star:
+        // TODO
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
