@@ -157,10 +157,6 @@ int main(void)
     
     std::cout << glGetString(GL_VERSION) << '\n';
 
-    unsigned int globalVao;
-    GLCall(glGenVertexArrays(1, &globalVao));
-    GLCall(glBindVertexArray(globalVao));
-
     // initialize rectangle:
     float positions[12] = {
         -.5f, -.5f, // 0
@@ -174,6 +170,10 @@ int main(void)
         2, 3, 0
     };
 
+
+    unsigned int rectVAO;
+    GLCall(glGenVertexArrays(1, &rectVAO));
+    GLCall(glBindVertexArray(rectVAO));
 
     unsigned int buffer;
     GLCall(glGenBuffers(1, &buffer));
@@ -226,6 +226,10 @@ int main(void)
         starIndices.push_back((2 * i + 2) % (n_spikes * 2));
     }
 
+    unsigned int starVAO;
+    GLCall(glGenVertexArrays(1, &starVAO));
+    GLCall(glBindVertexArray(starVAO));
+
     unsigned int starVBO;
     GLCall(glGenBuffers(1, &starVBO));
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, starVBO));
@@ -263,12 +267,8 @@ int main(void)
         // TODO: bind shader
         GLCall(glUniform4f(location, r, .3f, .8f, 1.0f));
 
-        // 1.2 bind vbo:
-        GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-
-        // 1.3 set up vertex layout:
-        GLCall(glEnableVertexAttribArray(posAttrIndex));
-        GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0));
+        // 1.2 bind vao:
+        GLCall(glBindVertexArray(rectVAO));
 
         // 1.4 bind ibo:
         GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
@@ -282,12 +282,8 @@ int main(void)
         // TODO: bind shader
         GLCall(glUniform4f(location, .8f, .8f, .8f, 1.0f));
 
-        // 2.2 bind vbo:
-        GLCall(glBindBuffer(GL_ARRAY_BUFFER, starVBO));
-
-        // 2.3 set up vertex layout:
-        GLCall(glEnableVertexAttribArray(posAttrIndex));
-        GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0));
+        // 2.2 bind vao:
+        GLCall(glBindVertexArray(starVAO));
 
         // 2.4 bind ibo:
         GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, starIBO));
