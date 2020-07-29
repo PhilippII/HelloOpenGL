@@ -207,9 +207,9 @@ int main(void)
     std::vector<float> starPositions;
     for (int i = 0; i < 2 * n_spikes; ++i) {
         float phi_i = phi_0 + i * dPhi;
-        float r = radii[i % 2];
-        starPositions.push_back(r * cos(phi_i));
-        starPositions.push_back(r * sin(phi_i));
+        float radius = radii[i % 2];
+        starPositions.push_back(radius * cos(phi_i));
+        starPositions.push_back(radius * sin(phi_i));
     }
     starPositions.push_back(0.f); // center point x
     starPositions.push_back(0.f); // center point y
