@@ -295,7 +295,7 @@ int main(void)
         GLCall(glBindVertexArray(rectVAO));
 
         // 1.4 bind ibo:
-        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+        // GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
 
         // 1.5 draw:
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
@@ -310,7 +310,7 @@ int main(void)
         GLCall(glBindVertexArray(starVAO));
 
         // 2.4 bind ibo:
-        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, starIBO));
+        // GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, starIBO));
 
         // 2.5 draw:
         GLCall(glDrawElements(GL_TRIANGLES, static_cast<int>(starIndices.size()),
