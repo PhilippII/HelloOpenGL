@@ -212,8 +212,9 @@ int main(void)
 
     // initialize star:
     int n_spikes = 5;
-    float dPhi = M_PI / n_spikes; // 2*M_PI / (2*n_spikes)
-    float phi_0 = .5 * M_PI - dPhi;
+    constexpr float pi_f = static_cast<float>(M_PI);
+    float dPhi = pi_f / n_spikes; // 2*M_PI / (2*n_spikes)
+    float phi_0 = .5f * pi_f - dPhi;
     std::vector<float> radii {.1, .25};
     std::array<std::array<float, 4>, 2> colors {std::array<float, 4>{0.f, 0.f, 0.f, 0.f},
                                                 std::array<float, 4>{1.f, 1.f, 0.f, 1.f}};
@@ -312,7 +313,8 @@ int main(void)
         GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, starIBO));
 
         // 2.5 draw:
-        GLCall(glDrawElements(GL_TRIANGLES, starIndices.size(), GL_UNSIGNED_INT, nullptr));
+        GLCall(glDrawElements(GL_TRIANGLES, static_cast<int>(starIndices.size()),
+                              GL_UNSIGNED_INT, nullptr));
 
 
         /* Swap front and back buffers */
