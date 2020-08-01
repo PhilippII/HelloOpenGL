@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 
+#include <array>
 #include <vector>
 
 #include <cmath> // M_PI and cos(...) sin(...)
@@ -121,6 +122,11 @@ static unsigned int CreateShader(const std::string& vertexShader, const std::str
     return program;
 }
 
+struct Vertex {
+    std::array<float, 2> pos;
+    std::array<float, 4> color;
+};
+
 int main(void)
 {
     #ifdef NDEBUG
@@ -158,11 +164,11 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << '\n';
 
     // initialize rectangle:
-    float positions[12] = {
-        -.5f, -.5f, // 0
-         .5f, -.5f, // 1
-         .5f,  .5f, // 2
-        -.5f,  .5f  // 3
+    Vertex rectVertices[4] = {
+        {{-.5f, -.5f}, {0.f, 0.f, 0.f, 0.f}}, // 0
+        {{ .5f, -.5f}, {0.f, 0.f, 0.f, 0.f}}, // 1
+        {{ .5f,  .5f}, {0.f, 0.f, 0.f, 0.f}}, // 2
+        {{-.5f,  .5f}, {0.f, 0.f, 0.f, 0.f}}  // 3
     };
 
     unsigned int indices[] = {
@@ -178,11 +184,16 @@ int main(void)
     unsigned int buffer;
     GLCall(glGenBuffers(1, &buffer));
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-    GLCall(glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), positions, GL_STATIC_DRAW));
+    GLCall(glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), rectVertices, GL_STATIC_DRAW));
 
     unsigned int posAttrIndex = 0;
     GLCall(glEnableVertexAttribArray(posAttrIndex));
-    GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0));
+    GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0));
+
+    unsigned int colAttrIndex = 1;
+    GLCall(glEnableVertexAttribArray(colAttrIndex));
+    GLCall(glVertexAttribPointer(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                                 reinterpret_cast<void*>(sizeof(Vertex::pos))));
 
     unsigned int ibo;
     GLCall(glGenBuffers(1, &ibo));
@@ -204,15 +215,21 @@ int main(void)
     float dPhi = M_PI / n_spikes; // 2*M_PI / (2*n_spikes)
     float phi_0 = .5 * M_PI - dPhi;
     std::vector<float> radii {.1, .25};
-    std::vector<float> starPositions;
+    std::array<std::array<float, 4>, 2> colors {std::array<float, 4>{0.f, 0.f, 0.f, 0.f},
+                                                std::array<float, 4>{1.f, 1.f, 0.f, 1.f}};
+    std::vector<Vertex> starVertices;
     for (int i = 0; i < 2 * n_spikes; ++i) {
         float phi_i = phi_0 + i * dPhi;
         float radius = radii[i % 2];
-        starPositions.push_back(radius * cosf(phi_i));
-        starPositions.push_back(radius * sinf(phi_i));
+        starVertices.push_back(Vertex{
+                                    std::array<float, 2>{radius * cosf(phi_i), radius * sinf(phi_i)},
+                                    colors[i % 2]
+                            });
     }
-    starPositions.push_back(0.f); // center point x
-    starPositions.push_back(0.f); // center point y
+    starVertices.push_back(Vertex{
+                                std::array<float, 2>{0.f, 0.f},
+                                colors[0]
+                            });
 
     std::vector<unsigned int> starIndices;
     for (int s = 0; s < n_spikes; ++s) {
@@ -233,11 +250,17 @@ int main(void)
     unsigned int starVBO;
     GLCall(glGenBuffers(1, &starVBO));
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, starVBO));
-    GLCall(glBufferData(GL_ARRAY_BUFFER, starPositions.size() * sizeof(float), starPositions.data(), GL_STATIC_DRAW));
+    GLCall(glBufferData(GL_ARRAY_BUFFER, starVertices.size() * sizeof(Vertex), starVertices.data(), GL_STATIC_DRAW));
 
     // unsigned int posAttrIndex = 0;
     GLCall(glEnableVertexAttribArray(posAttrIndex));
-    GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0));
+    GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0));
+
+    // unsigned int colAttrIndex = 1;
+    GLCall(glEnableVertexAttribArray(colAttrIndex));
+    GLCall(glVertexAttribPointer(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                                 reinterpret_cast<void*>(sizeof(Vertex::pos))));
+
 
     unsigned int starIBO;
     GLCall(glGenBuffers(1, &starIBO));
