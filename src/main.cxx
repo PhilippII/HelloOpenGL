@@ -214,16 +214,16 @@ int main(void)
     starPositions.push_back(0.f); // center point x
     starPositions.push_back(0.f); // center point y
 
-    std::vector<int> starIndices;
-    for (int i = 0; i < n_spikes; ++i) {
+    std::vector<unsigned int> starIndices;
+    for (int s = 0; s < n_spikes; ++s) {
         // inner triangle:
-        starIndices.push_back(2 * i);
-        starIndices.push_back((2 * i + 2) % (n_spikes * 2));
-        starIndices.push_back(n_spikes); // center point
+        starIndices.push_back(2 * s);
+        starIndices.push_back((2 * s + 2) % (n_spikes * 2));
+        starIndices.push_back(n_spikes * 2); // center point
         // outer triangle:
-        starIndices.push_back(2 * i);
-        starIndices.push_back(2 * i + 1);
-        starIndices.push_back((2 * i + 2) % (n_spikes * 2));
+        starIndices.push_back(2 * s);
+        starIndices.push_back(2 * s + 1);
+        starIndices.push_back((2 * s + 2) % (n_spikes * 2));
     }
 
     unsigned int starVAO;
