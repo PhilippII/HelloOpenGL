@@ -186,14 +186,20 @@ int main(void)
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
     GLCall(glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), rectVertices, GL_STATIC_DRAW));
 
+    unsigned int bindingIndex = 0;
+    GLCall(glBindVertexBuffer(bindingIndex, buffer, 0, sizeof(Vertex)));
     unsigned int posAttrIndex = 0;
     GLCall(glEnableVertexAttribArray(posAttrIndex));
-    GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0));
+    GLCall(glVertexAttribFormat(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 0));
+    GLCall(glVertexAttribBinding(posAttrIndex, bindingIndex));
+    // GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0));
 
     unsigned int colAttrIndex = 1;
     GLCall(glEnableVertexAttribArray(colAttrIndex));
-    GLCall(glVertexAttribPointer(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                                 reinterpret_cast<void*>(sizeof(Vertex::pos))));
+    GLCall(glVertexAttribFormat(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex::pos)));
+    GLCall(glVertexAttribBinding(colAttrIndex, bindingIndex));
+    // GLCall(glVertexAttribPointer(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+    //                              reinterpret_cast<void*>(sizeof(Vertex::pos))));
 
     unsigned int ibo;
     GLCall(glGenBuffers(1, &ibo));
@@ -253,14 +259,21 @@ int main(void)
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, starVBO));
     GLCall(glBufferData(GL_ARRAY_BUFFER, starVertices.size() * sizeof(Vertex), starVertices.data(), GL_STATIC_DRAW));
 
+    // unsigned int bindingIndex = 0;
+    GLCall(glBindVertexBuffer(bindingIndex, starVBO, 0, sizeof(Vertex)));
+
     // unsigned int posAttrIndex = 0;
     GLCall(glEnableVertexAttribArray(posAttrIndex));
-    GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0));
+    GLCall(glVertexAttribFormat(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 0));
+    GLCall(glVertexAttribBinding(posAttrIndex, bindingIndex));
+    // GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0));
 
     // unsigned int colAttrIndex = 1;
     GLCall(glEnableVertexAttribArray(colAttrIndex));
-    GLCall(glVertexAttribPointer(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                                 reinterpret_cast<void*>(sizeof(Vertex::pos))));
+    GLCall(glVertexAttribFormat(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex::pos)));
+    GLCall(glVertexAttribBinding(colAttrIndex, bindingIndex));
+    // GLCall(glVertexAttribPointer(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+    //                             reinterpret_cast<void*>(sizeof(Vertex::pos))));
 
 
     unsigned int starIBO;
