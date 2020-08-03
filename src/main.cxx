@@ -13,6 +13,7 @@
 
 // #include <cassert>
 
+#include "GLVertexArrayObject.h"
 #include "GLBufferObject.h"
 
 #include "debug_utils.h"
@@ -193,10 +194,8 @@ int main(void)
         2, 3, 0
     };
 
-
-    unsigned int rectVAO;
-    GLCall(glGenVertexArrays(1, &rectVAO));
-    GLCall(glBindVertexArray(rectVAO));
+    GLVertexArrayObject rectVAO;
+    rectVAO.bind();
 
     GLBufferObject rectVBO(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), rectVertices, GL_STATIC_DRAW);
 
@@ -258,9 +257,8 @@ int main(void)
         starIndices.push_back((2 * s + 2) % (n_spikes * 2));
     }
 
-    unsigned int starVAO;
-    GLCall(glGenVertexArrays(1, &starVAO));
-    GLCall(glBindVertexArray(starVAO));
+    GLVertexArrayObject starVAO;
+    starVAO.bind();
 
     GLBufferObject starVBO(GL_ARRAY_BUFFER, starVertices.size() * sizeof(Vertex), starVertices.data(), GL_STATIC_DRAW);
 
@@ -309,7 +307,7 @@ int main(void)
         GLCall(glUniform4f(location, r, .3f, .8f, 1.0f));
 
         // 1.2 bind vao:
-        GLCall(glBindVertexArray(rectVAO));
+        rectVAO.bind();
 
         // 1.4 bind ibo:
         // GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
@@ -324,7 +322,7 @@ int main(void)
         GLCall(glUniform4f(location, .8f, .8f, .8f, 1.0f));
 
         // 2.2 bind vao:
-        GLCall(glBindVertexArray(starVAO));
+        starVAO.bind();
 
         // 2.4 bind ibo:
         // GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, starIBO));
