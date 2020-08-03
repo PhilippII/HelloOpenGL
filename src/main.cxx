@@ -100,6 +100,18 @@ static unsigned int compileShader(unsigned int type, const std::string& source) 
     return id;
 }
 
+static void PrintShaderProgramInfoLog(unsigned int program) {
+    int length;
+    GLCall(glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length));
+    if (length > 0) {
+        char* message = static_cast<char*>(alloca(length * sizeof(char)));
+        GLCall(glGetProgramInfoLog(program, length, nullptr, message));
+        std::cout << message << '\n';
+    } else {
+        std::cout << "(no log)\n";
+    }
+}
+
 /*
  * - compile vertexShader
  * - compile fragmentShader
@@ -113,8 +125,28 @@ static unsigned int CreateShader(const std::string& vertexShader, const std::str
 
     GLCall(glAttachShader(program, vs));
     GLCall(glAttachShader(program, fs));
+
     GLCall(glLinkProgram(program));
+    GLint linkSuccess;
+    GLCall(glGetProgramiv(program, GL_LINK_STATUS, &linkSuccess));
+    if (linkSuccess == GL_TRUE) {
+        std::cout << "shader program linked successfully. Log:\n";
+    } else {
+        std::cout << "error linking shader program! Log:\n";
+    }
+    PrintShaderProgramInfoLog(program);
+    myAssert(linkSuccess == GL_TRUE);
+
     GLCall(glValidateProgram(program));
+    GLint validateSuccess;
+    GLCall(glGetProgramiv(program, GL_VALIDATE_STATUS, &validateSuccess));
+    if (validateSuccess == GL_TRUE) {
+        std::cout << "shader program validated successfully. Log:\n";
+    } else {
+        std::cout << "error validating shader program! Log:\n";
+    }
+    PrintShaderProgramInfoLog(program);
+    myAssert(validateSuccess == GL_TRUE);
 
     GLCall(glDeleteShader(vs));
     GLCall(glDeleteShader(fs));
