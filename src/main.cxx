@@ -66,7 +66,7 @@ static ShaderProgramSource ParseShader(const std::string& filepath) {
             } else if (line.find("fragment") != std::string::npos) {
                 type = ShaderType::FRAGMENT;
             }
-        } else {
+        } else if (type != ShaderType::NONE) {
             ss[static_cast<int>(type)] << line << '\n';
         }
     }
