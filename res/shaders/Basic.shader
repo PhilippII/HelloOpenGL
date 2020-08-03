@@ -1,7 +1,7 @@
 #shader vertex
 #version 330 core
-layout(location = 0) in vec4 position;
-layout(location = 1) in vec4 vs_in_color;
+in vec4 position;
+in vec4 vs_in_color;
 out vec4 fs_in_color;
 
 uniform vec4 u_Color;

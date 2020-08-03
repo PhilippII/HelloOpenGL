@@ -171,6 +171,8 @@ int main(void)
     GLCall(int location = glGetUniformLocation(shader, "u_Color"));
     myAssert(location != -1);
 
+    GLCall(GLint posAttrIndex = glGetAttribLocation(shader, "position"));
+    GLCall(GLint colAttrIndex = glGetAttribLocation(shader, "vs_in_color"));
 
 
     // initialize rectangle:
@@ -198,18 +200,20 @@ int main(void)
 
     unsigned int bindingIndex = 0;
     GLCall(glBindVertexBuffer(bindingIndex, buffer, 0, sizeof(Vertex)));
-    unsigned int posAttrIndex = 0;
-    GLCall(glEnableVertexAttribArray(posAttrIndex));
-    GLCall(glVertexAttribFormat(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 0));
-    GLCall(glVertexAttribBinding(posAttrIndex, bindingIndex));
-    // GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0));
+    if (posAttrIndex >= 0) {
+        GLCall(glEnableVertexAttribArray(posAttrIndex));
+        GLCall(glVertexAttribFormat(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 0));
+        GLCall(glVertexAttribBinding(posAttrIndex, bindingIndex));
+        // GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0));
+    }
 
-    unsigned int colAttrIndex = 1;
-    GLCall(glEnableVertexAttribArray(colAttrIndex));
-    GLCall(glVertexAttribFormat(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex::pos)));
-    GLCall(glVertexAttribBinding(colAttrIndex, bindingIndex));
-    // GLCall(glVertexAttribPointer(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-    //                              reinterpret_cast<void*>(sizeof(Vertex::pos))));
+    if (colAttrIndex >= 0) {
+        GLCall(glEnableVertexAttribArray(colAttrIndex));
+        GLCall(glVertexAttribFormat(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex::pos)));
+        GLCall(glVertexAttribBinding(colAttrIndex, bindingIndex));
+        // GLCall(glVertexAttribPointer(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+        //                              reinterpret_cast<void*>(sizeof(Vertex::pos))));
+    }
 
     unsigned int ibo;
     GLCall(glGenBuffers(1, &ibo));
@@ -266,19 +270,20 @@ int main(void)
     // unsigned int bindingIndex = 0;
     GLCall(glBindVertexBuffer(bindingIndex, starVBO, 0, sizeof(Vertex)));
 
-    // unsigned int posAttrIndex = 0;
-    GLCall(glEnableVertexAttribArray(posAttrIndex));
-    GLCall(glVertexAttribFormat(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 0));
-    GLCall(glVertexAttribBinding(posAttrIndex, bindingIndex));
-    // GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0));
+    if (posAttrIndex >= 0) {
+        GLCall(glEnableVertexAttribArray(posAttrIndex));
+        GLCall(glVertexAttribFormat(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 0));
+        GLCall(glVertexAttribBinding(posAttrIndex, bindingIndex));
+        // GLCall(glVertexAttribPointer(posAttrIndex, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0));
+    }
 
-    // unsigned int colAttrIndex = 1;
-    GLCall(glEnableVertexAttribArray(colAttrIndex));
-    GLCall(glVertexAttribFormat(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex::pos)));
-    GLCall(glVertexAttribBinding(colAttrIndex, bindingIndex));
-    // GLCall(glVertexAttribPointer(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-    //                             reinterpret_cast<void*>(sizeof(Vertex::pos))));
-
+    if (colAttrIndex >= 0) {
+        GLCall(glEnableVertexAttribArray(colAttrIndex));
+        GLCall(glVertexAttribFormat(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex::pos)));
+        GLCall(glVertexAttribBinding(colAttrIndex, bindingIndex));
+        // GLCall(glVertexAttribPointer(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+        //                             reinterpret_cast<void*>(sizeof(Vertex::pos))));
+    }
 
     unsigned int starIBO;
     GLCall(glGenBuffers(1, &starIBO));
