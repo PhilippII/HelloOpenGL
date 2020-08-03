@@ -14,6 +14,8 @@
 // #include <cassert>
 #include <signal.h> // for SIGTRAP in myAssert
 
+#include "GLBufferObject.h"
+
 #ifdef NDEBUG
 #define myAssert(x)
 #else
@@ -225,13 +227,10 @@ int main(void)
     GLCall(glGenVertexArrays(1, &rectVAO));
     GLCall(glBindVertexArray(rectVAO));
 
-    unsigned int buffer;
-    GLCall(glGenBuffers(1, &buffer));
-    GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-    GLCall(glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), rectVertices, GL_STATIC_DRAW));
+    GLBufferObject rectVBO(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), rectVertices, GL_STATIC_DRAW);
 
     unsigned int bindingIndex = 0;
-    GLCall(glBindVertexBuffer(bindingIndex, buffer, 0, sizeof(Vertex)));
+    GLCall(glBindVertexBuffer(bindingIndex, rectVBO.getName(), 0, sizeof(Vertex)));
     if (posAttrIndex >= 0) {
         GLCall(glEnableVertexAttribArray(posAttrIndex));
         GLCall(glVertexAttribFormat(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 0));
@@ -247,10 +246,8 @@ int main(void)
         //                              reinterpret_cast<void*>(sizeof(Vertex::pos))));
     }
 
-    unsigned int ibo;
-    GLCall(glGenBuffers(1, &ibo));
-    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
-    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW));
+    GLBufferObject rectIBO(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+    rectIBO.bind();
 
     float r = .0f;
     float increment = .05f;
@@ -294,13 +291,11 @@ int main(void)
     GLCall(glGenVertexArrays(1, &starVAO));
     GLCall(glBindVertexArray(starVAO));
 
-    unsigned int starVBO;
-    GLCall(glGenBuffers(1, &starVBO));
-    GLCall(glBindBuffer(GL_ARRAY_BUFFER, starVBO));
-    GLCall(glBufferData(GL_ARRAY_BUFFER, starVertices.size() * sizeof(Vertex), starVertices.data(), GL_STATIC_DRAW));
+    GLBufferObject starVBO(GL_ARRAY_BUFFER, starVertices.size() * sizeof(Vertex), starVertices.data(), GL_STATIC_DRAW);
+
 
     // unsigned int bindingIndex = 0;
-    GLCall(glBindVertexBuffer(bindingIndex, starVBO, 0, sizeof(Vertex)));
+    GLCall(glBindVertexBuffer(bindingIndex, starVBO.getName(), 0, sizeof(Vertex)));
 
     if (posAttrIndex >= 0) {
         GLCall(glEnableVertexAttribArray(posAttrIndex));
@@ -317,11 +312,8 @@ int main(void)
         //                             reinterpret_cast<void*>(sizeof(Vertex::pos))));
     }
 
-    unsigned int starIBO;
-    GLCall(glGenBuffers(1, &starIBO));
-    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, starIBO));
-    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, starIndices.size() * sizeof(unsigned int), starIndices.data(), GL_STATIC_DRAW));
-
+    GLBufferObject starIBO(GL_ELEMENT_ARRAY_BUFFER, starIndices.size() * sizeof(unsigned int), starIndices.data(), GL_STATIC_DRAW);
+    starIBO.bind();
 
 
     /* Loop until the user closes the window */
