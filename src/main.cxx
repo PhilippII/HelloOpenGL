@@ -12,39 +12,10 @@
 #include <cmath> // M_PI and cos(...) sin(...)
 
 // #include <cassert>
-#include <signal.h> // for SIGTRAP in myAssert
 
 #include "GLBufferObject.h"
 
-#ifdef NDEBUG
-#define myAssert(x)
-#else
-#define myAssert(x) if (!(x)) raise(SIGTRAP)
-#endif
-
-#ifdef NDEBUG
-#define GLCall(x) x
-#else
-#define GLCall(x) GLClearError();\
-    x;\
-    myAssert(GLLogCall(#x, __FILE__, __LINE__))
-#endif
-
-static void GLClearError() {
-    while (glGetError() != GL_NO_ERROR);
-    // or just:
-    // while (glGetError());
-}
-
-static bool GLLogCall(const char* function, const char* file, int line) {
-    bool success = true;
-    while (GLenum error = glGetError()) {
-        std::cout << "[OpenGL error] (" << error << "): " << function
-                  << " " << file << ":" << line << '\n';
-        success = false;
-    }
-    return success;
-}
+#include "debug_utils.h"
 
 struct ShaderProgramSource {
     std::string VertexSource;

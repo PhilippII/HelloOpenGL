@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cassert>
+#include "debug_utils.h"
 
 class GLBufferObject {
 public:
@@ -22,7 +23,7 @@ public:
     ~GLBufferObject();
 
 	void bind() {
-		glBindBuffer(target, buffer);
+        GLCall(glBindBuffer(target, buffer));
 		#ifndef NDEBUG
 		bound = true;
 		#endif
@@ -33,7 +34,7 @@ public:
 		assert(bound);
 		bound = false;
 		#endif
-		glBindBuffer(target, 0);
+        GLCall(glBindBuffer(target, 0));
 	}
 
     GLuint getName() const {

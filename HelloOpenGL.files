@@ -1,6 +1,8 @@
 Makefile
 inc/GLBuffer.h
 inc/GLBufferObject.h
+inc/debug_utils.h
 res/shaders/Basic.shader
 src/GLBufferObject.cxx
+src/debug_utils.cxx
 src/main.cxx

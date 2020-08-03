@@ -2,10 +2,10 @@
 
 GLBufferObject::GLBufferObject(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage) {
 	this->target = target;
-	glGenBuffers(1, &(this->buffer));
-	glBindBuffer(target, this->buffer);
-	glBufferData(target, size, data, usage);
-	glBindBuffer(target, 0);
+    GLCall(glGenBuffers(1, &(this->buffer)));
+    GLCall(glBindBuffer(target, this->buffer));
+    GLCall(glBufferData(target, size, data, usage));
+    GLCall(glBindBuffer(target, 0));
 }
 
 GLBufferObject::GLBufferObject(GLBufferObject&& other) {
@@ -16,7 +16,7 @@ GLBufferObject::GLBufferObject(GLBufferObject&& other) {
 
 GLBufferObject& GLBufferObject::operator=(GLBufferObject&& other) {
 	if (buffer) {
-		glDeleteBuffers(1, &buffer);
+        GLCall(glDeleteBuffers(1, &buffer));
 	}
 	target = other.target;
 	buffer = other.buffer;
@@ -27,7 +27,7 @@ GLBufferObject& GLBufferObject::operator=(GLBufferObject&& other) {
 
 GLBufferObject::~GLBufferObject() {
 	if (buffer) {
-		glDeleteBuffers(1, &buffer);
+        GLCall(glDeleteBuffers(1, &buffer));
 	}
 }
 
