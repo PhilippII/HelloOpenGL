@@ -15,6 +15,7 @@
 
 #include "GLVertexArrayObject.h"
 #include "GLBufferObject.h"
+#include "GLShader.h"
 
 #include "debug_utils.h"
 
@@ -48,31 +49,7 @@ static ShaderProgramSource ParseShader(const std::string& filepath) {
     return { ss[0].str(), ss[1].str() };
 }
 
-static unsigned int compileShader(unsigned int type, const std::string& source) {
-    unsigned int id = glCreateShader(type);
-    const char* src = source.c_str();
-    GLCall(glShaderSource(id, 1, &src, nullptr));
-    GLCall(glCompileShader(id));
 
-    // error handling:
-    int result;
-    GLCall(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
-    if (result == GL_FALSE) {
-        int length;
-        GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
-        char* message = static_cast<char*>(alloca(length * sizeof(char)));
-        GLCall(glGetShaderInfoLog(id, length, &length, message));
-        std::cout << "Failed to compile "
-                << ((type == GL_VERTEX_SHADER) ? "vertex" : "fragment")
-                << " shader\n";
-        std::cout << message << '\n';
-        GLCall(glDeleteShader(id));
-        return 0;
-    }
-
-    // if no error return shader id:
-    return id;
-}
 
 static void PrintShaderProgramInfoLog(unsigned int program) {
     int length;
@@ -94,11 +71,11 @@ static void PrintShaderProgramInfoLog(unsigned int program) {
  */
 static unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader) {
     unsigned int program = glCreateProgram();
-    unsigned int vs = compileShader(GL_VERTEX_SHADER, vertexShader);
-    unsigned int fs = compileShader(GL_FRAGMENT_SHADER, fragmentShader);
+    GLShader vs(GL_VERTEX_SHADER, vertexShader);
+    GLShader fs(GL_FRAGMENT_SHADER, fragmentShader);
 
-    GLCall(glAttachShader(program, vs));
-    GLCall(glAttachShader(program, fs));
+    GLCall(glAttachShader(program, vs.getName()));
+    GLCall(glAttachShader(program, fs.getName()));
 
     GLCall(glLinkProgram(program));
     GLint linkSuccess;
@@ -121,9 +98,6 @@ static unsigned int CreateShader(const std::string& vertexShader, const std::str
     }
     PrintShaderProgramInfoLog(program);
     myAssert(validateSuccess == GL_TRUE);
-
-    GLCall(glDeleteShader(vs));
-    GLCall(glDeleteShader(fs));
 
     return program;
 }
