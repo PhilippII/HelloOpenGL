@@ -163,6 +163,16 @@ int main(void)
     
     std::cout << glGetString(GL_VERSION) << '\n';
 
+    // initialize shader:
+    ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
+    unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
+    GLCall(glUseProgram(shader));
+
+    GLCall(int location = glGetUniformLocation(shader, "u_Color"));
+    myAssert(location != -1);
+
+
+
     // initialize rectangle:
     Vertex rectVertices[4] = {
         {{-.5f, -.5f}, {0.f, 0.f, 0.f, 0.f}}, // 0
@@ -206,15 +216,9 @@ int main(void)
     GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
     GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW));
 
-    ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
-    unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
-    GLCall(glUseProgram(shader));
-
-    GLCall(int location = glGetUniformLocation(shader, "u_Color"));
-    myAssert(location != -1);
-
     float r = .0f;
     float increment = .05f;
+
 
     // initialize star:
     int n_spikes = 5;
