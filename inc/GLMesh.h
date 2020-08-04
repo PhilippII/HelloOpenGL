@@ -42,7 +42,8 @@ class GLMesh
 {
 public:
     GLMesh() = delete;
-    GLMesh(GLsizei vertexCount, std::vector<VertexAttributeType> attrTypes, const GLvoid* vertexData, GLenum indicesType, const GLvoid* indexData);
+    GLMesh(std::vector<VertexAttributeType> attrTypes, const GLvoid* vertexData, GLsizei vertexCount,
+           GLenum indicesType, const GLvoid* indexData, GLsizei indexCount);
 
     GLMesh(const GLMesh& other) = delete;
     GLMesh& operator=(const GLMesh& other) = delete;
@@ -60,6 +61,14 @@ public:
         vao.unbind();
     }
 
+    GLsizei getNumUniqueVertices() const {
+        return vertexCount;
+    }
+
+    GLsizei getNumIndices() const {
+        return indexCount;
+    }
+
 private:
     static GLuint getSize(GLint dimension, GLenum componentType);
     static GLuint getIndexSize(GLenum indicesType);
@@ -71,6 +80,8 @@ private:
     GLBufferObject ibo;
     GLVertexArrayObject vao;
     static const GLuint bindingIndex;
+    GLsizei vertexCount;
+    GLsizei indexCount;
 };
 
 #endif // GLMESH_H

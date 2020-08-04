@@ -3,13 +3,13 @@
 const GLuint GLMesh::bindingIndex = 0;
 
 
-GLMesh::GLMesh(GLsizei vertexCount,
-               std::vector<VertexAttributeType> attrTypes, const GLvoid* vertexData,
-               GLenum indicesType, const GLvoid* indexData)
+GLMesh::GLMesh(std::vector<VertexAttributeType> attrTypes, const GLvoid* vertexData, GLsizei vertexCount,
+               GLenum indicesType, const GLvoid* indexData, GLsizei indexCount)
     : offsets(computeOffsets(attrTypes)),
       vbo(GL_ARRAY_BUFFER, vertexCount * offsets.back(), vertexData, GL_STATIC_DRAW),
-      ibo(GL_ELEMENT_ARRAY_BUFFER, vertexCount * getIndexSize(indicesType), indexData, GL_STATIC_DRAW),
-      vao()
+      ibo(GL_ELEMENT_ARRAY_BUFFER, indexCount * getIndexSize(indicesType), indexData, GL_STATIC_DRAW),
+      vao(),
+      vertexCount(vertexCount), indexCount(indexCount)
 {
     vao.bind();
     GLCall(glBindVertexBuffer(bindingIndex, vbo.getName(), 0, offsets.back()));
