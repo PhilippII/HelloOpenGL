@@ -13,7 +13,7 @@ GLMesh::GLMesh(GLsizei vertexCount,
 {
     vao.bind();
     GLCall(glBindVertexBuffer(bindingIndex, vbo.getName(), 0, offsets.back()));
-    for (int i = 0; i < attrTypes.size(); ++i) {
+    for (unsigned int i = 0; i < attrTypes.size(); ++i) {
         GLCall(glEnableVertexAttribArray(attrTypes[i].location));
         switch (attrTypes[i].castTo) {
           case VariableType::FLOAT:
@@ -61,38 +61,52 @@ GLMesh::~GLMesh() {
 }
 
 GLuint GLMesh::getSize(GLint dimension, GLenum componentType) {
+    std::size_t result = 0;
     switch (componentType) {
       case GL_HALF_FLOAT:
-        return dimension * sizeof(GLhalf);
+        result = dimension * sizeof(GLhalf);
+        break;
       case GL_FLOAT:
-        return dimension * sizeof(GLfloat);
+        result = dimension * sizeof(GLfloat);
+        break;
       case GL_DOUBLE:
-        return dimension * sizeof(GLdouble);
+        result = dimension * sizeof(GLdouble);
+        break;
       case GL_FIXED:
-        return dimension * sizeof(GLfixed);
+        result = dimension * sizeof(GLfixed);
+        break;
       case GL_BYTE:
-        return dimension * sizeof(GLbyte);
+        result = dimension * sizeof(GLbyte);
+        break;
       case GL_UNSIGNED_BYTE:
-        return dimension * sizeof(GLubyte);
+        result = dimension * sizeof(GLubyte);
+        break;
       case GL_SHORT:
-        return dimension * sizeof(GLshort);
+        result = dimension * sizeof(GLshort);
+        break;
       case GL_UNSIGNED_SHORT:
-        return dimension * sizeof(GLushort);
+        result = dimension * sizeof(GLushort);
+        break;
       case GL_INT:
-        return dimension * sizeof(GLint);
+        result = dimension * sizeof(GLint);
+        break;
       case GL_UNSIGNED_INT:
-        return dimension * sizeof(GLuint);
+        result = dimension * sizeof(GLuint);
+        break;
       case GL_INT_2_10_10_10_REV:
       case GL_UNSIGNED_INT_2_10_10_10_REV:
         myAssert(dimension == 4 || dimension == GL_BGRA);
-        return sizeof(GLuint);
+        result = sizeof(GLuint);
+        break;
       case GL_UNSIGNED_INT_10F_11F_11F_REV:
         myAssert(dimension == 3);
-        return sizeof(GLuint);
+        result = sizeof(GLuint);
+        break;
       default:
         myAssert(false);
-        return 0;
+        break;
     }
+    return static_cast<GLuint>(result);
 }
 
 GLuint GLMesh::getIndexSize(GLenum indicesType) {
