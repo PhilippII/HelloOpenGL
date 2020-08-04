@@ -100,11 +100,11 @@ int main(void)
     GLShaderProgram shaderProgram(sources);
     shaderProgram.use();
 
-    GLCall(int location = glGetUniformLocation(shaderProgram.getName(), "u_Color"));
+    int location = shaderProgram.getUniformLocation("u_Color");
     myAssert(location != -1);
 
-    GLCall(GLint posAttrIndex = glGetAttribLocation(shaderProgram.getName(), "position"));
-    GLCall(GLint colAttrIndex = glGetAttribLocation(shaderProgram.getName(), "vs_in_color"));
+    GLint posAttrIndex = shaderProgram.getAttribLocation("position");
+    GLint colAttrIndex = shaderProgram.getAttribLocation("vs_in_color");
 
 
     // initialize rectangle:

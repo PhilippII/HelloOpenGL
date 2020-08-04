@@ -50,6 +50,10 @@ public:
         return programId;
     }
 
+    GLint getAttribLocation(const std::string& name);
+
+    GLint getUniformLocation(const std::string& name);
+
 private:
     void printShaderProgramInfoLog() const;
     GLuint programId;
