@@ -37,6 +37,9 @@ struct VertexAttributeType {
  * Furthermore relative offsets and stride are computed automatically
  * from the order of the attributes and their types.
  *
+ * Warning: you should unbind any previously bound VAOs before calling
+ *          the constructor of this class.
+ *
  */
 class GLMesh
 {
