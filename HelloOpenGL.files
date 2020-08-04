@@ -1,12 +1,14 @@
 Makefile
 inc/GLBuffer.h
 inc/GLBufferObject.h
+inc/GLMesh.h
 inc/GLShader.h
 inc/GLShaderProgram.h
 inc/GLVertexArrayObject.h
 inc/debug_utils.h
 res/shaders/Basic.shader
 src/GLBufferObject.cxx
+src/GLMesh.cxx
 src/GLShader.cxx
 src/GLShaderProgram.cxx
 src/GLVertexArrayObject.cxx
