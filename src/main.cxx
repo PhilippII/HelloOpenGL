@@ -16,6 +16,7 @@
 #include "GLVertexArrayObject.h"
 #include "GLBufferObject.h"
 #include "GLShader.h"
+#include "GLShaderProgram.h"
 
 #include "debug_utils.h"
 
@@ -49,58 +50,6 @@ static ShaderProgramSource ParseShader(const std::string& filepath) {
     return { ss[0].str(), ss[1].str() };
 }
 
-
-
-static void PrintShaderProgramInfoLog(unsigned int program) {
-    int length;
-    GLCall(glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length));
-    if (length > 0) {
-        char* message = static_cast<char*>(alloca(length * sizeof(char)));
-        GLCall(glGetProgramInfoLog(program, length, nullptr, message));
-        std::cout << message << '\n';
-    } else {
-        std::cout << "(no log)\n";
-    }
-}
-
-/*
- * - compile vertexShader
- * - compile fragmentShader
- * - link them both together into a single shader program
- * - return a unique identifier to that shader program
- */
-static unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader) {
-    unsigned int program = glCreateProgram();
-    GLShader vs(GL_VERTEX_SHADER, vertexShader);
-    GLShader fs(GL_FRAGMENT_SHADER, fragmentShader);
-
-    GLCall(glAttachShader(program, vs.getName()));
-    GLCall(glAttachShader(program, fs.getName()));
-
-    GLCall(glLinkProgram(program));
-    GLint linkSuccess;
-    GLCall(glGetProgramiv(program, GL_LINK_STATUS, &linkSuccess));
-    if (linkSuccess == GL_TRUE) {
-        std::cout << "shader program linked successfully. Log:\n";
-    } else {
-        std::cout << "error linking shader program! Log:\n";
-    }
-    PrintShaderProgramInfoLog(program);
-    myAssert(linkSuccess == GL_TRUE);
-
-    GLCall(glValidateProgram(program));
-    GLint validateSuccess;
-    GLCall(glGetProgramiv(program, GL_VALIDATE_STATUS, &validateSuccess));
-    if (validateSuccess == GL_TRUE) {
-        std::cout << "shader program validated successfully. Log:\n";
-    } else {
-        std::cout << "error validating shader program! Log:\n";
-    }
-    PrintShaderProgramInfoLog(program);
-    myAssert(validateSuccess == GL_TRUE);
-
-    return program;
-}
 
 struct Vertex {
     std::array<float, 2> pos;
@@ -145,14 +94,17 @@ int main(void)
 
     // initialize shader:
     ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
-    unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
-    GLCall(glUseProgram(shader));
+    std::vector<ShaderSource> sources;
+    sources.push_back(ShaderSource{GL_VERTEX_SHADER, source.VertexSource});
+    sources.push_back(ShaderSource{GL_FRAGMENT_SHADER, source.FragmentSource});
+    GLShaderProgram shaderProgram(sources);
+    shaderProgram.use();
 
-    GLCall(int location = glGetUniformLocation(shader, "u_Color"));
+    GLCall(int location = glGetUniformLocation(shaderProgram.getName(), "u_Color"));
     myAssert(location != -1);
 
-    GLCall(GLint posAttrIndex = glGetAttribLocation(shader, "position"));
-    GLCall(GLint colAttrIndex = glGetAttribLocation(shader, "vs_in_color"));
+    GLCall(GLint posAttrIndex = glGetAttribLocation(shaderProgram.getName(), "position"));
+    GLCall(GLint colAttrIndex = glGetAttribLocation(shaderProgram.getName(), "vs_in_color"));
 
 
     // initialize rectangle:
@@ -312,8 +264,6 @@ int main(void)
         /* Poll for and process events */
         glfwPollEvents();
     }
-
-    GLCall(glDeleteProgram(shader));
 
     glfwTerminate();
     return 0;
