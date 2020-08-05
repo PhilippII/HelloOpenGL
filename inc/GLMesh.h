@@ -73,6 +73,10 @@ public:
         return indexCount;
     }
 
+    GLenum getIndicesType() const {
+        return indicesType;
+    }
+
 private:
     static GLuint getSize(GLint dimension, GLenum componentType);
     static GLuint getIndexSize(GLenum indicesType);
@@ -89,6 +93,7 @@ private:
     GLBufferObject ibo;
     GLsizei vertexCount;
     GLsizei indexCount;
+    GLenum indicesType;
 };
 
 #endif // GLMESH_H

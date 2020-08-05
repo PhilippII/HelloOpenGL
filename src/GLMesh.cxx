@@ -10,7 +10,7 @@ GLMesh::GLMesh(std::vector<VertexAttributeType> attrTypes, const GLvoid* vertexD
       vao(),
       vbo(GL_ARRAY_BUFFER, vertexCount * offsets.back(), vertexData, GL_STATIC_DRAW, false),
       ibo(GL_ELEMENT_ARRAY_BUFFER, indexCount * getIndexSize(indicesType), indexData, GL_STATIC_DRAW),
-      vertexCount(vertexCount), indexCount(indexCount)
+      vertexCount(vertexCount), indexCount(indexCount), indicesType(indicesType)
 {
     GLCall(glBindVertexBuffer(bindingIndex, vbo.getName(), 0, offsets.back()));
     for (unsigned int i = 0; i < attrTypes.size(); ++i) {
@@ -47,7 +47,8 @@ GLMesh::GLMesh(GLMesh&& other)
     : offsets(std::move(other.offsets)),
       vao(std::move(other.vao)),
       vbo(std::move(other.vbo)), ibo(std::move(other.ibo)),
-      vertexCount(other.vertexCount), indexCount(other.indexCount)
+      vertexCount(other.vertexCount), indexCount(other.indexCount),
+      indicesType(other.indicesType)
 {}
 
 GLMesh& GLMesh::operator=(GLMesh&& other) {
@@ -57,6 +58,7 @@ GLMesh& GLMesh::operator=(GLMesh&& other) {
     ibo = std::move(other.ibo);
     vertexCount = other.vertexCount;
     indexCount = other.indexCount;
+    indicesType = other.indicesType;
 
     return *this;
 }
