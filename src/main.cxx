@@ -123,24 +123,16 @@ int main(void)
         2, 3, 0
     };
 
-    GLVertexArrayObject rectVAO;
-    // vao is bound by default
-
-    GLBufferObject rectVBO(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), rectVertices, GL_STATIC_DRAW, false);
-
-    unsigned int bindingIndex = 0;
-    GLCall(glBindVertexBuffer(bindingIndex, rectVBO.getName(), 0, sizeof(Vertex)));
-
-    GLCall(glEnableVertexAttribArray(posAttrIndex));
-    GLCall(glVertexAttribFormat(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 0));
-    GLCall(glVertexAttribBinding(posAttrIndex, bindingIndex));
-
-    GLCall(glEnableVertexAttribArray(colAttrIndex));
-    GLCall(glVertexAttribFormat(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex::pos)));
-    GLCall(glVertexAttribBinding(colAttrIndex, bindingIndex));
-
-    GLBufferObject rectIBO(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
-    // bound automatically in constructor -> connected to rectVAO
+    std::vector<VertexAttributeType> attrTypes;
+    attrTypes.push_back(VertexAttributeType{static_cast<GLuint>(posAttrIndex),
+                        2, GL_FLOAT, GL_FALSE,
+                        VariableType::FLOAT});
+    attrTypes.push_back(VertexAttributeType{static_cast<GLuint>(colAttrIndex),
+                        4, GL_FLOAT, GL_FALSE,
+                        VariableType::FLOAT});
+    GLMesh rectMesh(attrTypes, rectVertices, 4,
+                    GL_UNSIGNED_INT, indices, 6,
+                    false);
 
     float r = .0f;
     float increment = .05f;
@@ -180,13 +172,7 @@ int main(void)
         starIndices.push_back((2 * s + 2) % (n_spikes * 2));
     }
 
-    std::vector<VertexAttributeType> attrTypes;
-    attrTypes.push_back(VertexAttributeType{static_cast<GLuint>(posAttrIndex),
-                        2, GL_FLOAT, GL_FALSE,
-                        VariableType::FLOAT});
-    attrTypes.push_back(VertexAttributeType{static_cast<GLuint>(colAttrIndex),
-                        4, GL_FLOAT, GL_FALSE,
-                        VariableType::FLOAT});
+    // reuse attrTypes from rectangle
     GLMesh starMesh(attrTypes, starVertices.data(), static_cast<GLsizei>(starVertices.size()),
                     GL_UNSIGNED_INT, starIndices.data(), static_cast<GLsizei>(starIndices.size()),
                     false);
@@ -214,13 +200,14 @@ int main(void)
         GLCall(glUniform4f(location, r, .3f, .8f, 1.0f));
 
         // 1.2 bind vao:
-        rectVAO.bind();
+        rectMesh.bindVAO();
 
         // 1.4 bind ibo:
         // GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
 
         // 1.5 draw:
-        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+        GLCall(glDrawElements(GL_TRIANGLES, rectMesh.getNumIndices(),
+                              rectMesh.getIndicesType(), nullptr));
 
 
         // 2 draw star:
