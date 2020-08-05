@@ -3,7 +3,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <cassert>
+
 #include "debug_utils.h"
 
 class GLBufferObject {
@@ -24,15 +24,13 @@ public:
 
 	void bind() {
         GLCall(glBindBuffer(target, buffer));
-		#ifndef NDEBUG
-		bound = true;
-		#endif
 	}
 
 	void unbind() {
 		#ifndef NDEBUG
-		assert(bound);
-		bound = false;
+        GLint currBuff;
+        GLCall(glGetIntegerv(getBindingEnum(target), &currBuff));
+        myAssert(static_cast<GLenum>(currBuff) == buffer);
 		#endif
         GLCall(glBindBuffer(target, 0));
 	}
@@ -42,11 +40,10 @@ public:
     }
 
 private:
+    static GLenum getBindingEnum(GLenum target);
+
 	GLenum target;
 	GLuint buffer;
-#ifndef NDEBUG
-	bool bound = false;
-#endif
 };
 
 
