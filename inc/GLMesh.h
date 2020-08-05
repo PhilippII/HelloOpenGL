@@ -46,7 +46,8 @@ class GLMesh
 public:
     GLMesh() = delete;
     GLMesh(std::vector<VertexAttributeType> attrTypes, const GLvoid* vertexData, GLsizei vertexCount,
-           GLenum indicesType, const GLvoid* indexData, GLsizei indexCount);
+           GLenum indicesType, const GLvoid* indexData, GLsizei indexCount,
+           bool keepBound = true);
 
     GLMesh(const GLMesh& other) = delete;
     GLMesh& operator=(const GLMesh& other) = delete;
@@ -77,12 +78,15 @@ private:
     static GLuint getIndexSize(GLenum indicesType);
     static std::vector<GLuint> computeOffsets(std::vector<VertexAttributeType> attrTypes);
 
+    static const GLuint bindingIndex;
+
     std::vector<GLuint> offsets;    // important that this member is the first !
                                     // so it is also initialized first
+    GLVertexArrayObject vao;        // important that vao is initialized before
+                                    // ibo is initialized, so vao is already bound
+                                    // when ibo will be bound
     GLBufferObject vbo;
     GLBufferObject ibo;
-    GLVertexArrayObject vao;
-    static const GLuint bindingIndex;
     GLsizei vertexCount;
     GLsizei indexCount;
 };

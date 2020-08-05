@@ -4,14 +4,14 @@ const GLuint GLMesh::bindingIndex = 0;
 
 
 GLMesh::GLMesh(std::vector<VertexAttributeType> attrTypes, const GLvoid* vertexData, GLsizei vertexCount,
-               GLenum indicesType, const GLvoid* indexData, GLsizei indexCount)
+               GLenum indicesType, const GLvoid* indexData, GLsizei indexCount,
+               bool keepBound)
     : offsets(computeOffsets(attrTypes)),
-      vbo(GL_ARRAY_BUFFER, vertexCount * offsets.back(), vertexData, GL_STATIC_DRAW),
-      ibo(GL_ELEMENT_ARRAY_BUFFER, indexCount * getIndexSize(indicesType), indexData, GL_STATIC_DRAW),
       vao(),
+      vbo(GL_ARRAY_BUFFER, vertexCount * offsets.back(), vertexData, GL_STATIC_DRAW, false),
+      ibo(GL_ELEMENT_ARRAY_BUFFER, indexCount * getIndexSize(indicesType), indexData, GL_STATIC_DRAW),
       vertexCount(vertexCount), indexCount(indexCount)
 {
-    vao.bind();
     GLCall(glBindVertexBuffer(bindingIndex, vbo.getName(), 0, offsets.back()));
     for (unsigned int i = 0; i < attrTypes.size(); ++i) {
         GLCall(glEnableVertexAttribArray(attrTypes[i].location));
@@ -37,21 +37,26 @@ GLMesh::GLMesh(std::vector<VertexAttributeType> attrTypes, const GLvoid* vertexD
         }
         GLCall(glVertexAttribBinding(attrTypes[i].location, bindingIndex));
     }
-    ibo.bind();
-    vao.unbind();
+    // ibo bound automatically in constructor already
+    if (!keepBound) {
+        vao.unbind();
+    }
 }
 
 GLMesh::GLMesh(GLMesh&& other)
     : offsets(std::move(other.offsets)),
+      vao(std::move(other.vao)),
       vbo(std::move(other.vbo)), ibo(std::move(other.ibo)),
-      vao(std::move(other.vao))
+      vertexCount(other.vertexCount), indexCount(other.indexCount)
 {}
 
 GLMesh& GLMesh::operator=(GLMesh&& other) {
     offsets = std::move(other.offsets);
+    vao = std::move(other.vao);
     vbo = std::move(other.vbo);
     ibo = std::move(other.ibo);
-    vao = std::move(other.vao);
+    vertexCount = other.vertexCount;
+    indexCount = other.indexCount;
 
     return *this;
 }
