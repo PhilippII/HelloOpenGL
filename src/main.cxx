@@ -17,6 +17,7 @@
 #include "GLBufferObject.h"
 #include "GLShader.h"
 #include "GLShaderProgram.h"
+#include "GLMesh.h"
 
 #include "debug_utils.h"
 
@@ -179,25 +180,16 @@ int main(void)
         starIndices.push_back((2 * s + 2) % (n_spikes * 2));
     }
 
-    GLVertexArrayObject starVAO;
-    // vao is bound by default
-
-    GLBufferObject starVBO(GL_ARRAY_BUFFER, starVertices.size() * sizeof(Vertex), starVertices.data(), GL_STATIC_DRAW, false);
-
-
-    // unsigned int bindingIndex = 0;
-    GLCall(glBindVertexBuffer(bindingIndex, starVBO.getName(), 0, sizeof(Vertex)));
-
-    GLCall(glEnableVertexAttribArray(posAttrIndex));
-    GLCall(glVertexAttribFormat(posAttrIndex, 2, GL_FLOAT, GL_FALSE, 0));
-    GLCall(glVertexAttribBinding(posAttrIndex, bindingIndex));
-
-    GLCall(glEnableVertexAttribArray(colAttrIndex));
-    GLCall(glVertexAttribFormat(colAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex::pos)));
-    GLCall(glVertexAttribBinding(colAttrIndex, bindingIndex));
-
-    GLBufferObject starIBO(GL_ELEMENT_ARRAY_BUFFER, starIndices.size() * sizeof(unsigned int), starIndices.data(), GL_STATIC_DRAW);
-    // bound automatically in constructor -> connected to starVAO
+    std::vector<VertexAttributeType> attrTypes;
+    attrTypes.push_back(VertexAttributeType{static_cast<GLuint>(posAttrIndex),
+                        2, GL_FLOAT, GL_FALSE,
+                        VariableType::FLOAT});
+    attrTypes.push_back(VertexAttributeType{static_cast<GLuint>(colAttrIndex),
+                        4, GL_FLOAT, GL_FALSE,
+                        VariableType::FLOAT});
+    GLMesh starMesh(attrTypes, starVertices.data(), static_cast<GLsizei>(starVertices.size()),
+                    GL_UNSIGNED_INT, starIndices.data(), static_cast<GLsizei>(starIndices.size()),
+                    false);
 
 
     /* Loop until the user closes the window */
@@ -237,14 +229,14 @@ int main(void)
         GLCall(glUniform4f(location, .8f, .8f, .8f, 1.0f));
 
         // 2.2 bind vao:
-        starVAO.bind();
+        starMesh.bindVAO();
 
         // 2.4 bind ibo:
         // GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, starIBO));
 
         // 2.5 draw:
-        GLCall(glDrawElements(GL_TRIANGLES, static_cast<int>(starIndices.size()),
-                              GL_UNSIGNED_INT, nullptr));
+        GLCall(glDrawElements(GL_TRIANGLES, starMesh.getNumIndices(),
+                              starMesh.getIndicesType(), nullptr));
 
 
         /* Swap front and back buffers */
