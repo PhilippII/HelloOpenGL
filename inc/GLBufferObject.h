@@ -8,7 +8,7 @@
 
 class GLBufferObject {
 public:
-    GLBufferObject(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage);
+    GLBufferObject(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage, bool keepBound = true);
 
 	// do not allow copy-constructor/assignment
     GLBufferObject(const GLBufferObject& other) = delete;

@@ -125,7 +125,7 @@ int main(void)
     GLVertexArrayObject rectVAO;
     rectVAO.bind();
 
-    GLBufferObject rectVBO(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), rectVertices, GL_STATIC_DRAW);
+    GLBufferObject rectVBO(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), rectVertices, GL_STATIC_DRAW, false);
 
     unsigned int bindingIndex = 0;
     GLCall(glBindVertexBuffer(bindingIndex, rectVBO.getName(), 0, sizeof(Vertex)));
@@ -139,7 +139,7 @@ int main(void)
     GLCall(glVertexAttribBinding(colAttrIndex, bindingIndex));
 
     GLBufferObject rectIBO(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
-    rectIBO.bind();
+    // bound automatically in constructor -> connected to rectVAO
 
     float r = .0f;
     float increment = .05f;
@@ -182,7 +182,7 @@ int main(void)
     GLVertexArrayObject starVAO;
     starVAO.bind();
 
-    GLBufferObject starVBO(GL_ARRAY_BUFFER, starVertices.size() * sizeof(Vertex), starVertices.data(), GL_STATIC_DRAW);
+    GLBufferObject starVBO(GL_ARRAY_BUFFER, starVertices.size() * sizeof(Vertex), starVertices.data(), GL_STATIC_DRAW, false);
 
 
     // unsigned int bindingIndex = 0;
@@ -197,7 +197,7 @@ int main(void)
     GLCall(glVertexAttribBinding(colAttrIndex, bindingIndex));
 
     GLBufferObject starIBO(GL_ELEMENT_ARRAY_BUFFER, starIndices.size() * sizeof(unsigned int), starIndices.data(), GL_STATIC_DRAW);
-    starIBO.bind();
+    // bound automatically in constructor -> connected to starVAO
 
 
     /* Loop until the user closes the window */

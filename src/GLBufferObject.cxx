@@ -1,11 +1,13 @@
 #include "GLBufferObject.h"
 
-GLBufferObject::GLBufferObject(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage) {
+GLBufferObject::GLBufferObject(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage, bool keepBound) {
 	this->target = target;
     GLCall(glGenBuffers(1, &(this->buffer)));
     GLCall(glBindBuffer(target, this->buffer));
     GLCall(glBufferData(target, size, data, usage));
-    GLCall(glBindBuffer(target, 0));
+    if (!keepBound) {
+        GLCall(glBindBuffer(target, 0));
+    }
 }
 
 GLBufferObject::GLBufferObject(GLBufferObject&& other) {
