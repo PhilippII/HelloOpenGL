@@ -29,6 +29,11 @@ public:
     }
 
     void unbind() {
+#ifndef NDEBUG
+        GLint currVao;
+        GLCall(glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &currVao));
+        myAssert(static_cast<GLuint>(currVao) == vao);
+#endif
         GLCall(glBindVertexArray(0));
     }
 
