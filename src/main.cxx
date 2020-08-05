@@ -123,7 +123,7 @@ int main(void)
     };
 
     GLVertexArrayObject rectVAO;
-    rectVAO.bind();
+    // vao is bound by default
 
     GLBufferObject rectVBO(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), rectVertices, GL_STATIC_DRAW, false);
 
@@ -180,7 +180,7 @@ int main(void)
     }
 
     GLVertexArrayObject starVAO;
-    starVAO.bind();
+    // vao is bound by default
 
     GLBufferObject starVBO(GL_ARRAY_BUFFER, starVertices.size() * sizeof(Vertex), starVertices.data(), GL_STATIC_DRAW, false);
 

@@ -2,9 +2,12 @@
 
 
 
-GLVertexArrayObject::GLVertexArrayObject()
+GLVertexArrayObject::GLVertexArrayObject(bool bindNow)
 {
     GLCall(glGenVertexArrays(1, &vao));
+    if (bindNow) {
+        bind();
+    }
 }
 
 GLVertexArrayObject::GLVertexArrayObject(GLVertexArrayObject&& other)

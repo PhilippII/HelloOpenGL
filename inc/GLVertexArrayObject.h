@@ -10,7 +10,7 @@
 class GLVertexArrayObject
 {
 public:
-    GLVertexArrayObject();
+    GLVertexArrayObject(bool bindNow = true);
 
     // do not allow copy:
     GLVertexArrayObject(const GLVertexArrayObject& other) = delete;
