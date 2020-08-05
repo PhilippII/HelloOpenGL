@@ -4,16 +4,14 @@
 
 #include <iostream>
 
-GLShaderProgram::GLShaderProgram(std::vector<ShaderSource> sources, bool buildNow)
+GLShaderProgram::GLShaderProgram(std::vector<ShaderSource> sources, SPReadiness readiness)
 {
     programId = glCreateProgram();
     for (auto& src : sources) {
         addShaderFromSource(src);
     }
-    if (buildNow) {
-        bool success = buildAll();
-        myAssert(success);
-    }
+    bool success = makeReady(readiness);
+    myAssert(success);
 }
 
 GLShaderProgram::GLShaderProgram(GLShaderProgram&& other)
@@ -85,11 +83,23 @@ bool GLShaderProgram::validate() {
     return success;
 }
 
-bool GLShaderProgram::buildAll() {
-    return (compileShaders() && link()) && validate();
-    // evaluation order left to right according to
+bool GLShaderProgram::makeReady(SPReadiness readiness) {
+    // according to:
     // https://stackoverflow.com/questions/7925479/if-argument-evaluation-order
-    // also avoids evaluating right function if left one fails
+    // - evaluation order of && and || left to right according to
+    // - also avoids evaluating right function if not necessary
+    bool buildSuccess
+         = ((readiness < SPReadiness::COMPILE)  || compileShaders())
+        && ((readiness < SPReadiness::LINK)     || link())
+        && ((readiness < SPReadiness::VALIDATE) || validate());
+    if (readiness == SPReadiness::USE) {
+        use();
+    }
+    return buildSuccess;
+}
+
+bool GLShaderProgram::buildAll() {
+    return makeReady(SPReadiness::VALIDATE);
 }
 
 void GLShaderProgram::use() {

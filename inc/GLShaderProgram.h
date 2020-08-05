@@ -14,10 +14,14 @@ struct ShaderSource {
     std::string sourceCode;
 };
 
+enum class SPReadiness {
+    NONE=0, COMPILE=1, LINK=2, VALIDATE=3, USE=4
+};
+
 class GLShaderProgram
 {
 public:
-    GLShaderProgram(std::vector<ShaderSource> sources, bool buildNow = true);
+    GLShaderProgram(std::vector<ShaderSource> sources, SPReadiness readiness = SPReadiness::USE);
 
     GLShaderProgram(const GLShaderProgram& other) = delete;
 
@@ -37,6 +41,8 @@ public:
     bool link();
 
     bool validate();
+
+    bool makeReady(SPReadiness readiness);
 
     bool buildAll();
 
