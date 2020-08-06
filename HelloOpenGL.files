@@ -1,3 +1,6 @@
+inc/Renderer.h
+src/Renderer.cxx
+src/main.cxx
 Makefile
 res/shaders/Basic.shader
 src/main.cxx
