@@ -20,6 +20,7 @@
 #include "GLMesh.h"
 
 #include "debug_utils.h"
+#include "GLFWInitialization.h"
 
 struct ShaderProgramSource {
     std::string VertexSource;
@@ -67,8 +68,10 @@ int main(void)
     GLFWwindow* window;
 
     /* Initialize the library */
-    if (!glfwInit())
+    GLFWInitialization init; // constructor calls GLFWInit()
+    if (!init.getSuccess()) {
         return -1;
+    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -78,7 +81,7 @@ int main(void)
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
     {
-        glfwTerminate();
+        //glfwTerminate(); called in destructor of GLFWInitialization
         return -1;
     }
 
@@ -233,7 +236,7 @@ int main(void)
         glfwPollEvents();
     }
 
-    glfwTerminate();
+    // glfwTerminate(); in destructor of GLFWInitialization
     return 0;
 }
 
