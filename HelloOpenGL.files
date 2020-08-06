@@ -1,5 +1,9 @@
+inc/IndexBuffer.h
 inc/Renderer.h
+inc/VertexBuffer.h
+src/IndexBuffer.cxx
 src/Renderer.cxx
+src/VertexBuffer.cxx
 src/main.cxx
 Makefile
 res/shaders/Basic.shader
