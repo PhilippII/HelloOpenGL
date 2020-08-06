@@ -1,5 +1,5 @@
-#ifndef VERTEXBUFFER_H
-#define VERTEXBUFFER_H
+#ifndef INDEXBUFFER_H
+#define INDEXBUFFER_H
 
 class IndexBuffer
 {
@@ -16,4 +16,4 @@ public:
     unsigned int GetCount() const { return m_Count; }
 };
 
-#endif // VERTEXBUFFER_H
+#endif // INDEXBUFFER_H

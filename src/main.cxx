@@ -168,6 +168,14 @@ int main(void)
         /* Render here */
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
+        GLCall(glUseProgram(shader));
+        GLCall(glUniform4f(location, r, .3f, .8f, 1.0f));
+
+        GLCall(glBindVertexArray(vao));
+        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+
+        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+
         r += increment;
         if (r > 1.0) {
             r = 1.0;
@@ -177,9 +185,6 @@ int main(void)
             r = 0.0;
             increment = +.05f;
         }
-
-        GLCall(glUniform4f(location, r, .3f, .8f, 1.0f));
-        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
