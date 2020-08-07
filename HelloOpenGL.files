@@ -1,9 +1,13 @@
 inc/IndexBuffer.h
 inc/Renderer.h
+inc/VertexArray.h
 inc/VertexBuffer.h
+inc/VertexBufferLayout.h
 src/IndexBuffer.cxx
 src/Renderer.cxx
+src/VertexArray.cxx
 src/VertexBuffer.cxx
+src/VertexBufferLayout.cxx
 src/main.cxx
 Makefile
 res/shaders/Basic.shader
