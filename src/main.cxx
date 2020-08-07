@@ -155,6 +155,11 @@ int main(void)
         GLCall(int location = glGetUniformLocation(shader, "u_Color"));
         myAssert(location != -1);
 
+        va.Unbind();
+        GLCall(glUseProgram(0));
+        vb.Unbind();
+        ib.Unbind();
+
         float r = .0f;
         float increment = .05f;
 
