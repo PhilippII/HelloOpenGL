@@ -7,9 +7,25 @@ VertexArray::VertexArray()
     GLCall(glGenVertexArrays(1, &m_RendererID));
 }
 
+VertexArray::VertexArray(VertexArray&& other)
+    : m_RendererID(other.m_RendererID)
+{
+    other.m_RendererID = 0;
+}
+
+VertexArray &VertexArray::operator=(VertexArray&& other)
+{
+    m_RendererID = other.m_RendererID;
+    other.m_RendererID = 0;
+
+    return *this;
+}
+
 VertexArray::~VertexArray()
 {
     GLCall(glDeleteVertexArrays(1, &m_RendererID));
+    // docs.gl:
+    // "Unused names in arrays are silently ignored, as is the value zero."
 }
 
 void VertexArray::AddBuffer(const VertexBuffer &vb, const VertexBufferLayout &layout)
@@ -25,7 +41,6 @@ void VertexArray::AddBuffer(const VertexBuffer &vb, const VertexBufferLayout &la
                                      layout.GetStride(), reinterpret_cast<const void*>(offset)));
         offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
     }
-
 }
 
 void VertexArray::Bind() const

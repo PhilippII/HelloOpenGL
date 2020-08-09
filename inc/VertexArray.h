@@ -10,6 +10,10 @@ private:
     unsigned int m_RendererID;
 public:
     VertexArray();
+    VertexArray(const VertexArray& other) = delete;
+    VertexArray& operator=(const VertexArray& other) = delete;
+    VertexArray(VertexArray&& other);
+    VertexArray& operator=(VertexArray&& other);
     ~VertexArray();
 
     void AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout);
