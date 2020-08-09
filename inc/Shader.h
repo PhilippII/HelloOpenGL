@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include <unordered_map>
+
 struct ShaderProgramSource {
     std::string VertexSource;
     std::string FragmentSource;
@@ -14,7 +16,7 @@ class Shader
 private:
     std::string m_FilePath;
     unsigned int m_RendererID;
-    // TODO: caching for uniform locations
+    std::unordered_map<std::string, unsigned int> m_UniformLocationCache;
 public:
     Shader(const std::string& filepath);
     ~Shader();
