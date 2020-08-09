@@ -8,6 +8,11 @@ private:
     unsigned int m_Count;
 public:
     IndexBuffer(const unsigned int* data, unsigned int count);
+    IndexBuffer() = delete;
+    IndexBuffer(const IndexBuffer& other) = delete;
+    IndexBuffer& operator=(const IndexBuffer& other) = delete;
+    IndexBuffer(IndexBuffer&& other);
+    IndexBuffer& operator=(IndexBuffer&& other);
     ~IndexBuffer();
 
     void Bind() const;
