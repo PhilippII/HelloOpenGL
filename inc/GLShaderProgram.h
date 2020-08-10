@@ -64,9 +64,9 @@ public:
         return m_rendererID;
     }
 
-    GLint getAttribLocation(const std::string& name);
+    GLint getAttribLocation(const std::string& name) const;
 
-    GLint getUniformLocation(const std::string& name);
+    GLint getUniformLocation(const std::string& name) const;
 
 private:
     void printShaderProgramInfoLog() const;

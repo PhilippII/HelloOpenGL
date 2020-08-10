@@ -134,12 +134,12 @@ GLint GLShaderProgram::getParam(GLenum pname) const {
 }
 
 
-GLint GLShaderProgram::getAttribLocation(const std::string& name) {
+GLint GLShaderProgram::getAttribLocation(const std::string& name) const {
     GLCall(GLint location = glGetAttribLocation(m_rendererID, name.c_str()));
     return location;
 }
 
-GLint GLShaderProgram::getUniformLocation(const std::string &name) {
+GLint GLShaderProgram::getUniformLocation(const std::string &name) const {
     GLCall(GLint location = glGetUniformLocation(m_rendererID, name.c_str()));
     return location;
 }
