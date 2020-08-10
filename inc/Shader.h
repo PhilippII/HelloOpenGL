@@ -19,6 +19,11 @@ private:
     std::unordered_map<std::string, unsigned int> m_UniformLocationCache;
 public:
     Shader(const std::string& filepath);
+    Shader() = delete;
+    Shader(const Shader& other) = delete;
+    Shader& operator=(const Shader& other) = delete;
+    Shader(Shader&& other);
+    Shader& operator=(Shader&& other);
     ~Shader();
 
     void Bind() const;

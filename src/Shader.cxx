@@ -18,6 +18,22 @@ Shader::Shader(const std::string &filepath)
 
 }
 
+Shader::Shader(Shader&& other)
+    : m_FilePath(other.m_FilePath),
+      m_RendererID(other.m_RendererID)
+{
+    other.m_RendererID = 0;
+}
+
+Shader &Shader::operator=(Shader&& other)
+{
+    m_FilePath = other.m_FilePath;
+    m_RendererID = other.m_RendererID;
+    other.m_RendererID = 0;
+
+    return *this;
+}
+
 Shader::~Shader()
 {
     GLCall(glDeleteProgram(m_RendererID));
