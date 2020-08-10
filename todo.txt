@@ -4,16 +4,8 @@ GLFW:
 	-> compile GLFW from source instead?
 - static vs. dynamic linking against glfw and glew. which is better?
 	-> and why does pkg-config --libs --static not include -Wl,-Bstatic -Wl,-Bdynamic ?
-- which of those functions do I need to call again for every frame when rendering multiple
-	3D-models (each from its own buffer)
-	- glBindBuffer(...) ?
-	- glEnableVertexAttribArray(...) ?
-	- glVertexAttribPointer(...) ?
-	-> and is the situation different when using glDrawArray(...) (no index buffer)
-		vs. when using glDrawElements(...) (with index buffer)
-	-> answer depends on whether we use Vertex Array Objects
-		see video 12 Vertex Arrays in OpenGL
-- clean up vertex buffers and co. at the end of the program
+
+OpenGL:
 - after reading chapters 9 + 10 in stroustrup look again at function ParseShader(...)
 - GLCall(...) macro is fragile
 	-> e.g. 
@@ -28,4 +20,20 @@ GLFW:
 	-> is std::array guaranteed to allow copy construction of new arrays?
 		-> also if array to be copied from is a line of a 2D-array?
 	-> and is it guaranteed to have the same memory layout as a normal C-style array?
+
+
+
+DONE:
+- which of those functions do I need to call again for every frame when rendering multiple
+	3D-models (each from its own buffer)
+	- glBindBuffer(...) ?
+	- glEnableVertexAttribArray(...) ?
+	- glVertexAttribPointer(...) ?
+	-> and is the situation different when using glDrawArray(...) (no index buffer)
+		vs. when using glDrawElements(...) (with index buffer)
+	-> answer depends on whether we use Vertex Array Objects
+		see video 12 Vertex Arrays in OpenGL
+- clean up vertex buffers and co. at the end of the program
+	-> destructors take care of that
+
 
