@@ -102,7 +102,7 @@ int main(void)
     sources.push_back(ShaderSource{GL_VERTEX_SHADER, source.VertexSource});
     sources.push_back(ShaderSource{GL_FRAGMENT_SHADER, source.FragmentSource});
     GLShaderProgram shaderProgram(sources);
-    // shaderProgram.use() is called automatically in constructor
+    // shaderProgram.bind() is called automatically in constructor
 
     int location = shaderProgram.getUniformLocation("u_Color");
     myAssert(location != -1);
