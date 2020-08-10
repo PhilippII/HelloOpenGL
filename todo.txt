@@ -21,6 +21,34 @@ OpenGL:
 		-> also if array to be copied from is a line of a 2D-array?
 	-> and is it guaranteed to have the same memory layout as a normal C-style array?
 
+abstraction into classes me vs. cherno:
+- generally:
+	-> cherno: member variables are prefixed with m_
+	-> cherno: debug utils are in same header as class Renderer
+	-> cherno: ids of OpenGL-Objects are called m_RendererID
+- Buffers
+	- cherno: VertexBuffer and IndexBuffer are separate classes
+- BufferLayout
+	-> cherno: there is an actual class for the BufferLayout which contains VertexBufferElements
+	-> me: there is only a std::vector of VertexAttributeType (=VertexBufferElement)
+- GLMesh + VAO
+	-> cherno: there is no GLMesh class that takes care of vao, BufferLayout and vbo simultanously
+	-> cherno: but the vao-class itself also takes a BufferLayout and a reference to the vbo
+	-> cherno: vao-class still does not take a reference to an ibo
+	-> cherno: vao-class still does not create vbo by itself it merely takes it as a function 
+		argument to function AddBuffer(...)
+- Renderer
+	-> me: separate renderer class does not exist: glDrawElements(...) is called from main(..) function directly
+- ShaderProgram
+	-> cherno: ShaderProgram only called Shader
+	-> me: separate classes for Shader and ShaderProgram
+	-> cherno: also contains parsing function and directly accepts filename in constructor	
+	-> cherno: it is not possible to create a Shader without immediately compiling/linking it in the constructor already
+	-> cherno: glUseProgram(..) is called Bind()
+
+
+abstracting into classes other TODOs:
+- ShaderProgram should not link before compiling and co.
 
 
 DONE:
