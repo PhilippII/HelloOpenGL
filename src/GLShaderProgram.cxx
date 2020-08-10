@@ -92,7 +92,7 @@ bool GLShaderProgram::makeReady(SPReadiness readiness) {
          = ((readiness < SPReadiness::COMPILE)  || compileShaders())
         && ((readiness < SPReadiness::LINK)     || link())
         && ((readiness < SPReadiness::VALIDATE) || validate());
-    if (readiness == SPReadiness::BIND) {
+    if (buildSuccess && readiness == SPReadiness::BIND) {
         bind();
     }
     return buildSuccess;
