@@ -173,7 +173,7 @@ void GLShaderProgram::setUniform4f(const std::string &name, float v0, float v1, 
 bool GLShaderProgram::isBound() const
 {
     GLint programID;
-    glGetIntegerv(GL_CURRENT_PROGRAM, &programID);
-    return (m_rendererID == programID);
+    GLCall(glGetIntegerv(GL_CURRENT_PROGRAM, &programID));
+    return (m_rendererID == static_cast<GLuint>(programID));
 }
 
