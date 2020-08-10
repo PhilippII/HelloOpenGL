@@ -58,23 +58,23 @@ public:
     virtual ~GLMesh();
 
     void bindVAO() {
-        vao.bind();
+        m_vao.bind();
     }
 
     void unbindVAO() {
-        vao.unbind();
+        m_vao.unbind();
     }
 
     GLsizei getNumUniqueVertices() const {
-        return vertexCount;
+        return m_vertexCount;
     }
 
     GLsizei getNumIndices() const {
-        return indexCount;
+        return m_indexCount;
     }
 
     GLenum getIndicesType() const {
-        return indicesType;
+        return m_indicesType;
     }
 
 private:
@@ -84,16 +84,16 @@ private:
 
     static const GLuint bindingIndex;
 
-    std::vector<GLuint> offsets;    // important that this member is the first !
+    std::vector<GLuint> m_offsets;    // important that this member is the first !
                                     // so it is also initialized first
-    GLVertexArrayObject vao;        // important that vao is initialized before
+    GLVertexArrayObject m_vao;        // important that vao is initialized before
                                     // ibo is initialized, so vao is already bound
                                     // when ibo will be bound
-    GLBufferObject vbo;
-    GLBufferObject ibo;
-    GLsizei vertexCount;
-    GLsizei indexCount;
-    GLenum indicesType;
+    GLBufferObject m_vbo;
+    GLBufferObject m_ibo;
+    GLsizei m_vertexCount;
+    GLsizei m_indexCount;
+    GLenum m_indicesType;
 };
 
 #endif // GLMESH_H

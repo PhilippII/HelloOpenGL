@@ -14,7 +14,7 @@ class GLFWInitialization
 {
 public:
     GLFWInitialization() {
-        success = (glfwInit() == GLFW_TRUE);
+        m_success = (glfwInit() == GLFW_TRUE);
     }
 
     GLFWInitialization(const GLFWInitialization& other) = delete;
@@ -23,16 +23,16 @@ public:
     GLFWInitialization& operator=(GLFWInitialization&& other) = delete;
 
     ~GLFWInitialization() {
-        if (success) {
+        if (m_success) {
             glfwTerminate();
         }
     }
 
     bool getSuccess() const {
-        return success;
+        return m_success;
     }
 private:
-    bool success;
+    bool m_success;
 };
 
 #endif // GLFWIINITIALIZATION_H

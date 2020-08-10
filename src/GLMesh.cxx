@@ -6,30 +6,30 @@ const GLuint GLMesh::bindingIndex = 0;
 GLMesh::GLMesh(std::vector<VertexAttributeType> attrTypes, const GLvoid* vertexData, GLsizei vertexCount,
                GLenum indicesType, const GLvoid* indexData, GLsizei indexCount,
                bool keepBound)
-    : offsets(computeOffsets(attrTypes)),
-      vao(),
-      vbo(GL_ARRAY_BUFFER, vertexCount * offsets.back(), vertexData, GL_STATIC_DRAW, false),
-      ibo(GL_ELEMENT_ARRAY_BUFFER, indexCount * getIndexSize(indicesType), indexData, GL_STATIC_DRAW),
-      vertexCount(vertexCount), indexCount(indexCount), indicesType(indicesType)
+    : m_offsets(computeOffsets(attrTypes)),
+      m_vao(),
+      m_vbo(GL_ARRAY_BUFFER, vertexCount * m_offsets.back(), vertexData, GL_STATIC_DRAW, false),
+      m_ibo(GL_ELEMENT_ARRAY_BUFFER, indexCount * getIndexSize(indicesType), indexData, GL_STATIC_DRAW),
+      m_vertexCount(vertexCount), m_indexCount(indexCount), m_indicesType(indicesType)
 {
-    GLCall(glBindVertexBuffer(bindingIndex, vbo.getName(), 0, offsets.back()));
+    GLCall(glBindVertexBuffer(bindingIndex, m_vbo.getName(), 0, m_offsets.back()));
     for (unsigned int i = 0; i < attrTypes.size(); ++i) {
         GLCall(glEnableVertexAttribArray(attrTypes[i].location));
         switch (attrTypes[i].castTo) {
           case VariableType::FLOAT:
             GLCall(glVertexAttribFormat(attrTypes[i].location, attrTypes[i].dimension,
                                         attrTypes[i].componentType, attrTypes[i].normalized,
-                                        offsets[i]));
+                                        m_offsets[i]));
             break;
           case VariableType::DOUBLE:
             GLCall(glVertexAttribIFormat(attrTypes[i].location, attrTypes[i].dimension,
                                          attrTypes[i].componentType,
-                                         offsets[i]));
+                                         m_offsets[i]));
             break;
           case VariableType::INT:
             GLCall(glVertexAttribLFormat(attrTypes[i].location, attrTypes[i].dimension,
                                          attrTypes[i].componentType,
-                                         offsets[i]));
+                                         m_offsets[i]));
             break;
           default:
             myAssert(false);
@@ -39,26 +39,26 @@ GLMesh::GLMesh(std::vector<VertexAttributeType> attrTypes, const GLvoid* vertexD
     }
     // ibo bound automatically in constructor already
     if (!keepBound) {
-        vao.unbind();
+        m_vao.unbind();
     }
 }
 
 GLMesh::GLMesh(GLMesh&& other)
-    : offsets(std::move(other.offsets)),
-      vao(std::move(other.vao)),
-      vbo(std::move(other.vbo)), ibo(std::move(other.ibo)),
-      vertexCount(other.vertexCount), indexCount(other.indexCount),
-      indicesType(other.indicesType)
+    : m_offsets(std::move(other.m_offsets)),
+      m_vao(std::move(other.m_vao)),
+      m_vbo(std::move(other.m_vbo)), m_ibo(std::move(other.m_ibo)),
+      m_vertexCount(other.m_vertexCount), m_indexCount(other.m_indexCount),
+      m_indicesType(other.m_indicesType)
 {}
 
 GLMesh& GLMesh::operator=(GLMesh&& other) {
-    offsets = std::move(other.offsets);
-    vao = std::move(other.vao);
-    vbo = std::move(other.vbo);
-    ibo = std::move(other.ibo);
-    vertexCount = other.vertexCount;
-    indexCount = other.indexCount;
-    indicesType = other.indicesType;
+    m_offsets = std::move(other.m_offsets);
+    m_vao = std::move(other.m_vao);
+    m_vbo = std::move(other.m_vbo);
+    m_ibo = std::move(other.m_ibo);
+    m_vertexCount = other.m_vertexCount;
+    m_indexCount = other.m_indexCount;
+    m_indicesType = other.m_indicesType;
 
     return *this;
 }

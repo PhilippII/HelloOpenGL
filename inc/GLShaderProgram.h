@@ -53,7 +53,7 @@ public:
     GLint getParam(GLenum pname) const;
 
     GLuint getName() const {
-        return programId;
+        return m_rendererID;
     }
 
     GLint getAttribLocation(const std::string& name);
@@ -62,8 +62,8 @@ public:
 
 private:
     void printShaderProgramInfoLog() const;
-    GLuint programId;
-    std::vector<GLShader> shaders;
+    GLuint m_rendererID;
+    std::vector<GLShader> m_shaders;
 };
 
 #endif // GLSHADERPROGRAM_H

@@ -3,68 +3,68 @@
 #include <iostream>
 
 GLShader::GLShader(GLenum type, const std::string& source, bool compileNow)
-    : type(type)
+    : m_type(type)
 {
-    GLCall(shaderId = glCreateShader(type));
+    GLCall(m_rendererId = glCreateShader(type));
     const char* src = source.c_str();
-    GLCall(glShaderSource(shaderId, 1, &src, nullptr));
-    state = GLShader::ShaderState::SOURCE;
+    GLCall(glShaderSource(m_rendererId, 1, &src, nullptr));
+    m_state = GLShader::ShaderState::SOURCE;
     if (compileNow) {
         this->compile();
     }
 }
 
 GLShader::GLShader(GLShader&& other)
-    : type(other.type), shaderId(other.shaderId), state(other.state)
+    : m_type(other.m_type), m_rendererId(other.m_rendererId), m_state(other.m_state)
 {
-    other.shaderId = 0;
+    other.m_rendererId = 0;
 }
 
 GLShader& GLShader::operator=(GLShader&& other) {
-    type = other.type;
-    shaderId = other.shaderId;
-    state = other.state;
+    m_type = other.m_type;
+    m_rendererId = other.m_rendererId;
+    m_state = other.m_state;
 
-    other.shaderId = 0;
+    other.m_rendererId = 0;
 
     return *this;
 }
 
 GLShader::~GLShader() {
-    if (shaderId) {
-        GLCall(glDeleteShader(shaderId));
+    if (m_rendererId) {
+        GLCall(glDeleteShader(m_rendererId));
     }
 }
 
 bool GLShader::compile() {
-    if (state == GLShader::ShaderState::SOURCE) {
-        GLCall(glCompileShader(shaderId));
+    if (m_state == GLShader::ShaderState::SOURCE) {
+        GLCall(glCompileShader(m_rendererId));
 
         bool success = (getParam(GL_COMPILE_STATUS) == GL_TRUE);
         if (success) {
-            state = GLShader::ShaderState::COMPILE_SUCCESS;
+            m_state = GLShader::ShaderState::COMPILE_SUCCESS;
             std::cout << "compiled successfully "
-                    << ((type == GL_VERTEX_SHADER) ? "vertex" : "fragment")
+                    << ((m_type == GL_VERTEX_SHADER) ? "vertex" : "fragment")
                     << " shader\n";
         } else {
-            state = GLShader::ShaderState::COMPILE_ERROR;
+            m_state = GLShader::ShaderState::COMPILE_ERROR;
             std::cout << "Failed to compile "
-                    << ((type == GL_VERTEX_SHADER) ? "vertex" : "fragment")
+                    << ((m_type == GL_VERTEX_SHADER) ? "vertex" : "fragment")
                     << " shader\n";
         }
         printInfoLog();
         return success;
     } else {
-        return (state == GLShader::ShaderState::COMPILE_SUCCESS);
+        return (m_state == GLShader::ShaderState::COMPILE_SUCCESS);
     }
 }
 
 void GLShader::printInfoLog() {
     int length;
-    GLCall(glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length));
+    GLCall(glGetShaderiv(m_rendererId, GL_INFO_LOG_LENGTH, &length));
     if (length > 0) {
         char* message = static_cast<char*>(alloca(length * sizeof(char)));
-        GLCall(glGetShaderInfoLog(shaderId, length, &length, message));
+        GLCall(glGetShaderInfoLog(m_rendererId, length, &length, message));
         std::cout << message << '\n';
     } else {
         std::cout << "(no log)\n";
@@ -73,6 +73,6 @@ void GLShader::printInfoLog() {
 
 GLint GLShader::getParam(GLenum pname) const {
     GLint result;
-    GLCall(glGetShaderiv(shaderId, pname, &result));
+    GLCall(glGetShaderiv(m_rendererId, pname, &result));
     return result;
 }

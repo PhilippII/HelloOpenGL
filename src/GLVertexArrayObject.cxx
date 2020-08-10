@@ -4,26 +4,26 @@
 
 GLVertexArrayObject::GLVertexArrayObject(bool bindNow)
 {
-    GLCall(glGenVertexArrays(1, &vao));
+    GLCall(glGenVertexArrays(1, &m_rendererID));
     if (bindNow) {
         bind();
     }
 }
 
 GLVertexArrayObject::GLVertexArrayObject(GLVertexArrayObject&& other)
-    : vao(other.vao)
+    : m_rendererID(other.m_rendererID)
     {
-    other.vao = 0;
+    other.m_rendererID = 0;
 }
 
 GLVertexArrayObject& GLVertexArrayObject::operator=(GLVertexArrayObject&& other) {
-    vao = other.vao;
-    other.vao = 0;
+    m_rendererID = other.m_rendererID;
+    other.m_rendererID = 0;
     return *this;
 }
 
 GLVertexArrayObject::~GLVertexArrayObject() {
-    if (vao) {
-        GLCall(glDeleteVertexArrays(1, &vao));
+    if (m_rendererID) {
+        GLCall(glDeleteVertexArrays(1, &m_rendererID));
     }
 }

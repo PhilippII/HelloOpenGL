@@ -1,9 +1,9 @@
 #include "GLBufferObject.h"
 
 GLBufferObject::GLBufferObject(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage, bool keepBound) {
-	this->target = target;
-    GLCall(glGenBuffers(1, &(this->buffer)));
-    GLCall(glBindBuffer(target, this->buffer));
+	this->m_target = target;
+    GLCall(glGenBuffers(1, &(this->m_rendererId)));
+    GLCall(glBindBuffer(target, this->m_rendererId));
     GLCall(glBufferData(target, size, data, usage));
     if (!keepBound) {
         GLCall(glBindBuffer(target, 0));
@@ -11,25 +11,25 @@ GLBufferObject::GLBufferObject(GLenum target, GLsizeiptr size, const GLvoid* dat
 }
 
 GLBufferObject::GLBufferObject(GLBufferObject&& other) {
-	target = other.target;
-	buffer = other.buffer;
-	other.buffer = 0;
+	m_target = other.m_target;
+    m_rendererId = other.m_rendererId;
+    other.m_rendererId = 0;
 }
 
 GLBufferObject& GLBufferObject::operator=(GLBufferObject&& other) {
-	if (buffer) {
-        GLCall(glDeleteBuffers(1, &buffer));
+    if (m_rendererId) {
+        GLCall(glDeleteBuffers(1, &m_rendererId));
 	}
-	target = other.target;
-	buffer = other.buffer;
-	other.buffer = 0;
+	m_target = other.m_target;
+    m_rendererId = other.m_rendererId;
+    other.m_rendererId = 0;
 	return *this;
 }
 
 
 GLBufferObject::~GLBufferObject() {
-	if (buffer) {
-        GLCall(glDeleteBuffers(1, &buffer));
+    if (m_rendererId) {
+        GLCall(glDeleteBuffers(1, &m_rendererId));
 	}
 }
 

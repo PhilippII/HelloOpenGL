@@ -6,7 +6,7 @@
 
 GLShaderProgram::GLShaderProgram(std::vector<ShaderSource> sources, SPReadiness readiness)
 {
-    programId = glCreateProgram();
+    m_rendererID = glCreateProgram();
     for (auto& src : sources) {
         addShaderFromSource(src);
     }
@@ -15,29 +15,29 @@ GLShaderProgram::GLShaderProgram(std::vector<ShaderSource> sources, SPReadiness 
 }
 
 GLShaderProgram::GLShaderProgram(GLShaderProgram&& other)
-    : programId(other.programId),
-      shaders(std::move(other.shaders))
+    : m_rendererID(other.m_rendererID),
+      m_shaders(std::move(other.m_shaders))
 {
-    other.programId = 0;
+    other.m_rendererID = 0;
 }
 
 GLShaderProgram& GLShaderProgram::operator=(GLShaderProgram&& other) {
-    programId = other.programId;
-    other.programId = 0;
+    m_rendererID = other.m_rendererID;
+    other.m_rendererID = 0;
 
-    shaders = std::move(other.shaders);
+    m_shaders = std::move(other.m_shaders);
 
     return *this;
 }
 
 GLShaderProgram::~GLShaderProgram() {
-    if (programId) {
+    if (m_rendererID) {
         GLint currId;
         GLCall(glGetIntegerv(GL_CURRENT_PROGRAM, &currId));
-        if (static_cast<GLuint>(currId) == programId) {
+        if (static_cast<GLuint>(currId) == m_rendererID) {
             GLCall(glUseProgram(0));
         }
-        GLCall(glDeleteProgram(programId));
+        GLCall(glDeleteProgram(m_rendererID));
     }
     // docs.gl:
     // - shaders will be automatically detached
@@ -47,20 +47,20 @@ GLShaderProgram::~GLShaderProgram() {
 }
 
 void GLShaderProgram::addShaderFromSource(const ShaderSource &source) {
-    shaders.push_back(GLShader(source.type, source.sourceCode, false));
-    GLCall(glAttachShader(programId, shaders.back().getName()));
+    m_shaders.push_back(GLShader(source.type, source.sourceCode, false));
+    GLCall(glAttachShader(m_rendererID, m_shaders.back().getName()));
 }
 
 bool GLShaderProgram::compileShaders() {
     bool success = true;
-    for (auto& s : shaders) {
+    for (auto& s : m_shaders) {
         success = (success && s.compile());
     }
     return success;
 }
 
 bool GLShaderProgram::link() {
-    GLCall(glLinkProgram(programId));
+    GLCall(glLinkProgram(m_rendererID));
     bool success = (getParam(GL_LINK_STATUS) == GL_TRUE);
     if (success) {
         std::cout << "shader program linked successfully. Log:\n";
@@ -72,7 +72,7 @@ bool GLShaderProgram::link() {
 }
 
 bool GLShaderProgram::validate() {
-    GLCall(glValidateProgram(programId));
+    GLCall(glValidateProgram(m_rendererID));
     bool success = (getParam(GL_VALIDATE_STATUS) == GL_TRUE);
     if (success) {
         std::cout << "shader program validated successfully. Log:\n";
@@ -103,14 +103,14 @@ bool GLShaderProgram::buildAll() {
 }
 
 void GLShaderProgram::use() {
-    GLCall(glUseProgram(programId));
+    GLCall(glUseProgram(m_rendererID));
 }
 
 void GLShaderProgram::unuse() {
 #ifndef NDEBUG
     GLint currId;
     GLCall(glGetIntegerv(GL_CURRENT_PROGRAM, &currId));
-    myAssert(static_cast<GLuint>(currId) == programId);
+    myAssert(static_cast<GLuint>(currId) == m_rendererID);
 #endif
     GLCall(glUseProgram(0));
 }
@@ -119,7 +119,7 @@ void GLShaderProgram::printShaderProgramInfoLog() const {
     int length = getParam(GL_INFO_LOG_LENGTH);
     if (length > 0) {
         char* message = static_cast<char*>(alloca(length * sizeof(char)));
-        GLCall(glGetProgramInfoLog(programId, length, nullptr, message));
+        GLCall(glGetProgramInfoLog(m_rendererID, length, nullptr, message));
         std::cout << message << '\n';
     } else {
         std::cout << "(no log)\n";
@@ -129,18 +129,18 @@ void GLShaderProgram::printShaderProgramInfoLog() const {
 GLint GLShaderProgram::getParam(GLenum pname) const {
     GLint param;
     myAssert(pname != GL_COMPUTE_WORK_GROUP_SIZE); // returns three integers
-    GLCall(glGetProgramiv(programId, pname, &param));
+    GLCall(glGetProgramiv(m_rendererID, pname, &param));
     return param;
 }
 
 
 GLint GLShaderProgram::getAttribLocation(const std::string& name) {
-    GLCall(GLint location = glGetAttribLocation(programId, name.c_str()));
+    GLCall(GLint location = glGetAttribLocation(m_rendererID, name.c_str()));
     return location;
 }
 
 GLint GLShaderProgram::getUniformLocation(const std::string &name) {
-    GLCall(GLint location = glGetUniformLocation(programId, name.c_str()));
+    GLCall(GLint location = glGetUniformLocation(m_rendererID, name.c_str()));
     return location;
 }
 

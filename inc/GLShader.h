@@ -31,7 +31,7 @@ public:
     void printInfoLog();
 
     GLuint getName() const {
-        return shaderId;
+        return m_rendererId;
     }
 
     GLint getParam(GLenum pname) const;
@@ -40,9 +40,9 @@ private:
     enum ShaderState {
         EMPTY, SOURCE, COMPILE_SUCCESS, COMPILE_ERROR
     };
-    GLenum type;
-    GLuint shaderId;
-    ShaderState state = ShaderState::EMPTY;
+    GLenum m_type;
+    GLuint m_rendererId;
+    ShaderState m_state = ShaderState::EMPTY;
 };
 
 #endif // GLSHADER_H

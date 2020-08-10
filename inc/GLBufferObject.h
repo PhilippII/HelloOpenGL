@@ -23,27 +23,27 @@ public:
     ~GLBufferObject();
 
 	void bind() {
-        GLCall(glBindBuffer(target, buffer));
+        GLCall(glBindBuffer(m_target, m_rendererId));
 	}
 
 	void unbind() {
 		#ifndef NDEBUG
         GLint currBuff;
-        GLCall(glGetIntegerv(getBindingEnum(target), &currBuff));
-        myAssert(static_cast<GLenum>(currBuff) == buffer);
+        GLCall(glGetIntegerv(getBindingEnum(m_target), &currBuff));
+        myAssert(static_cast<GLenum>(currBuff) == m_rendererId);
 		#endif
-        GLCall(glBindBuffer(target, 0));
+        GLCall(glBindBuffer(m_target, 0));
 	}
 
     GLuint getName() const {
-        return buffer;
+        return m_rendererId;
     }
 
 private:
     static GLenum getBindingEnum(GLenum target);
 
-	GLenum target;
-	GLuint buffer;
+    GLenum m_target;
+    GLuint m_rendererId;
 };
 
 
