@@ -68,6 +68,8 @@ public:
 
     GLint getUniformLocation(const std::string& name) const;
 
+    bool isBound() const;
+
 private:
     void printShaderProgramInfoLog() const;
     GLuint m_rendererID;

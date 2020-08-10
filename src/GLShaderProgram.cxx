@@ -144,3 +144,10 @@ GLint GLShaderProgram::getUniformLocation(const std::string &name) const {
     return location;
 }
 
+bool GLShaderProgram::isBound() const
+{
+    GLint programID;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &programID);
+    return (m_rendererID == programID);
+}
+
