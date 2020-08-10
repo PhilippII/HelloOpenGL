@@ -23,9 +23,7 @@ OpenGL:
 
 abstraction into classes me vs. cherno:
 - generally:
-	-> cherno: member variables are prefixed with m_
 	-> cherno: debug utils are in same header as class Renderer
-	-> cherno: ids of OpenGL-Objects are called m_RendererID
 	-> cherno: Bind() and Unbind() are const
 - Buffers
 	- cherno: VertexBuffer and IndexBuffer are separate classes
@@ -45,11 +43,19 @@ abstraction into classes me vs. cherno:
 	-> me: separate classes for Shader and ShaderProgram
 	-> cherno: also contains parsing function and directly accepts filename in constructor	
 	-> cherno: it is not possible to create a Shader without immediately compiling/linking it in the constructor already
-	-> cherno: glUseProgram(..) is called Bind()
+
 
 
 abstracting into classes other TODOs:
 - ShaderProgram should not link before compiling and co.
+
+
+removed differences me vs. cherno:
+- generally
+	-> cherno: member variables are prefixed with m_
+	-> cherno: ids of OpenGL-Objects are called m_RendererID
+- ShaderProgram:
+	-> cherno: glUseProgram(..) is called Bind()
 
 
 DONE:
