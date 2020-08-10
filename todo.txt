@@ -26,6 +26,7 @@ abstraction into classes me vs. cherno:
 	-> cherno: member variables are prefixed with m_
 	-> cherno: debug utils are in same header as class Renderer
 	-> cherno: ids of OpenGL-Objects are called m_RendererID
+	-> cherno: Bind() and Unbind() are const
 - Buffers
 	- cherno: VertexBuffer and IndexBuffer are separate classes
 - BufferLayout
