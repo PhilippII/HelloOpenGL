@@ -139,9 +139,35 @@ GLint GLShaderProgram::getAttribLocation(const std::string& name) const {
     return location;
 }
 
-GLint GLShaderProgram::getUniformLocation(const std::string &name) const {
+GLint GLShaderProgram::getUniformLocation(const std::string &name) {
+    if (uniformLocationCache.find(name) != uniformLocationCache.end()) {
+        // cache hit:
+        return uniformLocationCache[name];
+    }
+    // cache miss:
     GLCall(GLint location = glGetUniformLocation(m_rendererID, name.c_str()));
+    if (location == -1) {
+        std::cout << "warining: uniform " << name << " does not exist!\n";
+    }
+    uniformLocationCache[name] = location;
     return location;
+    // docs.gl:
+    // "This function returns -1 if name does not correspond
+    //    to an active uniform variable in program, [...]"
+}
+
+void GLShaderProgram::setUniform4f(GLint location, float v0, float v1, float v2, float v3)
+{
+    myAssert(isBound());
+    GLCall(glUniform4f(location, v0, v1, v2, v3));
+    // docs.gl:
+    // "If location is equal to -1, the data passed in will be silently ignored
+    //    and the specified uniform variable will not be changed."
+}
+
+void GLShaderProgram::setUniform4f(const std::string &name, float v0, float v1, float v2, float v3)
+{
+    setUniform4f(getUniformLocation(name), v0, v1, v2, v3);
 }
 
 bool GLShaderProgram::isBound() const

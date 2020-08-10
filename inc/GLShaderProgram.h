@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 struct ShaderSource {
     GLenum type;
@@ -66,7 +67,11 @@ public:
 
     GLint getAttribLocation(const std::string& name) const;
 
-    GLint getUniformLocation(const std::string& name) const;
+    GLint getUniformLocation(const std::string& name);
+
+    void setUniform4f(GLint location, float v0, float v1, float v2, float v3);
+
+    void setUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
 
     bool isBound() const;
 
@@ -74,6 +79,7 @@ private:
     void printShaderProgramInfoLog() const;
     GLuint m_rendererID;
     std::vector<GLShader> m_shaders;
+    std::unordered_map<std::string, GLint> uniformLocationCache;
 };
 
 #endif // GLSHADERPROGRAM_H

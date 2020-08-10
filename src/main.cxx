@@ -104,8 +104,8 @@ int main(void)
     GLShaderProgram shaderProgram(sources);
     // shaderProgram.bind() is called automatically in constructor
 
-    int location = shaderProgram.getUniformLocation("u_Color");
-    myAssert(location != -1);
+    //int location = shaderProgram.getUniformLocation("u_Color");
+    //myAssert(location != -1);
 
     GLint posAttrIndex = shaderProgram.getAttribLocation("position");
     myAssert(posAttrIndex != -1);
@@ -200,7 +200,7 @@ int main(void)
 
         // 1.1 bind shader (+ set uniforms):
         // TODO: bind shader
-        GLCall(glUniform4f(location, r, .3f, .8f, 1.0f));
+        shaderProgram.setUniform4f("u_Color", r, .3f, .8f, 1.0f);
 
         // 1.2 bind vao:
         rectMesh.bindVAO();
@@ -216,7 +216,7 @@ int main(void)
         // 2 draw star:
         // 2.1 bind shader (+ set uniforms):
         // TODO: bind shader
-        GLCall(glUniform4f(location, .8f, .8f, .8f, 1.0f));
+        shaderProgram.setUniform4f("u_Color", .8f, .8f, .8f, 1.0f);
 
         // 2.2 bind vao:
         starMesh.bindVAO();
