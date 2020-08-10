@@ -92,8 +92,8 @@ bool GLShaderProgram::makeReady(SPReadiness readiness) {
          = ((readiness < SPReadiness::COMPILE)  || compileShaders())
         && ((readiness < SPReadiness::LINK)     || link())
         && ((readiness < SPReadiness::VALIDATE) || validate());
-    if (readiness == SPReadiness::USE) {
-        use();
+    if (readiness == SPReadiness::BIND) {
+        bind();
     }
     return buildSuccess;
 }
@@ -102,11 +102,11 @@ bool GLShaderProgram::buildAll() {
     return makeReady(SPReadiness::VALIDATE);
 }
 
-void GLShaderProgram::use() {
+void GLShaderProgram::bind() {
     GLCall(glUseProgram(m_rendererID));
 }
 
-void GLShaderProgram::unuse() {
+void GLShaderProgram::unbind() {
 #ifndef NDEBUG
     GLint currId;
     GLCall(glGetIntegerv(GL_CURRENT_PROGRAM, &currId));

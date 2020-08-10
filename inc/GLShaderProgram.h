@@ -15,13 +15,13 @@ struct ShaderSource {
 };
 
 enum class SPReadiness {
-    NONE=0, COMPILE=1, LINK=2, VALIDATE=3, USE=4
+    NONE=0, COMPILE=1, LINK=2, VALIDATE=3, BIND=4
 };
 
 class GLShaderProgram
 {
 public:
-    GLShaderProgram(std::vector<ShaderSource> sources, SPReadiness readiness = SPReadiness::USE);
+    GLShaderProgram(std::vector<ShaderSource> sources, SPReadiness readiness = SPReadiness::BIND);
 
     GLShaderProgram(const GLShaderProgram& other) = delete;
 
@@ -46,9 +46,9 @@ public:
 
     bool buildAll();
 
-    void use();
+    void bind();
 
-    void unuse();
+    void unbind();
 
     GLint getParam(GLenum pname) const;
 
