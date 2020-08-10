@@ -42,6 +42,14 @@ public:
 
     bool validate();
 
+    /*
+     * this function will run through steps again
+     * even if they were already finished before calling this
+     * function.
+     * E.g. if shaders were compiled already before calling this
+     * function with SPReadiness::LINK they will be compiled a second time
+     * before being linked
+     */
     bool makeReady(SPReadiness readiness);
 
     bool buildAll();
