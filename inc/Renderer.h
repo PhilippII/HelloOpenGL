@@ -4,6 +4,10 @@
 #include <GL/glew.h>
 #include <signal.h> // for SIGTRAP in myAssert
 
+#include "VertexArray.h"
+#include "IndexBuffer.h"
+#include "Shader.h"
+
 #ifdef NDEBUG
 #define myAssert(x)
 #else
@@ -22,5 +26,9 @@ void GLClearError();
 
 bool GLLogCall(const char* function, const char* file, int line);
 
+class Renderer {
+public:
+    void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
+};
 
 #endif // RENDERER_H

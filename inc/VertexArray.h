@@ -2,7 +2,8 @@
 #define VERTEXARRAY_H
 
 #include "VertexBuffer.h"
-#include "VertexBufferLayout.h"
+//#include "VertexBufferLayout.h" // cyclic dependency!
+class VertexBufferLayout;
 
 class VertexArray
 {
