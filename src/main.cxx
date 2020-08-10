@@ -17,6 +17,7 @@
 #include "GLBufferObject.h"
 #include "GLShader.h"
 #include "GLShaderProgram.h"
+#include "VertexBufferLayout.h"
 #include "GLMesh.h"
 
 #include "debug_utils.h"
@@ -126,14 +127,10 @@ int main(void)
         2, 3, 0
     };
 
-    std::vector<VertexAttributeType> attrTypes;
-    attrTypes.push_back(VertexAttributeType{static_cast<GLuint>(posAttrIndex),
-                        2, GL_FLOAT, GL_FALSE,
-                        VariableType::FLOAT});
-    attrTypes.push_back(VertexAttributeType{static_cast<GLuint>(colAttrIndex),
-                        4, GL_FLOAT, GL_FALSE,
-                        VariableType::FLOAT});
-    GLMesh rectMesh(attrTypes, rectVertices, 4,
+    VertexBufferLayout layout;
+    layout.append(2, GL_FLOAT, VariableType::FLOAT, posAttrIndex);
+    layout.append(4, GL_FLOAT, VariableType::FLOAT, colAttrIndex);
+    GLMesh rectMesh(layout, rectVertices, 4,
                     GL_UNSIGNED_INT, indices, 6,
                     false);
 
@@ -175,8 +172,8 @@ int main(void)
         starIndices.push_back((2 * s + 2) % (n_spikes * 2));
     }
 
-    // reuse attrTypes from rectangle
-    GLMesh starMesh(attrTypes, starVertices.data(), static_cast<GLsizei>(starVertices.size()),
+    // reuse layout from rectangle
+    GLMesh starMesh(layout, starVertices.data(), static_cast<GLsizei>(starVertices.size()),
                     GL_UNSIGNED_INT, starIndices.data(), static_cast<GLsizei>(starIndices.size()),
                     false);
 

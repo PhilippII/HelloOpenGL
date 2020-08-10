@@ -11,22 +11,8 @@
 #include "GLBufferObject.h"
 #include "GLVertexArrayObject.h"
 
-enum class VariableType {
-    // type of the actual shader variable
-    // which may be different from the type of the data in the buffer
-    // (e.g. we might cast integers in the buffer to float variables in the shader
-    FLOAT, DOUBLE, INT
-};
 
-struct VertexAttributeType {
-    GLuint location;
-
-    GLint dimension;
-    GLenum componentType;
-    GLboolean normalized;
-    VariableType castTo;
-};
-
+#include "VertexBufferLayout.h"
 
 
 /*
@@ -45,7 +31,7 @@ class GLMesh
 {
 public:
     GLMesh() = delete;
-    GLMesh(std::vector<VertexAttributeType> attrTypes, const GLvoid* vertexData, GLsizei vertexCount,
+    GLMesh(const VertexBufferLayout& layout, const GLvoid* vertexData, GLsizei vertexCount,
            GLenum indicesType, const GLvoid* indexData, GLsizei indexCount,
            bool keepBound = true);
 
@@ -78,14 +64,11 @@ public:
     }
 
 private:
-    static GLuint getSize(GLint dimension, GLenum componentType);
     static GLuint getIndexSize(GLenum indicesType);
-    static std::vector<GLuint> computeOffsets(std::vector<VertexAttributeType> attrTypes);
+    static bool isFloatingPoint(GLenum componentType);
 
     static const GLuint bindingIndex;
 
-    std::vector<GLuint> m_offsets;    // important that this member is the first !
-                                    // so it is also initialized first
     GLVertexArrayObject m_vao;        // important that vao is initialized before
                                     // ibo is initialized, so vao is already bound
                                     // when ibo will be bound

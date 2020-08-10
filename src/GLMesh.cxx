@@ -3,39 +3,43 @@
 const GLuint GLMesh::bindingIndex = 0;
 
 
-GLMesh::GLMesh(std::vector<VertexAttributeType> attrTypes, const GLvoid* vertexData, GLsizei vertexCount,
+GLMesh::GLMesh(const VertexBufferLayout& layout, const GLvoid* vertexData, GLsizei vertexCount,
                GLenum indicesType, const GLvoid* indexData, GLsizei indexCount,
                bool keepBound)
-    : m_offsets(computeOffsets(attrTypes)),
-      m_vao(),
-      m_vbo(GL_ARRAY_BUFFER, vertexCount * m_offsets.back(), vertexData, GL_STATIC_DRAW, false),
+    : m_vao(),
+      m_vbo(GL_ARRAY_BUFFER, vertexCount * layout.getStride(), vertexData, GL_STATIC_DRAW, false),
       m_ibo(GL_ELEMENT_ARRAY_BUFFER, indexCount * getIndexSize(indicesType), indexData, GL_STATIC_DRAW),
       m_vertexCount(vertexCount), m_indexCount(indexCount), m_indicesType(indicesType)
 {
-    GLCall(glBindVertexBuffer(bindingIndex, m_vbo.getName(), 0, m_offsets.back()));
-    for (unsigned int i = 0; i < attrTypes.size(); ++i) {
-        GLCall(glEnableVertexAttribArray(attrTypes[i].location));
-        switch (attrTypes[i].castTo) {
+    GLCall(glBindVertexBuffer(bindingIndex, m_vbo.getName(), 0, layout.getStride()));
+    const std::vector<VertexAttributeLayout>& attributes = layout.getAttributes();
+    for (auto& attr : attributes) {
+        GLCall(glEnableVertexAttribArray(attr.location));
+        bool normalized = false;
+        switch (attr.castTo) {
           case VariableType::FLOAT:
-            GLCall(glVertexAttribFormat(attrTypes[i].location, attrTypes[i].dimension,
-                                        attrTypes[i].componentType, attrTypes[i].normalized,
-                                        m_offsets[i]));
+          case VariableType::NORMALIZED_FLOAT:
+            normalized = (attr.castTo == VariableType::NORMALIZED_FLOAT)
+                         && !isFloatingPoint(attr.componentType);
+            GLCall(glVertexAttribFormat(attr.location, attr.dimCount,
+                                        attr.componentType, normalized,
+                                        attr.offset));
             break;
           case VariableType::DOUBLE:
-            GLCall(glVertexAttribIFormat(attrTypes[i].location, attrTypes[i].dimension,
-                                         attrTypes[i].componentType,
-                                         m_offsets[i]));
+            GLCall(glVertexAttribIFormat(attr.location, attr.dimCount,
+                                         attr.componentType,
+                                         attr.offset));
             break;
           case VariableType::INT:
-            GLCall(glVertexAttribLFormat(attrTypes[i].location, attrTypes[i].dimension,
-                                         attrTypes[i].componentType,
-                                         m_offsets[i]));
+            GLCall(glVertexAttribLFormat(attr.location, attr.dimCount,
+                                         attr.componentType,
+                                         attr.offset));
             break;
           default:
             myAssert(false);
             break;
         }
-        GLCall(glVertexAttribBinding(attrTypes[i].location, bindingIndex));
+        GLCall(glVertexAttribBinding(attr.location, bindingIndex));
     }
     // ibo bound automatically in constructor already
     if (!keepBound) {
@@ -44,15 +48,13 @@ GLMesh::GLMesh(std::vector<VertexAttributeType> attrTypes, const GLvoid* vertexD
 }
 
 GLMesh::GLMesh(GLMesh&& other)
-    : m_offsets(std::move(other.m_offsets)),
-      m_vao(std::move(other.m_vao)),
+    : m_vao(std::move(other.m_vao)),
       m_vbo(std::move(other.m_vbo)), m_ibo(std::move(other.m_ibo)),
       m_vertexCount(other.m_vertexCount), m_indexCount(other.m_indexCount),
       m_indicesType(other.m_indicesType)
 {}
 
 GLMesh& GLMesh::operator=(GLMesh&& other) {
-    m_offsets = std::move(other.m_offsets);
     m_vao = std::move(other.m_vao);
     m_vbo = std::move(other.m_vbo);
     m_ibo = std::move(other.m_ibo);
@@ -67,54 +69,6 @@ GLMesh::~GLMesh() {
     // destructors of members are called automatically
 }
 
-GLuint GLMesh::getSize(GLint dimension, GLenum componentType) {
-    std::size_t result = 0;
-    switch (componentType) {
-      case GL_HALF_FLOAT:
-        result = dimension * sizeof(GLhalf);
-        break;
-      case GL_FLOAT:
-        result = dimension * sizeof(GLfloat);
-        break;
-      case GL_DOUBLE:
-        result = dimension * sizeof(GLdouble);
-        break;
-      case GL_FIXED:
-        result = dimension * sizeof(GLfixed);
-        break;
-      case GL_BYTE:
-        result = dimension * sizeof(GLbyte);
-        break;
-      case GL_UNSIGNED_BYTE:
-        result = dimension * sizeof(GLubyte);
-        break;
-      case GL_SHORT:
-        result = dimension * sizeof(GLshort);
-        break;
-      case GL_UNSIGNED_SHORT:
-        result = dimension * sizeof(GLushort);
-        break;
-      case GL_INT:
-        result = dimension * sizeof(GLint);
-        break;
-      case GL_UNSIGNED_INT:
-        result = dimension * sizeof(GLuint);
-        break;
-      case GL_INT_2_10_10_10_REV:
-      case GL_UNSIGNED_INT_2_10_10_10_REV:
-        myAssert(dimension == 4 || dimension == GL_BGRA);
-        result = sizeof(GLuint);
-        break;
-      case GL_UNSIGNED_INT_10F_11F_11F_REV:
-        myAssert(dimension == 3);
-        result = sizeof(GLuint);
-        break;
-      default:
-        myAssert(false);
-        break;
-    }
-    return static_cast<GLuint>(result);
-}
 
 GLuint GLMesh::getIndexSize(GLenum indicesType) {
     switch (indicesType) {
@@ -130,11 +84,15 @@ GLuint GLMesh::getIndexSize(GLenum indicesType) {
     }
 }
 
-std::vector<GLuint> GLMesh::computeOffsets(std::vector<VertexAttributeType> attrTypes) {
-    std::vector<GLuint> offsets;
-    offsets.push_back(0);
-    for (auto& attrT : attrTypes) {
-        offsets.push_back(offsets.back() + getSize(attrT.dimension, attrT.componentType));
+bool GLMesh::isFloatingPoint(GLenum componentType) {
+    switch (componentType) {
+      case GL_HALF_FLOAT:
+      case GL_FLOAT:
+      case GL_DOUBLE:
+      case GL_FIXED:
+        return true;
+      default:
+        return false;
     }
-    return offsets;
 }
+
