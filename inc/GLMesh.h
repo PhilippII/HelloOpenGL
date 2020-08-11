@@ -8,8 +8,8 @@
 
 #include "debug_utils.h"
 
-#include "GLBufferObject.h"
 #include "GLVertexBuffer.h"
+#include "GLIndexBuffer.h"
 #include "GLVertexArrayObject.h"
 
 
@@ -74,7 +74,7 @@ private:
                                     // ibo is initialized, so vao is already bound
                                     // when ibo will be bound
     GLVertexBuffer m_vb;
-    GLBufferObject m_ibo;
+    GLIndexBuffer m_ib;
     GLsizei m_vertexCount;
     GLsizei m_indexCount;
     GLenum m_indicesType;
