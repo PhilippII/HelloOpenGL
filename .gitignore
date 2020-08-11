@@ -34,3 +34,8 @@
 # build directory
 build/
 
+#QT
+HelloOpenGL.creator.user
+
+
+
