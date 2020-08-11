@@ -6,6 +6,8 @@
 
 #include "debug_utils.h"
 
+#include "GLVertexBuffer.h"
+#include "VertexBufferLayout.h"
 
 class GLVertexArray
 {
@@ -24,6 +26,8 @@ public:
 
     ~GLVertexArray();
 
+    void addBuffer(const GLVertexBuffer& vb, const VertexBufferLayout& layout);
+
     void bind() {
         GLCall(glBindVertexArray(m_rendererID));
     }
@@ -40,6 +44,8 @@ public:
     bool isBound() const;
 
 private:
+    static bool isFloatingPoint(GLenum componentType);
+
     GLuint m_rendererID;
 };
 
