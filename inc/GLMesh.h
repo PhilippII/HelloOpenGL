@@ -73,10 +73,6 @@ public:
     }
 
 private:
-    static bool isFloatingPoint(GLenum componentType);
-
-    static const GLuint bindingIndex;
-
     GLVertexBuffer m_vb;
     GLVertexArray m_va;
     GLIndexBuffer m_ib;     // m_ib should be constructed after m_va so it is bound

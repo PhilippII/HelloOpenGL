@@ -1,8 +1,5 @@
 #include "GLMesh.h"
 
-const GLuint GLMesh::bindingIndex = 0;
-
-
 GLMesh::GLMesh(const VertexBufferLayout& layout, const GLvoid* vertexData, GLsizei vertexCount,
                GLenum indicesType, const GLvoid* indexData, GLsizei indexCount,
                bool keepBound)
@@ -37,18 +34,5 @@ GLMesh& GLMesh::operator=(GLMesh&& other) {
 
 GLMesh::~GLMesh() {
     // destructors of members are called automatically
-}
-
-
-bool GLMesh::isFloatingPoint(GLenum componentType) {
-    switch (componentType) {
-      case GL_HALF_FLOAT:
-      case GL_FLOAT:
-      case GL_DOUBLE:
-      case GL_FIXED:
-        return true;
-      default:
-        return false;
-    }
 }
 
