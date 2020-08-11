@@ -27,3 +27,10 @@ GLVertexArray::~GLVertexArray() {
         GLCall(glDeleteVertexArrays(1, &m_rendererID));
     }
 }
+
+bool GLVertexArray::isBound() const
+{
+    GLint currVao;
+    GLCall(glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &currVao));
+    return (static_cast<GLuint>(currVao) == m_rendererID);
+}

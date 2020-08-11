@@ -29,17 +29,15 @@ public:
     }
 
     void unbind() {
-#ifndef NDEBUG
-        GLint currVao;
-        GLCall(glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &currVao));
-        myAssert(static_cast<GLuint>(currVao) == m_rendererID);
-#endif
+        myAssert(isBound());
         GLCall(glBindVertexArray(0));
     }
 
     GLuint getName() const {
         return m_rendererID;
     }
+
+    bool isBound() const;
 
 private:
     GLuint m_rendererID;
