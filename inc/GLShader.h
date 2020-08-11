@@ -30,7 +30,7 @@ public:
 
     void printInfoLog();
 
-    GLuint getName() const {
+    GLuint getRendererID() const {
         return m_rendererId;
     }
 

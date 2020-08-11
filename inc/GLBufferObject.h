@@ -35,7 +35,7 @@ public:
 
     bool isBound() const;
 
-    GLuint getName() const {
+    GLuint getRendererID() const {
         return m_rendererId;
     }
 

@@ -48,7 +48,7 @@ GLShaderProgram::~GLShaderProgram() {
 
 void GLShaderProgram::addShaderFromSource(const ShaderSource &source) {
     m_shaders.push_back(GLShader(source.type, source.sourceCode, false));
-    GLCall(glAttachShader(m_rendererID, m_shaders.back().getName()));
+    GLCall(glAttachShader(m_rendererID, m_shaders.back().getRendererID()));
 }
 
 bool GLShaderProgram::compileShaders() {

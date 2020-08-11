@@ -61,7 +61,7 @@ public:
 
     GLint getParam(GLenum pname) const;
 
-    GLuint getName() const {
+    GLuint getRendererID() const {
         return m_rendererID;
     }
 

@@ -32,7 +32,7 @@ void GLVertexArray::addBuffer(const GLVertexBuffer &vb, const VertexBufferLayout
 {
     bind();
     const GLuint bindingIndex = 0;
-    GLCall(glBindVertexBuffer(bindingIndex, vb.getName(), 0, layout.getStride()));
+    GLCall(glBindVertexBuffer(bindingIndex, vb.getRendererID(), 0, layout.getStride()));
     const std::vector<VertexAttributeLayout>& attributes = layout.getAttributes();
     for (auto& attr : attributes) {
         GLCall(glEnableVertexAttribArray(attr.location));

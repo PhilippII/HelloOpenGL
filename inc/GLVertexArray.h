@@ -37,7 +37,7 @@ public:
         GLCall(glBindVertexArray(0));
     }
 
-    GLuint getName() const {
+    GLuint getRendererID() const {
         return m_rendererID;
     }
 
