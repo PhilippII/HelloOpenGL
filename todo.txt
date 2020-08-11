@@ -25,8 +25,6 @@ abstraction into classes me vs. cherno:
 - generally:
 	-> cherno: debug utils are in same header as class Renderer
 	-> cherno: Bind() and Unbind() are const
-- Buffers
-	- cherno: VertexBuffer and IndexBuffer are separate classes
 - BufferLayout
 	-> cherno: there is an actual class for the BufferLayout which contains VertexBufferElements
 	-> me: there is only a std::vector of VertexAttributeType (=VertexBufferElement)
@@ -48,12 +46,15 @@ abstraction into classes me vs. cherno:
 
 abstracting into classes other TODOs:
 - ShaderProgram should not link before compiling and co.
+- rename getName to getRendererID()
 
 
 removed differences me vs. cherno:
 - generally
 	-> cherno: member variables are prefixed with m_
 	-> cherno: ids of OpenGL-Objects are called m_RendererID
+- Buffers
+	- cherno: VertexBuffer and IndexBuffer are separate classes
 - ShaderProgram:
 	-> cherno: glUseProgram(..) is called Bind()
 
