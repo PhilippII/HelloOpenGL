@@ -30,7 +30,14 @@ GLBufferObject& GLBufferObject::operator=(GLBufferObject&& other) {
 GLBufferObject::~GLBufferObject() {
     if (m_rendererId) {
         GLCall(glDeleteBuffers(1, &m_rendererId));
-	}
+    }
+}
+
+bool GLBufferObject::isBound() const
+{
+    GLint currBuff;
+    GLCall(glGetIntegerv(getBindingEnum(m_target), &currBuff));
+    return (static_cast<GLenum>(currBuff) == m_rendererId);
 }
 
 GLenum GLBufferObject::getBindingEnum(GLenum target) {

@@ -10,7 +10,9 @@ class GLBufferObject {
 public:
     GLBufferObject(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage, bool keepBound = true);
 
-	// do not allow copy-constructor/assignment
+    GLBufferObject() = delete;
+
+    // do not allow copy-constructor/assignment:
     GLBufferObject(const GLBufferObject& other) = delete;
 
     GLBufferObject& operator=(const GLBufferObject& other) = delete;
@@ -20,20 +22,18 @@ public:
 
     GLBufferObject& operator=(GLBufferObject&& other);
 
-    ~GLBufferObject();
+    virtual ~GLBufferObject();
 
 	void bind() {
         GLCall(glBindBuffer(m_target, m_rendererId));
 	}
 
 	void unbind() {
-		#ifndef NDEBUG
-        GLint currBuff;
-        GLCall(glGetIntegerv(getBindingEnum(m_target), &currBuff));
-        myAssert(static_cast<GLenum>(currBuff) == m_rendererId);
-		#endif
+        myAssert(isBound());
         GLCall(glBindBuffer(m_target, 0));
 	}
+
+    bool isBound() const;
 
     GLuint getName() const {
         return m_rendererId;
