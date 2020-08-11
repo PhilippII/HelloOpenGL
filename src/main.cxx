@@ -13,10 +13,10 @@
 
 // #include <cassert>
 
-#include "GLVertexArrayObject.h"
-#include "GLBufferObject.h"
+
 #include "GLShader.h"
 #include "GLShaderProgram.h"
+
 #include "VertexBufferLayout.h"
 #include "GLMesh.h"
 
@@ -200,10 +200,10 @@ int main(void)
         shaderProgram.setUniform4f("u_Color", r, .3f, .8f, 1.0f);
 
         // 1.2 bind vao:
-        rectMesh.bindVAO();
+        rectMesh.bindVA();
 
         // 1.4 bind ibo:
-        // GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+        rectMesh.bindIB();
 
         // 1.5 draw:
         GLCall(glDrawElements(GL_TRIANGLES, rectMesh.getNumIndices(),
@@ -216,10 +216,10 @@ int main(void)
         shaderProgram.setUniform4f("u_Color", .8f, .8f, .8f, 1.0f);
 
         // 2.2 bind vao:
-        starMesh.bindVAO();
+        starMesh.bindVA();
 
         // 2.4 bind ibo:
-        // GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, starIBO));
+        starMesh.bindIB();
 
         // 2.5 draw:
         GLCall(glDrawElements(GL_TRIANGLES, starMesh.getNumIndices(),

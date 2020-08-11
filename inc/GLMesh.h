@@ -10,7 +10,7 @@
 
 #include "GLVertexBuffer.h"
 #include "GLIndexBuffer.h"
-#include "GLVertexArrayObject.h"
+#include "GLVertexArray.h"
 
 
 #include "VertexBufferLayout.h"
@@ -44,12 +44,20 @@ public:
 
     virtual ~GLMesh();
 
-    void bindVAO() {
-        m_vao.bind();
+    void bindVA() {
+        m_va.bind();
     }
 
-    void unbindVAO() {
-        m_vao.unbind();
+    void unbindVA() {
+        m_va.unbind();
+    }
+
+    void bindIB() {
+        m_ib.bind();
+    }
+
+    void unbindIB() {
+        m_ib.unbind();
     }
 
     GLsizei getNumUniqueVertices() const {
@@ -69,11 +77,11 @@ private:
 
     static const GLuint bindingIndex;
 
-    GLVertexArrayObject m_vao;        // important that vao is initialized before
-                                    // ibo is initialized, so vao is already bound
-                                    // when ibo will be bound
     GLVertexBuffer m_vb;
-    GLIndexBuffer m_ib;
+    GLVertexArray m_va;
+    GLIndexBuffer m_ib;     // m_ib should be constructed after m_va so it is bound
+                            // in its constructor after m_va is bound its constructor.
+                            // thus m_ib's binding will be stored in m_va.
     GLsizei m_vertexCount;
 };
 
