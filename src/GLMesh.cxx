@@ -7,11 +7,11 @@ GLMesh::GLMesh(const VertexBufferLayout& layout, const GLvoid* vertexData, GLsiz
                GLenum indicesType, const GLvoid* indexData, GLsizei indexCount,
                bool keepBound)
     : m_vao(),
-      m_vbo(GL_ARRAY_BUFFER, vertexCount * layout.getStride(), vertexData, GL_STATIC_DRAW, false),
+      m_vb(vertexCount * layout.getStride(), vertexData, false),
       m_ibo(GL_ELEMENT_ARRAY_BUFFER, indexCount * getIndexSize(indicesType), indexData, GL_STATIC_DRAW),
       m_vertexCount(vertexCount), m_indexCount(indexCount), m_indicesType(indicesType)
 {
-    GLCall(glBindVertexBuffer(bindingIndex, m_vbo.getName(), 0, layout.getStride()));
+    GLCall(glBindVertexBuffer(bindingIndex, m_vb.getName(), 0, layout.getStride()));
     const std::vector<VertexAttributeLayout>& attributes = layout.getAttributes();
     for (auto& attr : attributes) {
         GLCall(glEnableVertexAttribArray(attr.location));
@@ -49,14 +49,14 @@ GLMesh::GLMesh(const VertexBufferLayout& layout, const GLvoid* vertexData, GLsiz
 
 GLMesh::GLMesh(GLMesh&& other)
     : m_vao(std::move(other.m_vao)),
-      m_vbo(std::move(other.m_vbo)), m_ibo(std::move(other.m_ibo)),
+      m_vb(std::move(other.m_vb)), m_ibo(std::move(other.m_ibo)),
       m_vertexCount(other.m_vertexCount), m_indexCount(other.m_indexCount),
       m_indicesType(other.m_indicesType)
 {}
 
 GLMesh& GLMesh::operator=(GLMesh&& other) {
     m_vao = std::move(other.m_vao);
-    m_vbo = std::move(other.m_vbo);
+    m_vb = std::move(other.m_vb);
     m_ibo = std::move(other.m_ibo);
     m_vertexCount = other.m_vertexCount;
     m_indexCount = other.m_indexCount;
