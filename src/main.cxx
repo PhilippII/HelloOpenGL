@@ -14,14 +14,18 @@
 // #include <cassert>
 
 
+#include "debug_utils.h"
+#include "GLFWInitialization.h"
+
+#include "GLVertexBuffer.h"
+#include "GLIndexBuffer.h"
+
+#include "VertexBufferLayout.h"
+#include "GLVertexArray.h"
+
 #include "GLShader.h"
 #include "GLShaderProgram.h"
 
-#include "VertexBufferLayout.h"
-#include "GLMesh.h"
-
-#include "debug_utils.h"
-#include "GLFWInitialization.h"
 
 struct ShaderProgramSource {
     std::string VertexSource;
@@ -127,12 +131,13 @@ int main(void)
         2, 3, 0
     };
 
+    GLVertexBuffer rectVB(4 * sizeof(Vertex), rectVertices);
     VertexBufferLayout layout;
     layout.append(2, GL_FLOAT, VariableType::FLOAT, posAttrIndex);
     layout.append(4, GL_FLOAT, VariableType::FLOAT, colAttrIndex);
-    GLMesh rectMesh(layout, rectVertices, 4,
-                    GL_UNSIGNED_INT, indices, 6,
-                    false);
+    GLVertexArray rectVA;
+    rectVA.addBuffer(rectVB, layout);
+    GLIndexBuffer rectIB(GL_UNSIGNED_INT, 6, indices);
 
     float r = .0f;
     float increment = .05f;
@@ -172,10 +177,11 @@ int main(void)
         starIndices.push_back((2 * s + 2) % (n_spikes * 2));
     }
 
-    // reuse layout from rectangle
-    GLMesh starMesh(layout, starVertices.data(), static_cast<GLsizei>(starVertices.size()),
-                    GL_UNSIGNED_INT, starIndices.data(), static_cast<GLsizei>(starIndices.size()),
-                    false);
+    GLVertexBuffer starVB(starVertices.size() * sizeof(Vertex), starVertices.data());
+    // reuse layout from rectangle:
+    GLVertexArray starVA;
+    starVA.addBuffer(starVB, layout);
+    GLIndexBuffer starIB(GL_UNSIGNED_INT, starIndices.size(), starIndices.data());
 
 
     /* Loop until the user closes the window */
@@ -200,14 +206,14 @@ int main(void)
         shaderProgram.setUniform4f("u_Color", r, .3f, .8f, 1.0f);
 
         // 1.2 bind vao:
-        rectMesh.bindVA();
+        rectVA.bind();
 
         // 1.4 bind ibo:
-        rectMesh.bindIB();
+        rectIB.bind();
 
         // 1.5 draw:
-        GLCall(glDrawElements(GL_TRIANGLES, rectMesh.getNumIndices(),
-                              rectMesh.getIndicesType(), nullptr));
+        GLCall(glDrawElements(GL_TRIANGLES, rectIB.getCount(),
+                              rectIB.getType(), nullptr));
 
 
         // 2 draw star:
@@ -216,14 +222,14 @@ int main(void)
         shaderProgram.setUniform4f("u_Color", .8f, .8f, .8f, 1.0f);
 
         // 2.2 bind vao:
-        starMesh.bindVA();
+        starVA.bind();
 
         // 2.4 bind ibo:
-        starMesh.bindIB();
+        starIB.bind();
 
         // 2.5 draw:
-        GLCall(glDrawElements(GL_TRIANGLES, starMesh.getNumIndices(),
-                              starMesh.getIndicesType(), nullptr));
+        GLCall(glDrawElements(GL_TRIANGLES, starIB.getCount(),
+                              starIB.getType(), nullptr));
 
 
         /* Swap front and back buffers */
