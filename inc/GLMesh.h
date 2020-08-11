@@ -57,15 +57,14 @@ public:
     }
 
     GLsizei getNumIndices() const {
-        return m_indexCount;
+        return m_ib.getCount();
     }
 
     GLenum getIndicesType() const {
-        return m_indicesType;
+        return m_ib.getType();
     }
 
 private:
-    static GLuint getIndexSize(GLenum indicesType);
     static bool isFloatingPoint(GLenum componentType);
 
     static const GLuint bindingIndex;
@@ -76,8 +75,6 @@ private:
     GLVertexBuffer m_vb;
     GLIndexBuffer m_ib;
     GLsizei m_vertexCount;
-    GLsizei m_indexCount;
-    GLenum m_indicesType;
 };
 
 #endif // GLMESH_H

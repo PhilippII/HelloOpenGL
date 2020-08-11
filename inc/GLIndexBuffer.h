@@ -8,8 +8,10 @@
 class GLIndexBuffer : public GLBufferObject
 {
 public:
-    GLIndexBuffer(GLsizeiptr size, const GLvoid* data, bool keepBound = true)
-        : GLBufferObject(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW, keepBound)
+    GLIndexBuffer(GLenum type, GLsizei count, const GLvoid* data, bool keepBound = true)
+        : GLBufferObject(GL_ELEMENT_ARRAY_BUFFER, count * getIndexSize(type),
+                         data, GL_STATIC_DRAW, keepBound),
+          m_type(type), m_count(count)
     {}
 
     GLIndexBuffer() = delete;
@@ -17,14 +19,32 @@ public:
     GLIndexBuffer& operator=(const GLIndexBuffer& other) = delete;
 
     GLIndexBuffer(GLIndexBuffer&& other)
-        : GLBufferObject(std::move(other))
+        : GLBufferObject(std::move(other)),
+          m_type(other.m_type),
+          m_count(other.m_count)
     {}
     GLIndexBuffer& operator=(GLIndexBuffer&& other) {
         GLBufferObject::operator=(std::move(other));
+        m_type = other.m_type;
+        m_count = other.m_count;
+
         return *this;
     }
 
     ~GLIndexBuffer() {}
+
+    GLenum getType() const {
+        return m_type;
+    }
+
+    GLsizei getCount() const {
+        return m_count;
+    }
+
+private:
+    static GLuint getIndexSize(GLenum type);
+    GLenum m_type;
+    GLsizei m_count;
 };
 
 #endif // GLINDEXBUFFER_H

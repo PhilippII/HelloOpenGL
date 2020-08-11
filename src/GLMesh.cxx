@@ -8,8 +8,8 @@ GLMesh::GLMesh(const VertexBufferLayout& layout, const GLvoid* vertexData, GLsiz
                bool keepBound)
     : m_vao(),
       m_vb(vertexCount * layout.getStride(), vertexData, false),
-      m_ib(indexCount * getIndexSize(indicesType), indexData),
-      m_vertexCount(vertexCount), m_indexCount(indexCount), m_indicesType(indicesType)
+      m_ib(indicesType, indexCount, indexData),
+      m_vertexCount(vertexCount)
 {
     GLCall(glBindVertexBuffer(bindingIndex, m_vb.getName(), 0, layout.getStride()));
     const std::vector<VertexAttributeLayout>& attributes = layout.getAttributes();
@@ -50,8 +50,7 @@ GLMesh::GLMesh(const VertexBufferLayout& layout, const GLvoid* vertexData, GLsiz
 GLMesh::GLMesh(GLMesh&& other)
     : m_vao(std::move(other.m_vao)),
       m_vb(std::move(other.m_vb)), m_ib(std::move(other.m_ib)),
-      m_vertexCount(other.m_vertexCount), m_indexCount(other.m_indexCount),
-      m_indicesType(other.m_indicesType)
+      m_vertexCount(other.m_vertexCount)
 {}
 
 GLMesh& GLMesh::operator=(GLMesh&& other) {
@@ -59,8 +58,6 @@ GLMesh& GLMesh::operator=(GLMesh&& other) {
     m_vb = std::move(other.m_vb);
     m_ib = std::move(other.m_ib);
     m_vertexCount = other.m_vertexCount;
-    m_indexCount = other.m_indexCount;
-    m_indicesType = other.m_indicesType;
 
     return *this;
 }
@@ -69,20 +66,6 @@ GLMesh::~GLMesh() {
     // destructors of members are called automatically
 }
 
-
-GLuint GLMesh::getIndexSize(GLenum indicesType) {
-    switch (indicesType) {
-      case GL_UNSIGNED_BYTE:
-        return sizeof(GLubyte);
-      case GL_UNSIGNED_SHORT:
-        return sizeof(GLushort);
-      case GL_UNSIGNED_INT:
-        return sizeof(GLuint);
-      default:
-        myAssert(false);
-        return 0;
-    }
-}
 
 bool GLMesh::isFloatingPoint(GLenum componentType) {
     switch (componentType) {
