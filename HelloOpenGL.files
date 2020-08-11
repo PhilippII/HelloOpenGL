@@ -6,6 +6,7 @@ inc/GLIndexBuffer.h
 inc/GLMesh.h
 inc/GLShader.h
 inc/GLShaderProgram.h
+inc/GLVertexArray.h
 inc/GLVertexArrayObject.h
 inc/GLVertexBuffer.h
 inc/VertexBufferLayout.h
@@ -17,6 +18,7 @@ src/GLIndexBuffer.cxx
 src/GLMesh.cxx
 src/GLShader.cxx
 src/GLShaderProgram.cxx
+src/GLVertexArray.cxx
 src/GLVertexArrayObject.cxx
 src/GLVertexBuffer.cxx
 src/VertexBufferLayout.cxx
