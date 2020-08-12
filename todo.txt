@@ -25,8 +25,8 @@ abstraction into classes me vs. cherno:
 - generally:
 	-> cherno: debug utils are in same header as class Renderer
 	-> cherno: Bind() and Unbind() are const
-- Renderer
-	-> me: separate renderer class does not exist: glDrawElements(...) is called from main(..) function directly
+- BufferLayout:
+	-> append takes componentType as template argument rather than as regular function argument
 - ShaderProgram
 	-> cherno: ShaderProgram only called Shader
 	-> me: separate classes for Shader and ShaderProgram
@@ -57,6 +57,8 @@ removed differences me vs. cherno:
 		argument to function AddBuffer(...)
 - ShaderProgram:
 	-> cherno: glUseProgram(..) is called Bind()
+- Renderer
+	-> me: separate renderer class does not exist: glDrawElements(...) is called from main(..) function directly
 
 
 DONE:
