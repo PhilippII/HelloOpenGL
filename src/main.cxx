@@ -202,7 +202,7 @@ int main(void)
         }
 
         // 1.1 bind shader (+ set uniforms):
-        // TODO: bind shader
+        shaderProgram.bind();
         shaderProgram.setUniform4f("u_Color", r, .3f, .8f, 1.0f);
 
         // 1.2 bind vao:
@@ -218,7 +218,7 @@ int main(void)
 
         // 2 draw star:
         // 2.1 bind shader (+ set uniforms):
-        // TODO: bind shader
+        shaderProgram.bind();
         shaderProgram.setUniform4f("u_Color", .8f, .8f, .8f, 1.0f);
 
         // 2.2 bind vao:
