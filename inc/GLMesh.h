@@ -60,10 +60,6 @@ public:
         m_ib.unbind();
     }
 
-    GLsizei getNumUniqueVertices() const {
-        return m_vertexCount;
-    }
-
     GLsizei getNumIndices() const {
         return m_ib.getCount();
     }
@@ -78,7 +74,6 @@ private:
     GLIndexBuffer m_ib;     // m_ib should be constructed after m_va so it is bound
                             // in its constructor after m_va is bound its constructor.
                             // thus m_ib's binding will be stored in m_va.
-    GLsizei m_vertexCount;
 };
 
 #endif // GLMESH_H

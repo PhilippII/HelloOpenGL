@@ -5,8 +5,7 @@ GLMesh::GLMesh(const VertexBufferLayout& layout, const GLvoid* vertexData, GLsiz
                bool keepBound)
     : m_vb(vertexCount * layout.getStride(), vertexData, false),
       m_va(),
-      m_ib(indicesType, indexCount, indexData),
-      m_vertexCount(vertexCount)
+      m_ib(indicesType, indexCount, indexData)
 {
     m_va.addBuffer(m_vb, layout);
     // m_va and m_ib bound in their constructors by default
@@ -19,15 +18,13 @@ GLMesh::GLMesh(const VertexBufferLayout& layout, const GLvoid* vertexData, GLsiz
 GLMesh::GLMesh(GLMesh&& other)
     : m_vb(std::move(other.m_vb)),
       m_va(std::move(other.m_va)),
-      m_ib(std::move(other.m_ib)),
-      m_vertexCount(other.m_vertexCount)
+      m_ib(std::move(other.m_ib))
 {}
 
 GLMesh& GLMesh::operator=(GLMesh&& other) {
     m_vb = std::move(other.m_vb);
     m_va = std::move(other.m_va);
     m_ib = std::move(other.m_ib);
-    m_vertexCount = other.m_vertexCount;
 
     return *this;
 }
