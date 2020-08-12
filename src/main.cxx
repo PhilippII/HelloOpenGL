@@ -26,6 +26,7 @@
 #include "GLShader.h"
 #include "GLShaderProgram.h"
 
+#include "GLRenderer.h"
 
 struct ShaderProgramSource {
     std::string VertexSource;
@@ -183,6 +184,7 @@ int main(void)
     starVA.addBuffer(starVB, layout);
     GLIndexBuffer starIB(GL_UNSIGNED_INT, starIndices.size(), starIndices.data());
 
+    GLRenderer renderer;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -200,36 +202,17 @@ int main(void)
             r = 0.0;
             increment = +.05f;
         }
-
-        // 1.1 bind shader (+ set uniforms):
         shaderProgram.bind();
         shaderProgram.setUniform4f("u_Color", r, .3f, .8f, 1.0f);
 
-        // 1.2 bind vao:
-        rectVA.bind();
-
-        // 1.4 bind ibo:
-        rectIB.bind();
-
-        // 1.5 draw:
-        GLCall(glDrawElements(GL_TRIANGLES, rectIB.getCount(),
-                              rectIB.getType(), nullptr));
+        renderer.draw(rectVA, rectIB, shaderProgram);
 
 
         // 2 draw star:
-        // 2.1 bind shader (+ set uniforms):
         shaderProgram.bind();
         shaderProgram.setUniform4f("u_Color", .8f, .8f, .8f, 1.0f);
 
-        // 2.2 bind vao:
-        starVA.bind();
-
-        // 2.4 bind ibo:
-        starIB.bind();
-
-        // 2.5 draw:
-        GLCall(glDrawElements(GL_TRIANGLES, starIB.getCount(),
-                              starIB.getType(), nullptr));
+        renderer.draw(starVA, starIB, shaderProgram);
 
 
         /* Swap front and back buffers */

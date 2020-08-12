@@ -3,6 +3,7 @@ inc/GLBuffer.h
 inc/GLBufferObject.h
 inc/GLFWInitialization.h
 inc/GLIndexBuffer.h
+inc/GLRenderer.h
 inc/GLShader.h
 inc/GLShaderProgram.h
 inc/GLVertexArray.h
@@ -13,6 +14,7 @@ res/shaders/Basic.shader
 src/GLBufferObject.cxx
 src/GLFWInitialization.cpp
 src/GLIndexBuffer.cxx
+src/GLRenderer.cxx
 src/GLShader.cxx
 src/GLShaderProgram.cxx
 src/GLVertexArray.cxx
