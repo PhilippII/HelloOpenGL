@@ -25,15 +25,6 @@ abstraction into classes me vs. cherno:
 - generally:
 	-> cherno: debug utils are in same header as class Renderer
 	-> cherno: Bind() and Unbind() are const
-- BufferLayout
-	-> cherno: there is an actual class for the BufferLayout which contains VertexBufferElements
-	-> me: there is only a std::vector of VertexAttributeType (=VertexBufferElement)
-- GLMesh + VAO
-	-> cherno: there is no GLMesh class that takes care of vao, BufferLayout and vbo simultanously
-	-> cherno: but the vao-class itself also takes a BufferLayout and a reference to the vbo
-	-> cherno: vao-class still does not take a reference to an ibo
-	-> cherno: vao-class still does not create vbo by itself it merely takes it as a function 
-		argument to function AddBuffer(...)
 - Renderer
 	-> me: separate renderer class does not exist: glDrawElements(...) is called from main(..) function directly
 - ShaderProgram
@@ -55,6 +46,15 @@ removed differences me vs. cherno:
 	-> cherno: ids of OpenGL-Objects are called m_RendererID
 - Buffers
 	- cherno: VertexBuffer and IndexBuffer are separate classes
+- BufferLayout
+	-> cherno: there is an actual class for the BufferLayout which contains VertexBufferElements
+	-> me: there is only a std::vector of VertexAttributeType (=VertexBufferElement)
+- GLMesh + VAO
+	-> cherno: there is no GLMesh class that takes care of vao, BufferLayout and vbo simultanously
+	-> cherno: but the vao-class itself also takes a BufferLayout and a reference to the vbo
+	-> cherno: vao-class still does not take a reference to an ibo
+	-> cherno: vao-class still does not create vbo by itself it merely takes it as a function 
+		argument to function AddBuffer(...)
 - ShaderProgram:
 	-> cherno: glUseProgram(..) is called Bind()
 
