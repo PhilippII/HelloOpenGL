@@ -11,6 +11,8 @@ class GLRenderer
 public:
     GLRenderer();
 
+    void clear() const;
+
     void draw(GLVertexArray& va, GLIndexBuffer& ib, GLShaderProgram& shaderP) const;
 };
 

@@ -5,6 +5,11 @@ GLRenderer::GLRenderer()
 
 }
 
+void GLRenderer::clear() const
+{
+    GLCall(glClear(GL_COLOR_BUFFER_BIT));
+}
+
 void GLRenderer::draw(GLVertexArray &va, GLIndexBuffer &ib, GLShaderProgram &shaderP) const
 {
     va.bind();

@@ -190,7 +190,7 @@ int main(void)
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
-        GLCall(glClear(GL_COLOR_BUFFER_BIT));
+        renderer.clear();
 
         // 1 draw rectangle:
         r += increment;
