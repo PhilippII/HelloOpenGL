@@ -6,7 +6,9 @@
 
 #include <fstream>
 #include <sstream>
+#include <regex>
 
+using namespace std::literals::string_literals;
 
 GLShaderProgram::GLShaderProgram()
 {
@@ -208,6 +210,8 @@ std::vector<ShaderSource> GLShaderProgram::parseShader(const std::string &filepa
         return std::vector<ShaderSource>();
     }
 
+    std::regex pat {R"(#shader\s+(\w+)\s*)"};
+
     std::vector<ShaderSource> sources;
 
     GLenum type;
@@ -217,24 +221,26 @@ std::vector<ShaderSource> GLShaderProgram::parseShader(const std::string &filepa
         //      store the shader source encountered before that
         std::string line;
         std::ostringstream oss;
+        std::smatch matches;
         if (validType) {
-            while (std::getline(stream, line) && line.find("#shader") == std::string::npos) {
+            while (std::getline(stream, line) && !std::regex_match(line, matches, pat)) {
                 oss << line << '\n';
             }
             sources.push_back(ShaderSource{type, oss.str()});
         } else {
-            while (std::getline(stream, line) && line.find("#shader") == std::string::npos) {}
+            while (std::getline(stream, line) && !std::regex_match(line, matches, pat)) {}
         }
         // 2. figure out type for next shader to parse:
         if (stream) {
-            if (line.find("vertex") != std::string::npos) {
+            std::string typeStr = matches[1].str();
+            if (typeStr == "vertex"s) {
                 type = GL_VERTEX_SHADER;
                 validType = true;
-            } else if (line.find("fragment") != std::string::npos) {
+            } else if (typeStr == "fragment"s) {
                 type = GL_FRAGMENT_SHADER;
                 validType = true;
             } else {
-                std::cerr << "warning invalid shader directive: " << line << '\n';
+                std::cerr << "warning invalid shader type: " << typeStr << '\n';
                 validType = false;
             }
         }
