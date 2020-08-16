@@ -41,22 +41,23 @@ static std::vector<ShaderSource> ParseShader(const std::string& filepath) {
 
     std::vector<ShaderSource> sources;
 
-    std::string line;
     GLenum type;
     bool validType = false;
-    std::ostringstream oss;
-    while (std::getline(stream, line)) {
-        if (line.find("#shader") != std::string::npos) {
-            // store previously parsed shader
-            // before starting to parse the next one:
-            if (validType) {
-                sources.push_back(ShaderSource{type, oss.str()});
+    while (stream) {
+        // 1. find next '#shader' directive or eof and
+        //      store the shader source encountered before that
+        std::string line;
+        std::ostringstream oss;
+        if (validType) {
+            while (std::getline(stream, line) && line.find("#shader") == std::string::npos) {
+                oss << line << '\n';
             }
-
-            // prepare parsing the next shader:
-            // clear oss and figure out type of next shader to parse:
-            oss.str(std::string());
-            oss.clear();
+            sources.push_back(ShaderSource{type, oss.str()});
+        } else {
+            while (std::getline(stream, line) && line.find("#shader") == std::string::npos) {}
+        }
+        // 2. figure out type for next shader to parse:
+        if (stream) {
             if (line.find("vertex") != std::string::npos) {
                 type = GL_VERTEX_SHADER;
                 validType = true;
@@ -64,14 +65,10 @@ static std::vector<ShaderSource> ParseShader(const std::string& filepath) {
                 type = GL_FRAGMENT_SHADER;
                 validType = true;
             } else {
+                std::cerr << "warning invalid shader directive: " << line << '\n';
                 validType = false;
             }
-        } else if (validType) {
-            oss << line << '\n';
         }
-    }
-    if (validType) {
-        sources.push_back(ShaderSource{type, oss.str()});
     }
 
     return sources;
