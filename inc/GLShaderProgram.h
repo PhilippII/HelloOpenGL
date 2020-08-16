@@ -79,6 +79,7 @@ public:
 
 private:
     static std::vector<ShaderSource> parseShader(const std::string& filepath);
+    static const std::unordered_map<std::string, GLenum> shaderTypes;
 
     void printShaderProgramInfoLog() const;
     GLuint m_rendererID;

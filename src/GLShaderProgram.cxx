@@ -10,6 +10,18 @@
 
 using namespace std::literals::string_literals;
 
+
+const std::unordered_map<std::string, GLenum> GLShaderProgram::shaderTypes ({
+                {"compute"s, GL_COMPUTE_SHADER},
+                {"vertex"s, GL_VERTEX_SHADER},
+                {"tess_control"s, GL_TESS_CONTROL_SHADER},
+                {"tess_evaluation"s, GL_TESS_EVALUATION_SHADER},
+                {"geometry"s, GL_GEOMETRY_SHADER},
+                {"fragment"s, GL_FRAGMENT_SHADER}
+            });
+
+
+
 GLShaderProgram::GLShaderProgram()
 {
     m_rendererID = glCreateProgram();
@@ -230,18 +242,18 @@ std::vector<ShaderSource> GLShaderProgram::parseShader(const std::string &filepa
         } else {
             while (std::getline(stream, line) && !std::regex_match(line, matches, pat)) {}
         }
+
         // 2. figure out type for next shader to parse:
         if (stream) {
             std::string typeStr = matches[1].str();
-            if (typeStr == "vertex"s) {
-                type = GL_VERTEX_SHADER;
-                validType = true;
-            } else if (typeStr == "fragment"s) {
-                type = GL_FRAGMENT_SHADER;
-                validType = true;
-            } else {
-                std::cerr << "warning invalid shader type: " << typeStr << '\n';
+            if (shaderTypes.find(typeStr) == shaderTypes.end()) {
+                std::cerr << "warining: invalid shader type " << typeStr << '\n';
+                myAssert(false);
                 validType = false;
+            } else {
+                // TODO: difference between at(...) and operator[](...)?
+                type = shaderTypes.at(typeStr);
+                validType = true;
             }
         }
     }
