@@ -41,7 +41,7 @@ static ShaderProgramSource ParseShader(const std::string& filepath) {
     };
 
     std::string line;
-    std::stringstream ss[2];
+    std::ostringstream ss[2];
     ShaderType type = ShaderType::NONE;
     while (std::getline(stream, line)) {
         if (line.find("#shader") != std::string::npos) {
