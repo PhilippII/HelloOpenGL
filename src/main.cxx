@@ -5,6 +5,8 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+                    // TODO: move headers used only for ParseShader(...)
+                    // to GLShaderProgram
 
 #include <array>
 #include <vector>
@@ -28,34 +30,51 @@
 
 #include "GLRenderer.h"
 
-struct ShaderProgramSource {
-    std::string VertexSource;
-    std::string FragmentSource;
-};
 
-static ShaderProgramSource ParseShader(const std::string& filepath) {
+static std::vector<ShaderSource> ParseShader(const std::string& filepath) {
     std::ifstream stream(filepath);
-
-    enum class ShaderType {
-        NONE = -1, VERTEX = 0, FRAGMENT = 1
-    };
-
-    std::string line;
-    std::ostringstream ss[2];
-    ShaderType type = ShaderType::NONE;
-    while (std::getline(stream, line)) {
-        if (line.find("#shader") != std::string::npos) {
-            if (line.find("vertex") != std::string::npos) {
-                type = ShaderType::VERTEX;
-            } else if (line.find("fragment") != std::string::npos) {
-                type = ShaderType::FRAGMENT;
-            }
-        } else if (type != ShaderType::NONE) {
-            ss[static_cast<int>(type)] << line << '\n';
-        }
+    if (!stream) {
+        std::cerr << "error opening file " << filepath << '\n';
+        myAssert(false);
+        return std::vector<ShaderSource>();
     }
 
-    return { ss[0].str(), ss[1].str() };
+    std::vector<ShaderSource> sources;
+
+    std::string line;
+    GLenum type;
+    bool validType = false;
+    std::ostringstream oss;
+    while (std::getline(stream, line)) {
+        if (line.find("#shader") != std::string::npos) {
+            // store previously parsed shader
+            // before starting to parse the next one:
+            if (validType) {
+                sources.push_back(ShaderSource{type, oss.str()});
+            }
+
+            // prepare parsing the next shader:
+            // clear oss and figure out type of next shader to parse:
+            oss.str(std::string());
+            oss.clear();
+            if (line.find("vertex") != std::string::npos) {
+                type = GL_VERTEX_SHADER;
+                validType = true;
+            } else if (line.find("fragment") != std::string::npos) {
+                type = GL_FRAGMENT_SHADER;
+                validType = true;
+            } else {
+                validType = false;
+            }
+        } else if (validType) {
+            oss << line << '\n';
+        }
+    }
+    if (validType) {
+        sources.push_back(ShaderSource{type, oss.str()});
+    }
+
+    return sources;
 }
 
 
@@ -103,11 +122,7 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << '\n';
 
     // initialize shader:
-    ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
-    std::vector<ShaderSource> sources;
-    sources.push_back(ShaderSource{GL_VERTEX_SHADER, source.VertexSource});
-    sources.push_back(ShaderSource{GL_FRAGMENT_SHADER, source.FragmentSource});
-    GLShaderProgram shaderProgram(sources);
+    GLShaderProgram shaderProgram(ParseShader("res/shaders/Basic.shader"));
     // shaderProgram.bind() is called automatically in constructor
 
     //int location = shaderProgram.getUniformLocation("u_Color");
