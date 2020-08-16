@@ -2,11 +2,6 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-                    // TODO: move headers used only for ParseShader(...)
-                    // to GLShaderProgram
 
 #include <array>
 #include <vector>
@@ -29,50 +24,6 @@
 #include "GLShaderProgram.h"
 
 #include "GLRenderer.h"
-
-
-static std::vector<ShaderSource> ParseShader(const std::string& filepath) {
-    std::ifstream stream(filepath);
-    if (!stream) {
-        std::cerr << "error opening file " << filepath << '\n';
-        myAssert(false);
-        return std::vector<ShaderSource>();
-    }
-
-    std::vector<ShaderSource> sources;
-
-    GLenum type;
-    bool validType = false;
-    while (stream) {
-        // 1. find next '#shader' directive or eof and
-        //      store the shader source encountered before that
-        std::string line;
-        std::ostringstream oss;
-        if (validType) {
-            while (std::getline(stream, line) && line.find("#shader") == std::string::npos) {
-                oss << line << '\n';
-            }
-            sources.push_back(ShaderSource{type, oss.str()});
-        } else {
-            while (std::getline(stream, line) && line.find("#shader") == std::string::npos) {}
-        }
-        // 2. figure out type for next shader to parse:
-        if (stream) {
-            if (line.find("vertex") != std::string::npos) {
-                type = GL_VERTEX_SHADER;
-                validType = true;
-            } else if (line.find("fragment") != std::string::npos) {
-                type = GL_FRAGMENT_SHADER;
-                validType = true;
-            } else {
-                std::cerr << "warning invalid shader directive: " << line << '\n';
-                validType = false;
-            }
-        }
-    }
-
-    return sources;
-}
 
 
 struct Vertex {
@@ -119,7 +70,7 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << '\n';
 
     // initialize shader:
-    GLShaderProgram shaderProgram(ParseShader("res/shaders/Basic.shader"));
+    GLShaderProgram shaderProgram("res/shaders/Basic.shader");
     // shaderProgram.bind() is called automatically in constructor
 
     //int location = shaderProgram.getUniformLocation("u_Color");

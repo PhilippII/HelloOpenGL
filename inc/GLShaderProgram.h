@@ -22,6 +22,8 @@ enum class SPReadiness {
 class GLShaderProgram
 {
 public:
+    GLShaderProgram();
+    GLShaderProgram(const std::string& filepath, SPReadiness readiness = SPReadiness::BIND);
     GLShaderProgram(std::vector<ShaderSource> sources, SPReadiness readiness = SPReadiness::BIND);
 
     GLShaderProgram(const GLShaderProgram& other) = delete;
@@ -76,6 +78,8 @@ public:
     bool isBound() const;
 
 private:
+    static std::vector<ShaderSource> parseShader(const std::string& filepath);
+
     void printShaderProgramInfoLog() const;
     GLuint m_rendererID;
     std::vector<GLShader> m_shaders;

@@ -4,9 +4,31 @@
 
 #include <iostream>
 
+#include <fstream>
+#include <sstream>
+
+
+GLShaderProgram::GLShaderProgram()
+{
+    m_rendererID = glCreateProgram();
+}
+
+GLShaderProgram::GLShaderProgram(const std::string &filepath, SPReadiness readiness)
+{
+    m_rendererID = glCreateProgram();
+
+    std::vector<ShaderSource> sources = parseShader(filepath);
+    for (auto& src : sources) {
+        addShaderFromSource(src);
+    }
+    bool success = makeReady(readiness);
+    myAssert(success);
+}
+
 GLShaderProgram::GLShaderProgram(std::vector<ShaderSource> sources, SPReadiness readiness)
 {
     m_rendererID = glCreateProgram();
+
     for (auto& src : sources) {
         addShaderFromSource(src);
     }
@@ -175,5 +197,49 @@ bool GLShaderProgram::isBound() const
     GLint programID;
     GLCall(glGetIntegerv(GL_CURRENT_PROGRAM, &programID));
     return (m_rendererID == static_cast<GLuint>(programID));
+}
+
+std::vector<ShaderSource> GLShaderProgram::parseShader(const std::string &filepath)
+{
+    std::ifstream stream(filepath);
+    if (!stream) {
+        std::cerr << "error opening file " << filepath << '\n';
+        myAssert(false);
+        return std::vector<ShaderSource>();
+    }
+
+    std::vector<ShaderSource> sources;
+
+    GLenum type;
+    bool validType = false;
+    while (stream) {
+        // 1. find next '#shader' directive or eof and
+        //      store the shader source encountered before that
+        std::string line;
+        std::ostringstream oss;
+        if (validType) {
+            while (std::getline(stream, line) && line.find("#shader") == std::string::npos) {
+                oss << line << '\n';
+            }
+            sources.push_back(ShaderSource{type, oss.str()});
+        } else {
+            while (std::getline(stream, line) && line.find("#shader") == std::string::npos) {}
+        }
+        // 2. figure out type for next shader to parse:
+        if (stream) {
+            if (line.find("vertex") != std::string::npos) {
+                type = GL_VERTEX_SHADER;
+                validType = true;
+            } else if (line.find("fragment") != std::string::npos) {
+                type = GL_FRAGMENT_SHADER;
+                validType = true;
+            } else {
+                std::cerr << "warning invalid shader directive: " << line << '\n';
+                validType = false;
+            }
+        }
+    }
+
+    return sources;
 }
 
