@@ -5,7 +5,7 @@
 *.slo
 *.lo
 *.o
-*.obj
+#*.obj # this is a wavefront-OBJ not a compiled object file
 
 # Precompiled Headers
 *.gch
