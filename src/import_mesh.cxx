@@ -149,7 +149,7 @@ void readOBJtest(std::string filepath)
                         indices_v.push_back(indices_v[i_first]);
                         indices_v.push_back(indices_v[i_last]);
                     }
-                    v = static_cast<GLuint>(std::stoi(matches[1].str()));
+                    v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
                         // regular expression does not allow negative numbers here anyway
                         // so we can cast to unsigned
                     indices_v.push_back({v});
@@ -162,8 +162,8 @@ void readOBJtest(std::string filepath)
                         indices_v_vt.push_back(indices_v_vt[i_first]);
                         indices_v_vt.push_back(indices_v_vt[i_last]);
                     }
-                    v = static_cast<GLuint>(std::stoi(matches[1].str()));
-                    vt = static_cast<GLuint>(std::stoi(matches[2].str()));
+                    v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
+                    vt = static_cast<GLuint>(std::stoi(matches[2].str())) - 1;
                     indices_v_vt.push_back({v, vt});
                     break;
                 case MultiIndexFormat::V_VN:
@@ -174,8 +174,8 @@ void readOBJtest(std::string filepath)
                         indices_v_vn.push_back(indices_v_vn[i_first]);
                         indices_v_vn.push_back(indices_v_vn[i_last]);
                     }
-                    v = static_cast<GLuint>(std::stoi(matches[1].str()));
-                    vn = static_cast<GLuint>(std::stoi(matches[2].str()));
+                    v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
+                    vn = static_cast<GLuint>(std::stoi(matches[2].str())) - 1;
                     indices_v_vn.push_back({v, vn});
                     break;
                 case MultiIndexFormat::V_VT_VN:
@@ -186,9 +186,9 @@ void readOBJtest(std::string filepath)
                         indices_v_vt_vn.push_back(indices_v_vt_vn[i_first]);
                         indices_v_vt_vn.push_back(indices_v_vt_vn[i_last]);
                     }
-                    v = static_cast<GLuint>(std::stoi(matches[1].str()));
-                    vt = static_cast<GLuint>(std::stoi(matches[2].str()));
-                    vn = static_cast<GLuint>(std::stoi(matches[3].str()));
+                    v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
+                    vt = static_cast<GLuint>(std::stoi(matches[2].str())) - 1;
+                    vn = static_cast<GLuint>(std::stoi(matches[3].str())) - 1;
                     indices_v_vt_vn.push_back({v, vt, vn});
                     break;
                 default:
