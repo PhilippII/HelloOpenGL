@@ -328,11 +328,15 @@ std::ostream &operator<<(std::ostream &os, const CPUVertexArray &va)
 {
     unsigned int stride = va.layout.getStride();
     unsigned int count = va.data.size() / stride;
-    for (unsigned int i = 0; i < count; ++i) {
-        os << "vertex " << i << ":\n{";
-        for (const auto& attr : va.layout.getAttributes()) {
+    for (unsigned int i_v = 0; i_v < count; ++i_v) {
+        os << "vertex " << i_v << ":\n{";
+        const auto& attrs = va.layout.getAttributes();
+        if (!attrs.empty()) {
+            printAttribute(os, attrs[0].dimCount, attrs[0].componentType, &(va.data[i_v * stride + attrs[0].offset]));
+        }
+        for (unsigned int i_a = 1; i_a < attrs.size(); ++i_a) {
             os << ", ";
-            printAttribute(os, attr.dimCount, attr.componentType, &(va.data[i * stride + attr.offset]));
+            printAttribute(os, attrs[i_a].dimCount, attrs[i_a].componentType, &(va.data[i_v * stride + attrs[i_a].offset]));
         }
         os << "}\n";
     }
