@@ -84,6 +84,34 @@ int main(void)
     myAssert(colAttrIndex != -1);
 
 
+    // initialize house:
+    float hSz = 1.5f;
+    Vertex houseVertices[9] = {
+        {{-.5f * hSz, -.5f * hSz}, {.5f, .5f, .5f, .0f}},
+        {{ .5f * hSz, -.5f * hSz}, {.5f, .5f, .5f, .0f}},
+        {{ .5f * hSz,  .5f * hSz}, {.5f, .5f, .5f, .0f}},
+
+        {{-.5f * hSz, -.5f * hSz}, {.5f, .5f, .5f, .0f}},
+        {{ .5f * hSz,  .5f * hSz}, {.5f, .5f, .5f, .0f}},
+        {{-.5f * hSz,  .5f * hSz}, {.5f, .5f, .5f, .0f}},
+
+        {{-.5f * hSz,  .5f * hSz}, {.5f, .5f, .5f, .0f}},
+        {{ .5f * hSz,  .5f * hSz}, {.5f, .5f, .5f, .0f}},
+        {{ .0f * hSz,  .75f * hSz}, {.5f, .5f, .5f, .0f}}
+    };
+    VertexBufferLayout houseLayout;
+    houseLayout.append(2, GL_FLOAT, VariableType::FLOAT, posAttrIndex);
+    houseLayout.append(4, GL_FLOAT, VariableType::FLOAT, colAttrIndex);
+    CPUMesh<GLuint> houseCPUMesh = addIndexBuffer<GLuint>(CPUVertexArray{houseLayout,
+                                                                 std::vector<GLbyte>(reinterpret_cast<const GLbyte*>(houseVertices),
+                                                                                     reinterpret_cast<const GLbyte*>(houseVertices)
+                                                                                                        + 9 * sizeof(Vertex))});
+    GLVertexBuffer houseVB(houseCPUMesh.va.data.size(), houseCPUMesh.va.data.data());
+    GLVertexArray houseVA;
+    houseVA.addBuffer(houseVB, houseLayout);
+    GLIndexBuffer houseIB(GL_UNSIGNED_INT, houseCPUMesh.ib.indices.size(), houseCPUMesh.ib.indices.data());
+
+
     // initialize rectangle:
     Vertex rectVertices[4] = {
         {{-.5f, -.5f}, {0.f, 0.f, 0.f, 0.f}}, // 0
@@ -159,6 +187,12 @@ int main(void)
     {
         /* Render here */
         renderer.clear();
+
+        // 0 draw house:
+        shaderProgram.bind();
+        shaderProgram.setUniform4f("u_Color", .5f, .5f, .5f, 1.0f);
+
+        renderer.draw(houseVA, houseIB, shaderProgram);
 
         // 1 draw rectangle:
         r += increment;
