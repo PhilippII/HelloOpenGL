@@ -3,7 +3,8 @@
 
 #include <string>
 #include <vector>
-
+#include <GL/glew.h>
+/*
 template <typename Index>
 struct CPUIndexBuffer {
     std::vector<Index> indices;
@@ -57,7 +58,7 @@ CPUMesh unifyIndexBuffer(CPUMultiIndexMesh miMesh) {
                                     );
     return CPUMesh{indexedMultiIndex.ib, va};
 }
-
+*/
 // TODO: change return type to CPUMesh
 void readOBJtest(std::string filepath);
 //{

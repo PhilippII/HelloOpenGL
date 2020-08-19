@@ -25,6 +25,8 @@
 
 #include "GLRenderer.h"
 
+#include "import_mesh.h"
+
 
 struct Vertex {
     std::array<float, 2> pos;
@@ -146,6 +148,9 @@ int main(void)
     GLVertexArray starVA;
     starVA.addBuffer(starVB, layout);
     GLIndexBuffer starIB(GL_UNSIGNED_INT, starIndices.size(), starIndices.data());
+
+    // import from OBJ-file:
+    readOBJtest("res/meshes/suzanne_scaled.obj");
 
     GLRenderer renderer;
 
