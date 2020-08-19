@@ -42,9 +42,9 @@ void readOBJtest(std::string filepath)
         std::regex{R"((\d+)/(\d+)/(\d+))"} // V_VT_VN
     };
 
-    // std::vector<std::array<float, 3>> verts_v;
-    // std::vector<std::array<float, 2>> verts_vt;
-    // std::vector<std::array<float, 3>> verts_vn;
+    std::vector<std::array<float, 3>> verts_v;
+    std::vector<std::array<float, 2>> verts_vt;
+    std::vector<std::array<float, 3>> verts_vn;
 
     std::vector<std::array<GLuint, 1>> indices_v;
     std::vector<std::array<GLuint, 2>> indices_v_vt;
@@ -53,7 +53,7 @@ void readOBJtest(std::string filepath)
 
     string line;
     while (getline(ifs, line)) {
-        cout << line << '\n';
+        // cout << line << '\n';
         istringstream iss {line};
         string opcodeStr;
         if (!(iss >> opcodeStr)) {
@@ -64,14 +64,56 @@ void readOBJtest(std::string filepath)
             getline(iss, commentStr);
             cout << "OBJ-file comment: " << commentStr << '\n';
         } else if (opcodeStr == "v") {
-            cout << "vertex:\n";
+            std::array<float, 3> v;
+            unsigned int i;
+            for (i = 0; i < v.size() && iss >> v[i]; ++i)
+                {}
+            if (i < v.size()) {
+                cerr << "error reading vertex position:\n";
+                cerr << '\t' << line << "\n";
+                myAssert(false);
+                return;
+            }
+            verts_v.push_back(v);
             float value;
             if (iss >> value) {
-                cout << "(" << value;
-                while (iss >> value) {
-                    cout << ", " << value;
-                }
-                cout << ")\n";
+                cout << "warning: only 3 dimensional positions are not supported by this implementation\n";
+                cout << '\t' << line << "\n";
+            }
+        } else if (opcodeStr == "vt") {
+            std::array<float, 2> vt;
+            unsigned int i;
+            for (i = 0; i < vt.size() && iss >> vt[i]; ++i)
+                {}
+            if (i < vt.size()) {
+                cerr << "error reading texture coordinate:\n";
+                cerr << '\t' << line << "\n";
+                myAssert(false);
+                return;
+            }
+            verts_vt.push_back(vt);
+            float value;
+            if (iss >> value) {
+                cout << "warning: only 2-dimensional texture coordinates are supported by this implementation\n";
+            }
+        } else if (opcodeStr == "vn") {
+            std::array<float, 3> vn;
+            unsigned int i;
+            for (i = 0; i < vn.size() && iss >> vn[i]; ++i)
+                {}
+            if (i < vn.size()) {
+                cerr << "error reading normal:\n";
+                cerr << '\t' << line << '\n';
+                myAssert(false);
+                return;
+            }
+            verts_vn.push_back(vn);
+            float value;
+            if (iss >> value) {
+                cerr << "error normal should only have three dimensions:\n";
+                cerr << '\t' << line << '\n';
+                myAssert(false);
+                return;
             }
         } else if (opcodeStr == "f") {
             string multIndStr;
@@ -81,7 +123,7 @@ void readOBJtest(std::string filepath)
                 std::smatch matches;
                 bool success = false;
                 if (miFormat == MultiIndexFormat::UNKNOWN) {
-                    for (int i = 0; i < mi_pats.size() && !success; ++i) {
+                    for (unsigned int i = 0; i < mi_pats.size() && !success; ++i) {
                         if (regex_match(multIndStr, matches, mi_pats[i])) {
                             success = true;
                             miFormat = static_cast<MultiIndexFormat>(i); // or static_cast ?
@@ -162,6 +204,27 @@ void readOBJtest(std::string filepath)
     }
 
     cout << "finished parsing OBJfile " << filepath << '\n';
+    cout << "vertex positions:\n";
+    for (auto& v : verts_v) {
+        cout << "x=" << v[0]
+             << " y=" << v[1]
+             << " z=" << v[2] << '\n';
+    }
+    cout << '\n';
+    cout << "texture coordinates:\n";
+    for (auto& vt : verts_vt) {
+        cout << "u=" << vt[0]
+             << " v=" << vt[1] << '\n';
+    }
+    cout << '\n';
+    cout << "normals:\n";
+    for (auto& vn : verts_vn) {
+        cout << "nx=" << vn[0]
+             << " ny=" << vn[1]
+             << " nz=" << vn[2] << '\n';
+    }
+    cout << '\n';
+    cout << "faces:\n";
     switch (miFormat) {
     case MultiIndexFormat::UNKNOWN:
         cout << "error no faces specified\n";
