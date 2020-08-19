@@ -106,6 +106,8 @@ int main(void)
                                                                  std::vector<GLbyte>(reinterpret_cast<const GLbyte*>(houseVertices),
                                                                                      reinterpret_cast<const GLbyte*>(houseVertices)
                                                                                                         + 9 * sizeof(Vertex))});
+    std::cout << "houseCPUMesh:\n";
+    std::cout << houseCPUMesh;
     GLVertexBuffer houseVB(houseCPUMesh.va.data.size(), houseCPUMesh.va.data.data());
     GLVertexArray houseVA;
     houseVA.addBuffer(houseVB, houseLayout);

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <GL/glew.h>
+#include <iostream>
 
 #include "VertexBufferLayout.h"
 
@@ -11,6 +12,19 @@ template <typename Index>
 struct CPUIndexBuffer {
     std::vector<Index> indices;
 };
+
+template <typename Index>
+std::ostream& operator<<(std::ostream& os, const CPUIndexBuffer<Index>& ib) {
+    os << "CPUIndexBuffer {";
+    if (!ib.indices.empty()) {
+        os << ib.indices[0];
+    }
+    for (unsigned int i = 1; i < ib.indices.size(); ++i) {
+        os << ", " << ib.indices[i];
+    }
+    return os << "}\n";
+}
+
 /*
 template <typename Index, int N>
 struct CPUMultiIndexBuffer {
@@ -22,11 +36,19 @@ struct CPUVertexArray {
     std::vector<GLbyte> data;
 };
 
+std::ostream& operator<<(std::ostream& os, const CPUVertexArray& va);
+
 template <typename Index>
 struct CPUMesh {
     CPUIndexBuffer<Index> ib;
     CPUVertexArray va;
 };
+
+template <typename Index>
+std::ostream& operator<<(std::ostream& os, const CPUMesh<Index>& cpuMesh) {
+    return os << cpuMesh.ib << cpuMesh.va;
+}
+
 /*
 template <typename Index, int N>
 struct CPUMultiIndexMesh {
