@@ -95,7 +95,9 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout, GLsizei count, const GL
 
 template <typename Index>
 CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va) {
-    return addIndexBuffer<Index>(va.layout, va.data.size(), va.data.data());
+    return addIndexBuffer<Index>(va.layout,
+                                 va.data.size() / va.layout.getStride(),
+                                 va.data.data());
 }
 /*
 template <typename Index, int N>
