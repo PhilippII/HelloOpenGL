@@ -19,6 +19,15 @@ void VertexBufferLayout::append(GLint dimCount, GLenum componentType, VariableTy
     m_stride += getAttributeSize(dimCount, componentType);
 }
 
+VertexBufferLayout &VertexBufferLayout::operator+=(const VertexBufferLayout &other)
+{
+   for (auto& attr : other.getAttributes()) {
+       m_attributes.push_back(attr);
+       m_attributes.back().offset += static_cast<unsigned int>(m_stride);
+   }
+   m_stride += other.getStride();
+}
+
 
 GLuint VertexBufferLayout::getAttributeSize(GLint dimCount, GLenum componentType) {
     std::size_t result = 0;
@@ -71,3 +80,8 @@ GLuint VertexBufferLayout::getAttributeSize(GLint dimCount, GLenum componentType
 
 
 
+
+VertexBufferLayout operator+(VertexBufferLayout a, const VertexBufferLayout &b)
+{
+   return a += b;
+}

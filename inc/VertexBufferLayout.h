@@ -28,6 +28,9 @@ public:
     VertexBufferLayout();
     static constexpr GLint AUTO_LOCATION = -1;
     void append(GLint dimCount, GLenum componentType, VariableType castTo, GLint location = AUTO_LOCATION);
+
+    VertexBufferLayout& operator+=(const VertexBufferLayout& other);
+
     const std::vector<VertexAttributeLayout>& getAttributes() const {
         return m_attributes;
     }
@@ -41,5 +44,7 @@ private:
 
     static GLuint getAttributeSize(GLint dimCount, GLenum componentType);
 };
+
+VertexBufferLayout operator+(VertexBufferLayout a, const VertexBufferLayout& b);
 
 #endif // VERTEXBUFFERLAYOUT_H
