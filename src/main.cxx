@@ -180,7 +180,15 @@ int main(void)
     GLIndexBuffer starIB(GL_UNSIGNED_INT, starIndices.size(), starIndices.data());
 
     // import from OBJ-file:
-    readOBJtest("res/meshes/suzanne_scaled.obj");
+    GLShaderProgram suzanneSP("res/shaders/Suzanne.shader");
+    CPUVertexArray suzanneCPU_VA = readOBJtest("res/meshes/suzanne_scaled.obj");
+    suzanneCPU_VA.layout.setDefaultLocations(); // assumes vertex attributes
+                                                // were added to layout in order
+                                                // position, texCoordinate, normal
+    GLVertexBuffer suzanneVB(suzanneCPU_VA.data.size(),
+                             suzanneCPU_VA.data.data());
+    GLVertexArray suzanneVA;
+    suzanneVA.addBuffer(suzanneVB, suzanneCPU_VA.layout);
 
     GLRenderer renderer;
 
@@ -217,6 +225,11 @@ int main(void)
         shaderProgram.setUniform4f("u_Color", .8f, .8f, .8f, 1.0f);
 
         renderer.draw(starVA, starIB, shaderProgram);
+
+        // 3 draw suzanne:
+        suzanneSP.bind();
+        suzanneVA.bind();
+        GLCall(glDrawArrays(GL_TRIANGLES, 0, suzanneCPU_VA.data.size()));
 
 
         /* Swap front and back buffers */
