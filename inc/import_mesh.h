@@ -109,7 +109,7 @@ CPUVertexArray applyMultiIndex(int count, const std::array<Index, N>* multiIndic
             int stride_buf = vas[i_buf].layout.getStride();
             Index index = multiIndices[i_v][i_buf];
             for (unsigned int offset = 0; offset < stride_buf; ++offset) {
-                res.data.push_back(vas[i_buf][stride_buf * index + offset]);
+                res.data.push_back(vas[i_buf].data[stride_buf * index + offset]);
             }
         }
     }
