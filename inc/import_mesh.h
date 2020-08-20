@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <array>
 #include <GL/glew.h>
 #include <iostream>
 
@@ -25,12 +26,12 @@ std::ostream& operator<<(std::ostream& os, const CPUIndexBuffer<Index>& ib) {
     return os << "}\n";
 }
 
-/*
+
 template <typename Index, int N>
 struct CPUMultiIndexBuffer {
     std::vector<std::array<Index, N>> indices;
 };
-*/
+
 struct CPUVertexArray {
     VertexBufferLayout layout;
     std::vector<GLbyte> data;
@@ -49,13 +50,13 @@ std::ostream& operator<<(std::ostream& os, const CPUMesh<Index>& cpuMesh) {
     return os << cpuMesh.ib << cpuMesh.va;
 }
 
-/*
+
 template <typename Index, int N>
 struct CPUMultiIndexMesh {
     CPUMultiIndexBuffer<Index, N> mib;
     std::array<CPUVertexArray, N> vas;
 };
-*/
+
 template <typename Index>
 CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout, GLsizei count, const GLbyte* data) {
     // TODO:
@@ -99,16 +100,34 @@ CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va) {
                                  va.data.size() / va.layout.getStride(),
                                  va.data.data());
 }
-/*
-template <typename Index, int N>
-CPUVertexArray applyMultiIndex(int count, const std::array<Index, N>* multiIndices, const std::array<CPUVertexArray, N>& vas);
 
-CPUVertexArray applyMultiIndex(const CPUMultiIndexMesh& miMesh) {
-    return applyMultiIndex(miMesh.mib.indices.size(),
-                           miMesh.mib.indices.data(),
-                           miMesh.vas);
+template <typename Index, int N>
+CPUVertexArray applyMultiIndex(int count, const std::array<Index, N>* multiIndices, const std::array<CPUVertexArray, N>& vas) {
+    CPUVertexArray res;
+    for (unsigned int i_v = 0; i_v < count; ++i_v) {
+        for (unsigned int i_buf = 0; i_buf < N; ++i_buf) {
+            int stride_buf = vas[i_buf].layout.getStride();
+            Index index = multiIndices[i_v][i_buf];
+            for (unsigned int offset = 0; offset < stride_buf; ++offset) {
+                res.data.push_back(vas[i_buf][stride_buf * index + offset]);
+            }
+        }
+    }
+
+    for (auto& va : vas) {
+        res.layout += va.layout;
+    }
+
+    return res;
 }
 
+template<typename Index, int N>
+CPUVertexArray applyMultiIndex(const CPUMultiIndexMesh<Index, N>& miMesh) {
+    return applyMultiIndex<Index, N>(miMesh.mib.indices.size(),
+                                     miMesh.mib.indices.data(),
+                                     miMesh.vas);
+}
+/*
 template <typename Index, int N>
 CPUMesh unifyIndexBuffer(CPUMultiIndexMesh miMesh) {
     VertexBufferLayout mibLayout;

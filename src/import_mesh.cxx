@@ -3,7 +3,6 @@
 #include <fstream>
 #include <sstream>
 #include <regex>
-#include <array>
 
 #include "debug_utils.h"
 
