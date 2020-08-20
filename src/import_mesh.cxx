@@ -12,15 +12,24 @@ using std::cout, std::cerr;
 using std::ifstream, std::istringstream, std::getline;
 
 
-
+template <typename Elem_Src>
+static std::vector<GLbyte> toByteVector(const std::vector<Elem_Src>& v) {
+    unsigned int targetCount = v.size() * sizeof(Elem_Src);
+    std::vector<GLbyte> res;
+    const GLbyte* p = reinterpret_cast<const GLbyte*>(v.data());
+    for (unsigned int i = 0; i < targetCount; ++i) {
+        res.push_back(p[i]);
+    }
+    return res;
+}
 
 // TODO: change return type to CPUMesh
-void readOBJtest(std::string filepath)
+CPUVertexArray readOBJtest(std::string filepath)
 {
     ifstream ifs {filepath};
     if (!ifs) {
         cerr << "error opening file " << filepath << '\n';
-        return;
+        return CPUVertexArray{};
     }
 
     enum class MultiIndexFormat {
@@ -70,7 +79,7 @@ void readOBJtest(std::string filepath)
                 cerr << "error reading vertex position:\n";
                 cerr << '\t' << line << "\n";
                 myAssert(false);
-                return;
+                return CPUVertexArray{};
             }
             verts_v.push_back(v);
             float value;
@@ -87,7 +96,7 @@ void readOBJtest(std::string filepath)
                 cerr << "error reading texture coordinate:\n";
                 cerr << '\t' << line << "\n";
                 myAssert(false);
-                return;
+                return CPUVertexArray{};
             }
             verts_vt.push_back(vt);
             float value;
@@ -103,7 +112,7 @@ void readOBJtest(std::string filepath)
                 cerr << "error reading normal:\n";
                 cerr << '\t' << line << '\n';
                 myAssert(false);
-                return;
+                return CPUVertexArray{};
             }
             verts_vn.push_back(vn);
             float value;
@@ -111,7 +120,7 @@ void readOBJtest(std::string filepath)
                 cerr << "error normal should only have three dimensions:\n";
                 cerr << '\t' << line << '\n';
                 myAssert(false);
-                return;
+                return CPUVertexArray{};
             }
         } else if (opcodeStr == "f") {
             string multIndStr;
@@ -135,7 +144,7 @@ void readOBJtest(std::string filepath)
                     cerr << "error parsing vertex: " << multIndStr << '\n';
                     cerr << "\tin face: " << line << '\n';
                     myAssert(false);
-                    return;
+                    return CPUVertexArray{};
                 }
                 GLuint v, vt, vn;
                 switch (miFormat) {
@@ -257,6 +266,65 @@ void readOBJtest(std::string filepath)
     default:
         break;
     }
+
+    VertexBufferLayout layout_v;
+    layout_v.append(3, GL_FLOAT, VariableType::FLOAT);
+    VertexBufferLayout layout_vt;
+    layout_vt.append(2, GL_FLOAT, VariableType::FLOAT);
+    VertexBufferLayout layout_vn;
+    layout_vn.append(3, GL_FLOAT, VariableType::FLOAT);
+    switch (miFormat) {
+    case MultiIndexFormat::UNKNOWN:
+        cout << "error no faces specified\n";
+        break;
+    case MultiIndexFormat::V:
+        {
+            CPUVertexArray va_v {layout_v,
+                                toByteVector(verts_v)};
+            CPUMultiIndexBuffer<GLuint, 1> mib {indices_v};
+            CPUMultiIndexMesh<GLuint, 1> miMesh {mib, std::array<CPUVertexArray, 1>{va_v}};
+            return applyMultiIndex(miMesh);
+        }
+        break;
+    case MultiIndexFormat::V_VT:
+        {
+            CPUVertexArray va_v {layout_v,
+                                 toByteVector(verts_v)};
+            CPUVertexArray va_vt {layout_vt,
+                                  toByteVector(verts_vt)};
+            CPUMultiIndexBuffer<GLuint, 2> mib {indices_v_vt};
+            CPUMultiIndexMesh<GLuint, 2> miMesh {mib, std::array<CPUVertexArray, 2>{va_v, va_vt}};
+            return applyMultiIndex(miMesh);
+        }
+        break;
+    case MultiIndexFormat::V_VN:
+        {
+            CPUVertexArray va_v {layout_v,
+                                 toByteVector(verts_v)};
+            CPUVertexArray va_vn {layout_vn,
+                                  toByteVector(verts_vn)};
+            CPUMultiIndexBuffer<GLuint, 2> mib {indices_v_vn};
+            CPUMultiIndexMesh<GLuint, 2> miMesh {mib, std::array<CPUVertexArray, 2>{va_v, va_vn}};
+            return applyMultiIndex(miMesh);
+        }
+        break;
+    case MultiIndexFormat::V_VT_VN:
+        {
+            CPUVertexArray va_v {layout_v,
+                                 toByteVector(verts_v)};
+            CPUVertexArray va_vt {layout_vt,
+                                  toByteVector(verts_vt)};
+            CPUVertexArray va_vn {layout_vn,
+                                  toByteVector(verts_vn)};
+            CPUMultiIndexBuffer<GLuint, 3> mib {indices_v_vt_vn};
+            CPUMultiIndexMesh<GLuint, 3> miMesh {mib, std::array<CPUVertexArray, 3>{va_v, va_vt, va_vn}};
+            return applyMultiIndex(miMesh);
+        }
+        break;
+    default:
+        break;
+    }
+    return CPUVertexArray{};
 }
 
 template <typename T>

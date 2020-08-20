@@ -143,7 +143,7 @@ CPUMesh unifyIndexBuffer(CPUMultiIndexMesh miMesh) {
 }
 */
 // TODO: change return type to CPUMesh
-void readOBJtest(std::string filepath);
+CPUVertexArray readOBJtest(std::string filepath);
 //{
 //    // ...
 //    CPUMultiIndexMesh mim(...);
