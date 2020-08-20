@@ -12,6 +12,7 @@ inc/VertexBufferLayout.h
 inc/debug_utils.h
 inc/import_mesh.h
 res/shaders/Basic.shader
+res/shaders/Suzanne.shader
 src/GLBufferObject.cxx
 src/GLFWInitialization.cpp
 src/GLIndexBuffer.cxx
