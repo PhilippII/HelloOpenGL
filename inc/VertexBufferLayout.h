@@ -31,6 +31,8 @@ public:
 
     VertexBufferLayout& operator+=(const VertexBufferLayout& other);
 
+    void setDefaultLocations();
+
     const std::vector<VertexAttributeLayout>& getAttributes() const {
         return m_attributes;
     }

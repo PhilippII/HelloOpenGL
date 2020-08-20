@@ -28,6 +28,13 @@ VertexBufferLayout &VertexBufferLayout::operator+=(const VertexBufferLayout &oth
    m_stride += other.getStride();
 }
 
+void VertexBufferLayout::setDefaultLocations()
+{
+    for (unsigned int i = 0; i < m_attributes.size(); ++i) {
+        m_attributes[i].location = i;
+    }
+}
+
 
 GLuint VertexBufferLayout::getAttributeSize(GLint dimCount, GLenum componentType) {
     std::size_t result = 0;
