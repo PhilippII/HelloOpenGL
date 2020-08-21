@@ -8,7 +8,7 @@
 class GLVertexBuffer : public GLBufferObject
 {
 public:
-    GLVertexBuffer(GLsizeiptr size, const GLvoid* data, bool keepBound = true)
+    GLVertexBuffer(GLBufferObject::size_type size, const GLvoid* data, bool keepBound = true)
         : GLBufferObject(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW, keepBound)
     {}
 

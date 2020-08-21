@@ -8,7 +8,11 @@
 
 class GLBufferObject {
 public:
-    GLBufferObject(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage, bool keepBound = true);
+    // glBufferData     (GLsizeiptr)
+    // glNamedBufferData(GLsizei)
+    using size_type = GLsizeiptr;
+
+    GLBufferObject(GLenum target, size_type size, const GLvoid* data, GLenum usage, bool keepBound = true);
 
     GLBufferObject() = delete;
 
