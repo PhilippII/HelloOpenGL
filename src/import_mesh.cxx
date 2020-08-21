@@ -14,10 +14,11 @@ using std::ifstream, std::istringstream, std::getline;
 
 template <typename Elem_Src>
 static std::vector<GLbyte> toByteVector(const std::vector<Elem_Src>& v) {
-    unsigned int targetCount = v.size() * sizeof(Elem_Src);
+    using res_size_t = std::vector<GLbyte>::size_type;
+    res_size_t resSize = v.size() * sizeof(Elem_Src);
     std::vector<GLbyte> res;
     const GLbyte* p = reinterpret_cast<const GLbyte*>(v.data());
-    for (unsigned int i = 0; i < targetCount; ++i) {
+    for (res_size_t i = 0; i < resSize; ++i) {
         res.push_back(p[i]);
     }
     return res;
@@ -53,6 +54,8 @@ CPUVertexArray readOBJtest(std::string filepath)
     std::vector<std::array<float, 2>> verts_vt;
     std::vector<std::array<float, 3>> verts_vn;
 
+    // TODO: allocate CPUMultiIndexBuffer directly here already
+    //          instead of raw arrays?
     std::vector<std::array<GLuint, 1>> indices_v;
     std::vector<std::array<GLuint, 2>> indices_v_vt;
     std::vector<std::array<GLuint, 2>> indices_v_vn;
@@ -125,7 +128,7 @@ CPUVertexArray readOBJtest(std::string filepath)
         } else if (opcodeStr == "f") {
             string multIndStr;
             int n = 1;
-            unsigned int i_first;
+            std::vector<std::array<GLuint, 1>>::size_type i_first;
             while (iss >> multIndStr) {
                 std::smatch matches;
                 bool success = false;
@@ -152,7 +155,7 @@ CPUVertexArray readOBJtest(std::string filepath)
                     if (n == 1) {
                         i_first = indices_v.size();
                     } else if (n > 3) {
-                        unsigned int i_last = indices_v.size() - 1;
+                        auto i_last = indices_v.size() - 1;
                         indices_v.push_back(indices_v[i_first]);
                         indices_v.push_back(indices_v[i_last]);
                     }
@@ -165,7 +168,7 @@ CPUVertexArray readOBJtest(std::string filepath)
                     if (n == 1) {
                         i_first = indices_v_vt.size();
                     } else if (n > 3) {
-                        unsigned int i_last = indices_v_vt.size() - 1;
+                        auto i_last = indices_v_vt.size() - 1;
                         indices_v_vt.push_back(indices_v_vt[i_first]);
                         indices_v_vt.push_back(indices_v_vt[i_last]);
                     }
@@ -177,7 +180,7 @@ CPUVertexArray readOBJtest(std::string filepath)
                     if (n == 1) {
                         i_first = indices_v_vn.size();
                     } else if (n > 3) {
-                        unsigned int i_last = indices_v_vn.size() - 1;
+                        auto i_last = indices_v_vn.size() - 1;
                         indices_v_vn.push_back(indices_v_vn[i_first]);
                         indices_v_vn.push_back(indices_v_vn[i_last]);
                     }
@@ -189,7 +192,7 @@ CPUVertexArray readOBJtest(std::string filepath)
                     if (n == 1) {
                         i_first = indices_v_vt_vn.size();
                     } else if (n > 3) {
-                        unsigned int i_last = indices_v_vt_vn.size() - 1;
+                        auto i_last = indices_v_vt_vn.size() - 1;
                         indices_v_vt_vn.push_back(indices_v_vt_vn[i_first]);
                         indices_v_vt_vn.push_back(indices_v_vt_vn[i_last]);
                     }
