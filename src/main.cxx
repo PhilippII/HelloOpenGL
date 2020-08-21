@@ -233,7 +233,8 @@ int main(void)
         // 3 draw suzanne:
         suzanneSP.bind();
         suzanneVA.bind();
-        GLCall(glDrawArrays(GL_TRIANGLES, 0, suzanneCPU_VA.data.size()));
+        GLsizei count = static_cast<GLsizei>(suzanneCPU_VA.data.size() / suzanneCPU_VA.layout.getStride());
+        GLCall(glDrawArrays(GL_TRIANGLES, 0, count));
 
 
         /* Swap front and back buffers */
