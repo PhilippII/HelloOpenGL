@@ -8,14 +8,14 @@ VertexBufferLayout::VertexBufferLayout()
 
 }
 
-void VertexBufferLayout::append(GLint dimCount, GLenum componentType, VariableType castTo, GLint location)
+void VertexBufferLayout::append(GLint dimCount, GLenum componentType, VariableType castTo, signed_loc_type location)
 {
     if (location == AUTO_LOCATION) {
-        location = m_attributes.size();
+        location = static_cast<signed_loc_type>(m_attributes.size());
     }
     m_attributes.push_back({static_cast<unsigned int>(m_stride),
                             dimCount, componentType, castTo,
-                            static_cast<GLuint>(location)});
+                            static_cast<loc_type>(location)});
     m_stride += getAttributeSize(dimCount, componentType);
 }
 
@@ -23,7 +23,7 @@ VertexBufferLayout &VertexBufferLayout::operator+=(const VertexBufferLayout &oth
 {
    for (auto& attr : other.getAttributes()) {
        m_attributes.push_back(attr);
-       m_attributes.back().offset += static_cast<unsigned int>(m_stride);
+       m_attributes.back().offset += static_cast<offset_type>(m_stride);
    }
    m_stride += other.getStride();
    return *this;
