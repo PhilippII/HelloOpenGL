@@ -58,21 +58,23 @@ struct CPUMultiIndexMesh {
 };
 
 template <typename Index>
-CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout, GLsizei count, const GLbyte* data) {
+CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
+                              Index count,
+                              const GLbyte* data) {
     // TODO:
     // - loop over stride is confusing
     // - linear search over i_out has bad performance
     CPUMesh<Index> res;
     res.va.layout = layout;
-    auto stride = layout.getStride();
-    GLsizei copiedCount = 0;
-    for (unsigned int i_in = 0; i_in < count; ++i_in) {
-        bool found = false;
+    VertexBufferLayout::stride_type stride = layout.getStride();
+    Index copiedCount = 0;
+    for (Index i_in = 0; i_in < count; ++i_in) {
         myAssert(copiedCount == res.va.data.size() / stride);
-        unsigned int i_out;
+        bool found = false;
+        Index i_out;
         for (i_out = 0; i_out < copiedCount && !found; ++i_out) {
             bool equal = true;
-            for (unsigned int offset = 0; offset < stride && equal; ++offset) {
+            for (VertexBufferLayout::stride_type offset = 0; offset < stride && equal; ++offset) {
                 if (data[i_in * stride + offset] != res.va.data[i_out * stride + offset]) {
                     equal = false;
                 }
@@ -84,7 +86,7 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout, GLsizei count, const GL
         if (found) {
             res.ib.indices.push_back(i_out - 1);
         } else {
-            for (unsigned int offset = 0; offset < stride; ++offset) {
+            for (VertexBufferLayout::stride_type offset = 0; offset < stride; ++offset) {
                 res.va.data.push_back(data[i_in * stride + offset]);
             }
             ++copiedCount;
@@ -97,7 +99,7 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout, GLsizei count, const GL
 template <typename Index>
 CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va) {
     return addIndexBuffer<Index>(va.layout,
-                                 va.data.size() / va.layout.getStride(),
+                                 static_cast<Index>(va.data.size() / va.layout.getStride()),
                                  va.data.data());
 }
 
