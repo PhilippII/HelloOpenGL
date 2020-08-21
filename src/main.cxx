@@ -111,7 +111,9 @@ int main(void)
     GLVertexBuffer houseVB(houseCPUMesh.va.data.size(), houseCPUMesh.va.data.data());
     GLVertexArray houseVA;
     houseVA.addBuffer(houseVB, houseLayout);
-    GLIndexBuffer houseIB(GL_UNSIGNED_INT, houseCPUMesh.ib.indices.size(), houseCPUMesh.ib.indices.data());
+    GLIndexBuffer houseIB(GL_UNSIGNED_INT,
+                          static_cast<GLIndexBuffer::count_type>(houseCPUMesh.ib.indices.size()),
+                          houseCPUMesh.ib.indices.data());
 
 
     // initialize rectangle:
@@ -177,7 +179,9 @@ int main(void)
     // reuse layout from rectangle:
     GLVertexArray starVA;
     starVA.addBuffer(starVB, layout);
-    GLIndexBuffer starIB(GL_UNSIGNED_INT, starIndices.size(), starIndices.data());
+    GLIndexBuffer starIB(GL_UNSIGNED_INT,
+                         static_cast<GLIndexBuffer::count_type>(starIndices.size()),
+                         starIndices.data());
 
     // import from OBJ-file:
     GLShaderProgram suzanneSP("res/shaders/Suzanne.shader");
