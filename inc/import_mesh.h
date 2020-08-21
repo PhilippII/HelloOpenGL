@@ -26,7 +26,7 @@ std::ostream& operator<<(std::ostream& os, const CPUIndexBuffer<Index>& ib) {
     return os << "}\n";
 }
 
-
+// TODO: N should be unsigned int?
 template <typename Index, int N>
 struct CPUMultiIndexBuffer {
     std::vector<std::array<Index, N>> indices;
@@ -102,13 +102,15 @@ CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va) {
 }
 
 template <typename Index, int N>
-CPUVertexArray applyMultiIndex(int count, const std::array<Index, N>* multiIndices, const std::array<CPUVertexArray, N>& vas) {
+CPUVertexArray applyMultiIndex(std::size_t count, // std::vector<...>::size_type does not work for some reason
+                               const std::array<Index, N>* multiIndices, const std::array<CPUVertexArray, N>& vas) {
     CPUVertexArray res;
-    for (unsigned int i_v = 0; i_v < count; ++i_v) {
-        for (unsigned int i_buf = 0; i_buf < N; ++i_buf) {
-            int stride_buf = vas[i_buf].layout.getStride();
+    for (std::size_t i_v = 0; i_v < count; ++i_v) {
+        // TODO: i_buff and N should be unsigned int ?
+        for (int i_buf = 0; i_buf < N; ++i_buf) {
+            VertexBufferLayout::stride_type stride_buf = vas[i_buf].layout.getStride();
             Index index = multiIndices[i_v][i_buf];
-            for (unsigned int offset = 0; offset < stride_buf; ++offset) {
+            for (VertexBufferLayout::stride_type offset = 0; offset < stride_buf; ++offset) {
                 res.data.push_back(vas[i_buf].data[stride_buf * index + offset]);
             }
         }
