@@ -25,6 +25,12 @@ struct VertexAttributeLayout {
 class VertexBufferLayout
 {
 public:
+    using count_type = std::vector<VertexAttributeLayout>::size_type;
+    // GLintptr: glBindVertexBuffer(...)
+    // GLsizei:  glVertexArrayVertexBuffer(...)
+    // GLsizei:  glVertexAttribPointer(...)
+    using stride_type = GLsizei;
+
     VertexBufferLayout();
     static constexpr GLint AUTO_LOCATION = -1;
     void append(GLint dimCount, GLenum componentType, VariableType castTo, GLint location = AUTO_LOCATION);
