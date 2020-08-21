@@ -73,5 +73,7 @@ DONE:
 		see video 12 Vertex Arrays in OpenGL
 - clean up vertex buffers and co. at the end of the program
 	-> destructors take care of that
+- in assignment operator do delete previous content if there is any!!
+
 
 

@@ -21,6 +21,9 @@ GLShader::GLShader(GLShader&& other)
 }
 
 GLShader& GLShader::operator=(GLShader&& other) {
+    if (m_rendererId) {
+        GLCall(glDeleteShader(m_rendererId));
+    }
     m_type = other.m_type;
     m_rendererId = other.m_rendererId;
     m_state = other.m_state;

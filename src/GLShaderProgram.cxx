@@ -58,6 +58,12 @@ GLShaderProgram::GLShaderProgram(GLShaderProgram&& other)
 }
 
 GLShaderProgram& GLShaderProgram::operator=(GLShaderProgram&& other) {
+    if (m_rendererID) {
+        if (isBound()) {
+            unbind();
+        }
+        GLCall(glDeleteProgram(m_rendererID));
+    }
     m_rendererID = other.m_rendererID;
     other.m_rendererID = 0;
 
@@ -68,18 +74,21 @@ GLShaderProgram& GLShaderProgram::operator=(GLShaderProgram&& other) {
 
 GLShaderProgram::~GLShaderProgram() {
     if (m_rendererID) {
-        GLint currId;
-        GLCall(glGetIntegerv(GL_CURRENT_PROGRAM, &currId));
-        if (static_cast<GLuint>(currId) == m_rendererID) {
-            GLCall(glUseProgram(0));
+        if (isBound()) {
+            unbind();
         }
         GLCall(glDeleteProgram(m_rendererID));
     }
     // docs.gl:
     // - shaders will be automatically detached
-    // - programId zero (=moved from object) will be silently ignored
-    //      (but in that case we do not need to call glUseProgram(0)
-    //      so we check this case anyway.)
+    // - m_rendererID zero (=moved from object) will be silently ignored.
+    //      * but I do not want to call members isBound() / unbind() on
+    //          a "moved-from object"
+    //          so we check this case anyway.
+    //          (isBound() may return true if m_rendererID is zero
+    //          and nothing is bound. The resulting unnecessary call
+    //          to unbind() would not really cause a problem. But
+    //          I would still find this weird.)
 }
 
 void GLShaderProgram::addShaderFromSource(const ShaderSource &source) {
@@ -143,11 +152,7 @@ void GLShaderProgram::bind() {
 }
 
 void GLShaderProgram::unbind() {
-#ifndef NDEBUG
-    GLint currId;
-    GLCall(glGetIntegerv(GL_CURRENT_PROGRAM, &currId));
-    myAssert(static_cast<GLuint>(currId) == m_rendererID);
-#endif
+    myAssert(isBound());
     GLCall(glUseProgram(0));
 }
 
@@ -208,9 +213,9 @@ void GLShaderProgram::setUniform4f(const std::string &name, float v0, float v1, 
 
 bool GLShaderProgram::isBound() const
 {
-    GLint programID;
-    GLCall(glGetIntegerv(GL_CURRENT_PROGRAM, &programID));
-    return (m_rendererID == static_cast<GLuint>(programID));
+    GLint currID;
+    GLCall(glGetIntegerv(GL_CURRENT_PROGRAM, &currID));
+    return (m_rendererID == static_cast<GLuint>(currID));
 }
 
 std::vector<ShaderSource> GLShaderProgram::parseShader(const std::string &filepath)
