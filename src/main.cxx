@@ -185,7 +185,7 @@ int main(void)
 
     // import from OBJ-file:
     GLShaderProgram suzanneSP("res/shaders/Suzanne.shader");
-    CPUVertexArray suzanneCPU_VA = readOBJtest("res/meshes/suzanne_scaled.obj");
+    CPUVertexArray suzanneCPU_VA = readOBJtest("res/meshes/suzanne_scaled_smooth.obj");
     suzanneCPU_VA.layout.setDefaultLocations(); // assumes vertex attributes
                                                 // were added to layout in order
                                                 // position, texCoordinate, normal
