@@ -396,15 +396,18 @@ static void printAttribute(std::ostream& os, GLint dimCount, GLenum componentTyp
 
 std::ostream &operator<<(std::ostream &os, const CPUVertexArray &va)
 {
-    unsigned int stride = va.layout.getStride();
-    unsigned int count = va.data.size() / stride;
-    for (unsigned int i_v = 0; i_v < count; ++i_v) {
+    using va_size_t = std::vector<GLbyte>::size_type;
+    using attrs_count_t = VertexBufferLayout::count_type;
+
+    GLsizei stride = va.layout.getStride();
+    va_size_t count = va.data.size() / stride;
+    for (va_size_t i_v = 0; i_v < count; ++i_v) {
         os << "vertex " << i_v << ":\n{";
         const auto& attrs = va.layout.getAttributes();
         if (!attrs.empty()) {
             printAttribute(os, attrs[0].dimCount, attrs[0].componentType, &(va.data[i_v * stride + attrs[0].offset]));
         }
-        for (unsigned int i_a = 1; i_a < attrs.size(); ++i_a) {
+        for (attrs_count_t i_a = 1; i_a < attrs.size(); ++i_a) {
             os << ", ";
             printAttribute(os, attrs[i_a].dimCount, attrs[i_a].componentType, &(va.data[i_v * stride + attrs[i_a].offset]));
         }
