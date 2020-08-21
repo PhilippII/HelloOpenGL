@@ -26,6 +26,7 @@ VertexBufferLayout &VertexBufferLayout::operator+=(const VertexBufferLayout &oth
        m_attributes.back().offset += static_cast<unsigned int>(m_stride);
    }
    m_stride += other.getStride();
+   return *this;
 }
 
 void VertexBufferLayout::setDefaultLocations()
