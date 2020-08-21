@@ -8,14 +8,33 @@ VertexBufferLayout::VertexBufferLayout()
 
 }
 
-void VertexBufferLayout::append(GLint dimCount, GLenum componentType, VariableType castTo, signed_loc_type location)
+void VertexBufferLayout::append(GLint dimCount, GLenum componentType)
 {
-    if (location == AUTO_LOCATION) {
-        location = static_cast<signed_loc_type>(m_attributes.size());
+    VariableType castTo;
+    switch (getTypeCategory(componentType)) {
+    case TypeCategory::FLOAT_SINGLE_PREC:
+        castTo = VariableType::FLOAT;
+        break;
+    case TypeCategory::FLOAT_DOUBLE_PREC:
+        castTo = VariableType::DOUBLE;
+        break;
+    case TypeCategory::INT_PACKED:
+    case TypeCategory::INT_NOT_PACKED:
+        castTo = VariableType::NORMALIZED_FLOAT;
+        break;
+    default:
+        myAssert(false);
+        castTo = VariableType::FLOAT;
+        break;
     }
+    append(dimCount, componentType, castTo);
+}
+
+void VertexBufferLayout::append(GLint dimCount, GLenum componentType, VariableType castTo, loc_type location)
+{
     m_attributes.push_back({static_cast<unsigned int>(m_stride),
                             dimCount, componentType, castTo,
-                            static_cast<loc_type>(location)});
+                            location});
     m_stride += getAttributeSize(dimCount, componentType);
 }
 
@@ -33,6 +52,27 @@ void VertexBufferLayout::setDefaultLocations()
 {
     for (unsigned int i = 0; i < m_attributes.size(); ++i) {
         m_attributes[i].location = i;
+    }
+}
+
+VertexBufferLayout::TypeCategory VertexBufferLayout::getTypeCategory(GLenum componentType)
+{
+    switch (componentType) {
+    case GL_HALF_FLOAT:
+    case GL_FLOAT:
+    case GL_FIXED:
+        return VertexBufferLayout::TypeCategory::FLOAT_SINGLE_PREC;
+    case GL_DOUBLE:
+        return VertexBufferLayout::TypeCategory::FLOAT_DOUBLE_PREC;
+    case GL_BYTE:
+    case GL_SHORT:
+    case GL_INT:
+    case GL_UNSIGNED_BYTE:
+    case GL_UNSIGNED_SHORT:
+    case GL_UNSIGNED_INT:
+        return VertexBufferLayout::TypeCategory::INT_NOT_PACKED;
+    default:
+        return VertexBufferLayout::TypeCategory::INT_PACKED;
     }
 }
 
@@ -85,9 +125,6 @@ GLuint VertexBufferLayout::getAttributeSize(GLint dimCount, GLenum componentType
     }
     return static_cast<GLuint>(result);
 }
-
-
-
 
 VertexBufferLayout operator+(VertexBufferLayout a, const VertexBufferLayout &b)
 {

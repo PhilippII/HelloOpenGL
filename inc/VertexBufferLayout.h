@@ -27,7 +27,6 @@ struct VertexAttributeLayout {
     GLuint location;
 };
 
-
 class VertexBufferLayout
 {
 public:
@@ -35,18 +34,34 @@ public:
 
     using offset_type = GLuint; // see VertexAttributeLayout::offset
 
+
     // glBindVertexBuffer       (GLintptr)
     // glVertexArrayVertexBuffer(GLsizei)
     // glVertexAttribPointer    (GLsizei)
     using stride_type = GLsizei;
 
     using loc_type = GLuint; // see VertexAttributeLayout::location
-    // unlike loc_type this can also hold AUTO_LOCATION:
-    using signed_loc_type = GLint;
+
+    enum class TypeCategory {
+        FLOAT_SINGLE_PREC,  // glVertexAttribPointer( normalized = GL_FALSE )
+        FLOAT_DOUBLE_PREC,  // glVertexAttribLPointer( )
+                            // glVertexAttribPointer( normalized = GL_FALSE ) (not recommended but possible)
+        INT_NOT_PACKED,     // glVertexAttribIPointer( )
+                            // glVertexAttribPointer( normalized = GL_FALSE or GL_TRUE )
+        INT_PACKED          // glVertexAttribPointer( normalized = GL_FALSE or GL_TRUE )
+    };
 
     VertexBufferLayout();
-    static constexpr signed_loc_type AUTO_LOCATION = -1;
-    void append(GLint dimCount, GLenum componentType, VariableType castTo, GLint location = AUTO_LOCATION);
+
+    void append(GLint dimCount, GLenum componentType, VariableType castTo, loc_type location);
+
+    void append(GLint dimCount, GLenum componentType, VariableType castTo)
+    {
+        append(dimCount, componentType, castTo,
+               static_cast<loc_type>(m_attributes.size()));
+    }
+
+    void append(GLint dimCount, GLenum componentType);
 
     VertexBufferLayout& operator+=(const VertexBufferLayout& other);
 
@@ -58,6 +73,19 @@ public:
 
     stride_type getStride() const {
         return m_stride;
+    }
+
+
+    static TypeCategory getTypeCategory(GLenum componentType);
+
+    static bool isFloat(GLenum componentType) {
+        TypeCategory category = getTypeCategory(componentType);
+        return category == TypeCategory::FLOAT_SINGLE_PREC || category == TypeCategory::FLOAT_DOUBLE_PREC;
+    }
+
+    static bool isInteger(GLenum componentType) {
+        TypeCategory category = getTypeCategory(componentType);
+        return category == TypeCategory::INT_PACKED || category == TypeCategory::INT_NOT_PACKED;
     }
 private:
     std::vector<VertexAttributeLayout> m_attributes;

@@ -44,8 +44,6 @@ public:
     bool isBound() const;
 
 private:
-    static bool isFloatingPoint(GLenum componentType);
-
     GLuint m_rendererID;
 };
 

@@ -44,7 +44,7 @@ void GLVertexArray::addBuffer(const GLVertexBuffer &vb, const VertexBufferLayout
           case VariableType::FLOAT:
           case VariableType::NORMALIZED_FLOAT:
             normalized = (attr.castTo == VariableType::NORMALIZED_FLOAT)
-                         && !isFloatingPoint(attr.componentType);
+                         && VertexBufferLayout::isInteger(attr.componentType);
             GLCall(glVertexAttribFormat(attr.location, attr.dimCount,
                                         attr.componentType, normalized,
                                         attr.offset));
@@ -72,17 +72,4 @@ bool GLVertexArray::isBound() const
     GLint currVao;
     GLCall(glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &currVao));
     return (static_cast<GLuint>(currVao) == m_rendererID);
-}
-
-
-bool GLVertexArray::isFloatingPoint(GLenum componentType) { // TODO: delete this from class GLMesh
-    switch (componentType) {
-      case GL_HALF_FLOAT:
-      case GL_FLOAT:
-      case GL_DOUBLE:
-      case GL_FIXED:
-        return true;
-      default:
-        return false;
-    }
 }
