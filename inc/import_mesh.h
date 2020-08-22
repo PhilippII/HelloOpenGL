@@ -141,7 +141,7 @@ CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh) {
                                                reinterpret_cast<const GLbyte*>(miMesh.mib.indices.data()));
     // right now res.va contains the multi-dimensional indices instead of the actual data.
     // To replace the multi-dimensional indices with the actual data we do:
-    res.va = applyMultiIndex<Index, N>(res.va.data.size(),
+    res.va = applyMultiIndex<Index, N>(res.va.data.size() / sizeof(std::array<Index, N>),
                                        reinterpret_cast<const std::array<Index, N>*>(res.va.data.data()),
                                        miMesh.vas);
     return res;
