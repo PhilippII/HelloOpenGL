@@ -1,7 +1,5 @@
 #include "VertexBufferLayout.h"
 
-#include "debug_utils.h"
-
 VertexBufferLayout::VertexBufferLayout()
     : m_stride(0)
 {

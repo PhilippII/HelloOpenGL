@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include "debug_utils.h"
+
 enum class VariableType {
     // type of the actual shader variable
     // which may be different from the type of the data in the buffer
@@ -63,6 +65,11 @@ public:
 
     void append(GLint dimCount, GLenum componentType);
 
+    template<typename T>
+    void append(GLint dimCount) {
+        myAssert(false);
+    }
+
     VertexBufferLayout& operator+=(const VertexBufferLayout& other);
 
     void setDefaultLocations();
@@ -95,5 +102,63 @@ private:
 };
 
 VertexBufferLayout operator+(VertexBufferLayout a, const VertexBufferLayout& b);
+
+
+//template <>
+//inline void VertexBufferLayout::append<GLhalf>(GLint dimCount) {
+//    append(dimCount, GL_HALF_FLOAT);
+//}
+// -> problem: on CPU side half precision float is not availible
+//             so GLhalf is 16-bit unsigned integer on CPU
+//              -> cannot be distinguished from GLushort
+
+template <>
+inline void VertexBufferLayout::append<GLfloat>(GLint dimCount) {
+    append(dimCount, GL_FLOAT);
+}
+
+template <>
+inline void VertexBufferLayout::append<GLdouble>(GLint dimCount) {
+    append(dimCount, GL_DOUBLE);
+}
+
+//template <>
+//inline void VertexBufferLayout::append<GLfixed>(GLint dimCount) {
+//    append(dimCount, GL_FIXED);
+//}
+// -> cannot be distinguished from GLint
+
+
+template <>
+inline void VertexBufferLayout::append<GLbyte>(GLint dimCount) {
+    append(dimCount, GL_BYTE);
+}
+
+template <>
+inline void VertexBufferLayout::append<GLubyte>(GLint dimCount) {
+    append(dimCount, GL_UNSIGNED_BYTE);
+}
+
+template <>
+inline void VertexBufferLayout::append<GLshort>(GLint dimCount) {
+    append(dimCount, GL_SHORT);
+}
+
+template <>
+inline void VertexBufferLayout::append<GLushort>(GLint dimCount) {
+    append(dimCount, GL_UNSIGNED_SHORT);
+}
+
+template <>
+inline void VertexBufferLayout::append<GLint>(GLint dimCount) {
+    append(dimCount, GL_INT);
+}
+
+template <>
+inline void VertexBufferLayout::append<GLuint>(GLint dimCount) {
+    append(dimCount, GL_UNSIGNED_INT);
+}
+
+// TODO: append-template-specialization for packed integer types
 
 #endif // VERTEXBUFFERLAYOUT_H

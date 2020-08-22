@@ -271,11 +271,11 @@ CPUVertexArray readOBJtest(std::string filepath)
     }
 
     VertexBufferLayout layout_v;
-    layout_v.append(3, GL_FLOAT, VariableType::FLOAT);
+    layout_v.append<float>(3);
     VertexBufferLayout layout_vt;
-    layout_vt.append(2, GL_FLOAT, VariableType::FLOAT);
+    layout_vt.append<float>(2);
     VertexBufferLayout layout_vn;
-    layout_vn.append(3, GL_FLOAT, VariableType::FLOAT);
+    layout_vn.append<float>(3);
     switch (miFormat) {
     case MultiIndexFormat::UNKNOWN:
         cout << "error no faces specified\n";
