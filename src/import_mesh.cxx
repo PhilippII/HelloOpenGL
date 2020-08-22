@@ -24,13 +24,13 @@ static std::vector<GLbyte> toByteVector(const std::vector<Elem_Src>& v) {
     return res;
 }
 
-// TODO: change return type to CPUMesh
-CPUVertexArray readOBJtest(std::string filepath)
+
+CPUMesh<GLuint> readOBJ(std::string filepath)
 {
     ifstream ifs {filepath};
     if (!ifs) {
         cerr << "error opening file " << filepath << '\n';
-        return CPUVertexArray{};
+        return CPUMesh<GLuint>{};
     }
 
     enum class MultiIndexFormat {
@@ -82,7 +82,7 @@ CPUVertexArray readOBJtest(std::string filepath)
                 cerr << "error reading vertex position:\n";
                 cerr << '\t' << line << "\n";
                 myAssert(false);
-                return CPUVertexArray{};
+                return CPUMesh<GLuint>{};
             }
             verts_v.push_back(v);
             float value;
@@ -99,7 +99,7 @@ CPUVertexArray readOBJtest(std::string filepath)
                 cerr << "error reading texture coordinate:\n";
                 cerr << '\t' << line << "\n";
                 myAssert(false);
-                return CPUVertexArray{};
+                return CPUMesh<GLuint>{};
             }
             verts_vt.push_back(vt);
             float value;
@@ -115,7 +115,7 @@ CPUVertexArray readOBJtest(std::string filepath)
                 cerr << "error reading normal:\n";
                 cerr << '\t' << line << '\n';
                 myAssert(false);
-                return CPUVertexArray{};
+                return CPUMesh<GLuint>{};
             }
             verts_vn.push_back(vn);
             float value;
@@ -123,7 +123,7 @@ CPUVertexArray readOBJtest(std::string filepath)
                 cerr << "error normal should only have three dimensions:\n";
                 cerr << '\t' << line << '\n';
                 myAssert(false);
-                return CPUVertexArray{};
+                return CPUMesh<GLuint>{};
             }
         } else if (opcodeStr == "f") {
             string multIndStr;
@@ -147,7 +147,7 @@ CPUVertexArray readOBJtest(std::string filepath)
                     cerr << "error parsing vertex: " << multIndStr << '\n';
                     cerr << "\tin face: " << line << '\n';
                     myAssert(false);
-                    return CPUVertexArray{};
+                    return CPUMesh<GLuint>{};
                 }
                 GLuint v, vt, vn;
                 switch (miFormat) {
@@ -286,7 +286,7 @@ CPUVertexArray readOBJtest(std::string filepath)
                                 toByteVector(verts_v)};
             CPUMultiIndexBuffer<GLuint, 1> mib {indices_v};
             CPUMultiIndexMesh<GLuint, 1> miMesh {mib, std::array<CPUVertexArray, 1>{va_v}};
-            return applyMultiIndex(miMesh);
+            return unifyIndexBuffer(miMesh);
         }
         break;
     case MultiIndexFormat::V_VT:
@@ -297,7 +297,7 @@ CPUVertexArray readOBJtest(std::string filepath)
                                   toByteVector(verts_vt)};
             CPUMultiIndexBuffer<GLuint, 2> mib {indices_v_vt};
             CPUMultiIndexMesh<GLuint, 2> miMesh {mib, std::array<CPUVertexArray, 2>{va_v, va_vt}};
-            return applyMultiIndex(miMesh);
+            return unifyIndexBuffer(miMesh);
         }
         break;
     case MultiIndexFormat::V_VN:
@@ -308,7 +308,7 @@ CPUVertexArray readOBJtest(std::string filepath)
                                   toByteVector(verts_vn)};
             CPUMultiIndexBuffer<GLuint, 2> mib {indices_v_vn};
             CPUMultiIndexMesh<GLuint, 2> miMesh {mib, std::array<CPUVertexArray, 2>{va_v, va_vn}};
-            return applyMultiIndex(miMesh);
+            return unifyIndexBuffer(miMesh);
         }
         break;
     case MultiIndexFormat::V_VT_VN:
@@ -321,13 +321,13 @@ CPUVertexArray readOBJtest(std::string filepath)
                                   toByteVector(verts_vn)};
             CPUMultiIndexBuffer<GLuint, 3> mib {indices_v_vt_vn};
             CPUMultiIndexMesh<GLuint, 3> miMesh {mib, std::array<CPUVertexArray, 3>{va_v, va_vt, va_vn}};
-            return applyMultiIndex(miMesh);
+            return unifyIndexBuffer(miMesh);
         }
         break;
     default:
         break;
     }
-    return CPUVertexArray{};
+    return CPUMesh<GLuint>{};
 }
 
 template <typename T>

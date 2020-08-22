@@ -185,14 +185,17 @@ int main(void)
 
     // import from OBJ-file:
     GLShaderProgram suzanneSP("res/shaders/Suzanne.shader");
-    CPUVertexArray suzanneCPU_VA = readOBJtest("res/meshes/suzanne_scaled_smooth_subdiv_1_ndc.obj");
-    suzanneCPU_VA.layout.setDefaultLocations(); // assumes vertex attributes
-                                                // were added to layout in order
-                                                // position, texCoordinate, normal
-    GLVertexBuffer suzanneVB(suzanneCPU_VA.data.size(),
-                             suzanneCPU_VA.data.data());
+    CPUMesh<GLuint> suzanneCPUMesh = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_ndc.obj");
+    suzanneCPUMesh.va.layout.setDefaultLocations(); // assumes vertex attributes
+                                                    // were added to layout in order
+                                                    // position, texCoordinate, normal
+    GLVertexBuffer suzanneVB(suzanneCPUMesh.va.data.size(),
+                             suzanneCPUMesh.va.data.data());
     GLVertexArray suzanneVA;
-    suzanneVA.addBuffer(suzanneVB, suzanneCPU_VA.layout);
+    suzanneVA.addBuffer(suzanneVB, suzanneCPUMesh.va.layout);
+    GLIndexBuffer suzanneIB(GL_UNSIGNED_INT,
+                            suzanneCPUMesh.ib.indices.size(),
+                            suzanneCPUMesh.ib.indices.data());
 
     GLRenderer renderer;
 
@@ -232,10 +235,7 @@ int main(void)
         renderer.draw(starVA, starIB, shaderProgram);
 
         // 3 draw suzanne:
-        suzanneSP.bind();
-        suzanneVA.bind();
-        GLsizei count = static_cast<GLsizei>(suzanneCPU_VA.data.size() / suzanneCPU_VA.layout.getStride());
-        GLCall(glDrawArrays(GL_TRIANGLES, 0, count));
+        renderer.draw(suzanneVA, suzanneIB, suzanneSP);
 
 
         /* Swap front and back buffers */

@@ -131,23 +131,24 @@ CPUVertexArray applyMultiIndex(const CPUMultiIndexMesh<Index, N>& miMesh) {
                                      miMesh.mib.indices.data(),
                                      miMesh.vas);
 }
-/*
+
 template <typename Index, int N>
-CPUMesh unifyIndexBuffer(CPUMultiIndexMesh miMesh) {
+CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh) {
     VertexBufferLayout mibLayout;
     mibLayout.append<Index>(N);
-    CPUMesh res = addIndexBuffer(mibLayout, miMesh.mib.indices.size(),
-                                               miMesh.mib.indices.data());
+    CPUMesh<Index> res = addIndexBuffer<Index>(mibLayout,
+                                               static_cast<Index>(miMesh.mib.indices.size()),
+                                               reinterpret_cast<const GLbyte*>(miMesh.mib.indices.data()));
     // right now res.va contains the multi-dimensional indices instead of the actual data.
     // To replace the multi-dimensional indices with the actual data we do:
-    res.va = applyMultiIndex(res.va.size(),
-                             reinterpret_cast<std::array<Index, N>*>(res.va.data()),
-                             miMesh.vas);
+    res.va = applyMultiIndex<Index, N>(res.va.data.size(),
+                                       reinterpret_cast<const std::array<Index, N>*>(res.va.data.data()),
+                                       miMesh.vas);
     return res;
 }
-*/
+
 // TODO: change return type to CPUMesh
-CPUVertexArray readOBJtest(std::string filepath);
+CPUMesh<GLuint> readOBJ(std::string filepath);
 //{
 //    // ...
 //    CPUMultiIndexMesh mim(...);
