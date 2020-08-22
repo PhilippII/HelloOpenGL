@@ -194,7 +194,7 @@ int main(void)
     GLVertexArray suzanneVA;
     suzanneVA.addBuffer(suzanneVB, suzanneCPUMesh.va.layout);
     GLIndexBuffer suzanneIB(GL_UNSIGNED_INT,
-                            suzanneCPUMesh.ib.indices.size(),
+                            static_cast<GLIndexBuffer::count_type>(suzanneCPUMesh.ib.indices.size()),
                             suzanneCPUMesh.ib.indices.data());
 
     GLRenderer renderer;
