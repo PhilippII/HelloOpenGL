@@ -45,6 +45,21 @@ void GLRenderer::disableFaceCulling()
     GLCall(glDisable(GL_CULL_FACE));
 }
 
+void GLRenderer::enableDepthTest()
+{
+    GLCall(glEnable(GL_DEPTH_TEST));
+}
+
+void GLRenderer::disableDepthTest()
+{
+    GLCall(glDisable(GL_DEPTH_TEST));
+}
+
+void GLRenderer::setDepthFunc(GLenum func)
+{
+    GLCall(glDepthFunc(func));
+}
+
 void GLRenderer::draw(GLVertexArray &va, GLIndexBuffer &ib, GLShaderProgram &shaderP) const
 {
     va.bind();

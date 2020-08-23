@@ -200,12 +200,13 @@ int main(void)
     GLRenderer renderer;
     renderer.setClearColor(.2f, .8f, .2f, 0.f);
     renderer.enableFaceCulling();
+    renderer.enableDepthTest();
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
-        renderer.clear(GL_COLOR_BUFFER_BIT);
+        renderer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // 0 draw house:
         shaderProgram.bind();

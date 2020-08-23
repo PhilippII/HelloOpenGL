@@ -31,6 +31,14 @@ public:
 
     void disableFaceCulling();
 
+    void enableDepthTest();
+
+    // khronos.org:
+    // "When depth testing is disabled, writes to the depth buffer are also disabled."
+    void disableDepthTest();
+
+    void setDepthFunc(GLenum func = GL_LESS);
+
     void draw(GLVertexArray& va, GLIndexBuffer& ib, GLShaderProgram& shaderP) const;
 };
 
