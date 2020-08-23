@@ -198,13 +198,13 @@ int main(void)
                             suzanneCPUMesh.ib.indices.data());
 
     GLRenderer renderer;
-
+    renderer.setClearColor(.2f, .8f, .2f, 0.f);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
-        renderer.clear();
+        renderer.clear(GL_COLOR_BUFFER_BIT);
 
         // 0 draw house:
         shaderProgram.bind();
