@@ -25,6 +25,26 @@ void GLRenderer::setClearDepth(GLfloat depth)
     GLCall(glClearDepthf(depth));
 }
 
+void GLRenderer::setFrontFace(GLenum mode)
+{
+    GLCall(glFrontFace(mode));
+}
+
+void GLRenderer::setCullFace(GLenum mode)
+{
+    GLCall(glCullFace(mode));
+}
+
+void GLRenderer::enableFaceCulling()
+{
+    GLCall(glEnable(GL_CULL_FACE));
+}
+
+void GLRenderer::disableFaceCulling()
+{
+    GLCall(glDisable(GL_CULL_FACE));
+}
+
 void GLRenderer::draw(GLVertexArray &va, GLIndexBuffer &ib, GLShaderProgram &shaderP) const
 {
     va.bind();

@@ -199,6 +199,7 @@ int main(void)
 
     GLRenderer renderer;
     renderer.setClearColor(.2f, .8f, .2f, 0.f);
+    renderer.enableFaceCulling();
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))

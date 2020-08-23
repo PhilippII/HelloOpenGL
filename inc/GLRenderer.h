@@ -23,6 +23,14 @@ public:
 
     // TODO: getClear(Color|Depth|Stencil)(...)
 
+    void setFrontFace(GLenum mode = GL_CCW);
+
+    void setCullFace(GLenum mode = GL_BACK);
+
+    void enableFaceCulling();
+
+    void disableFaceCulling();
+
     void draw(GLVertexArray& va, GLIndexBuffer& ib, GLShaderProgram& shaderP) const;
 };
 
