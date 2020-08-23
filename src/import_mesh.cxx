@@ -25,7 +25,7 @@ static std::vector<GLbyte> toByteVector(const std::vector<Elem_Src>& v) {
 }
 
 
-CPUMesh<GLuint> readOBJ(std::string filepath)
+CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
 {
     ifstream ifs {filepath};
     if (!ifs) {
@@ -84,6 +84,9 @@ CPUMesh<GLuint> readOBJ(std::string filepath)
                 myAssert(false);
                 return CPUMesh<GLuint>{};
             }
+            if (invert_z) {
+                v[2] = -v[2];
+            }
             verts_v.push_back(v);
             float value;
             if (iss >> value) {
@@ -116,6 +119,9 @@ CPUMesh<GLuint> readOBJ(std::string filepath)
                 cerr << '\t' << line << '\n';
                 myAssert(false);
                 return CPUMesh<GLuint>{};
+            }
+            if (invert_z) {
+                vn[2] = -vn[2];
             }
             verts_vn.push_back(vn);
             float value;

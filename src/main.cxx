@@ -185,7 +185,7 @@ int main(void)
 
     // import from OBJ-file:
     GLShaderProgram suzanneSP("res/shaders/Suzanne.shader");
-    CPUMesh<GLuint> suzanneCPUMesh = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj");
+    CPUMesh<GLuint> suzanneCPUMesh = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj", true);
     suzanneCPUMesh.va.layout.setDefaultLocations(); // assumes vertex attributes
                                                     // were added to layout in order
                                                     // position, texCoordinate, normal
