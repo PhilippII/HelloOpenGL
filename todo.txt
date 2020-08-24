@@ -6,7 +6,6 @@ GLFW:
 	-> and why does pkg-config --libs --static not include -Wl,-Bstatic -Wl,-Bdynamic ?
 
 OpenGL:
-- after reading chapters 9 + 10 in stroustrup look again at function ParseShader(...)
 - GLCall(...) macro is fragile
 	-> e.g. 
 		if (...)
@@ -25,8 +24,6 @@ abstraction into classes me vs. cherno:
 - generally:
 	-> cherno: debug utils are in same header as class Renderer
 	-> cherno: Bind() and Unbind() are const
-- BufferLayout:
-	-> append takes componentType as template argument rather than as regular function argument
 - ShaderProgram
 	-> cherno: ShaderProgram only called Shader
 	-> me: separate classes for Shader and ShaderProgram
@@ -37,7 +34,6 @@ abstraction into classes me vs. cherno:
 
 abstracting into classes other TODOs:
 - ShaderProgram should not link before compiling and co.
-- rename getName to getRendererID()
 
 
 removed differences me vs. cherno:
@@ -47,6 +43,7 @@ removed differences me vs. cherno:
 - Buffers
 	- cherno: VertexBuffer and IndexBuffer are separate classes
 - BufferLayout
+	-> append takes componentType as template argument rather than as regular function argument
 	-> cherno: there is an actual class for the BufferLayout which contains VertexBufferElements
 	-> me: there is only a std::vector of VertexAttributeType (=VertexBufferElement)
 - GLMesh + VAO
@@ -74,6 +71,8 @@ DONE:
 - clean up vertex buffers and co. at the end of the program
 	-> destructors take care of that
 - in assignment operator do delete previous content if there is any!!
+- after reading chapters 9 + 10 in stroustrup look again at function ParseShader(...)
+- rename getName to getRendererID()
 
 
 
