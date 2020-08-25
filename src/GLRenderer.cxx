@@ -65,8 +65,15 @@ void GLRenderer::draw(GLVertexArray &va, GLIndexBuffer &ib, GLShaderProgram &sha
     va.bind();
     ib.bind();
     shaderP.bind();
+    if (ib.hasPrimitiveRestart()) {
+        GLCall(glPrimitiveRestartIndex(ib.getPrimitiveRestartIndex()));
+        GLCall(glEnable(GL_PRIMITIVE_RESTART));
+    }
     GLCall(glDrawElements(ib.getPrimitiveType(), ib.getCount(),
                           ib.getIndexType(), nullptr));
+    if (ib.hasPrimitiveRestart()) {
+        GLCall(glDisable(GL_PRIMITIVE_RESTART));
+    }
     shaderP.unbind();
     va.unbind(); // automatically unbinds ib
 }
