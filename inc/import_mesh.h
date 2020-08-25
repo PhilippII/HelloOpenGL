@@ -57,10 +57,14 @@ struct CPUMultiIndexMesh {
     std::array<CPUVertexArray, N> vas;
 };
 
+bool areBytesEqual(const GLbyte* a, const GLbyte* b, unsigned int size);
+
 template <typename Index>
 CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
                               Index count,
-                              const GLbyte* data) {
+                              const GLbyte* data,
+                              GLbyte* restartVertex = nullptr,
+                              Index restartIndex = 0) { // TODO: restartIndex = max_value
     // TODO:
     // - loop over stride is confusing
     // - linear search over i_out has bad performance
@@ -70,16 +74,14 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
     Index copiedCount = 0;
     for (Index i_in = 0; i_in < count; ++i_in) {
         myAssert(copiedCount == res.va.data.size() / stride);
+        if (restartVertex != nullptr && areBytesEqual(&data[i_in * stride], restartVertex, stride)) {
+            res.ib.indices.push_back(restartIndex);
+            continue;
+        }
         bool found = false;
         Index i_out;
         for (i_out = 0; i_out < copiedCount && !found; ++i_out) {
-            bool equal = true;
-            for (VertexBufferLayout::stride_type offset = 0; offset < stride && equal; ++offset) {
-                if (data[i_in * stride + offset] != res.va.data[i_out * stride + offset]) {
-                    equal = false;
-                }
-            }
-            if (equal) {
+            if (areBytesEqual(&data[i_in * stride], &res.va.data[i_out * stride], stride)) {
                 found = true;
             }
         }

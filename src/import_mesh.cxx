@@ -421,3 +421,10 @@ std::ostream &operator<<(std::ostream &os, const CPUVertexArray &va)
     }
     return os;
 }
+
+bool areBytesEqual(const GLbyte *a, const GLbyte *b, unsigned int size)
+{
+    unsigned int i;
+    for (i = 0; i < size && a[i] == b[i]; ++i) {}
+    return i == size;
+}
