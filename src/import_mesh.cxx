@@ -60,6 +60,7 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
     std::vector<std::array<GLuint, 2>> indices_v_vt;
     std::vector<std::array<GLuint, 2>> indices_v_vn;
     std::vector<std::array<GLuint, 3>> indices_v_vt_vn;
+    GLuint restartIndex = std::numeric_limits<GLuint>::max();
 
     string line;
     while (getline(ifs, line)) {
@@ -134,7 +135,6 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
         } else if (opcodeStr == "f") {
             string multIndStr;
             int n = 1;
-            std::vector<std::array<GLuint, 1>>::size_type i_first;
             while (iss >> multIndStr) {
                 std::smatch matches;
                 bool success = false;
@@ -158,50 +158,22 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
                 GLuint v, vt, vn;
                 switch (miFormat) {
                 case MultiIndexFormat::V:
-                    if (n == 1) {
-                        i_first = indices_v.size();
-                    } else if (n > 3) {
-                        auto i_last = indices_v.size() - 1;
-                        indices_v.push_back(indices_v[i_first]);
-                        indices_v.push_back(indices_v[i_last]);
-                    }
                     v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
                         // regular expression does not allow negative numbers here anyway
                         // so we can cast to unsigned
                     indices_v.push_back({v});
                     break;
                 case MultiIndexFormat::V_VT:
-                    if (n == 1) {
-                        i_first = indices_v_vt.size();
-                    } else if (n > 3) {
-                        auto i_last = indices_v_vt.size() - 1;
-                        indices_v_vt.push_back(indices_v_vt[i_first]);
-                        indices_v_vt.push_back(indices_v_vt[i_last]);
-                    }
                     v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
                     vt = static_cast<GLuint>(std::stoi(matches[2].str())) - 1;
                     indices_v_vt.push_back({v, vt});
                     break;
                 case MultiIndexFormat::V_VN:
-                    if (n == 1) {
-                        i_first = indices_v_vn.size();
-                    } else if (n > 3) {
-                        auto i_last = indices_v_vn.size() - 1;
-                        indices_v_vn.push_back(indices_v_vn[i_first]);
-                        indices_v_vn.push_back(indices_v_vn[i_last]);
-                    }
                     v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
                     vn = static_cast<GLuint>(std::stoi(matches[2].str())) - 1;
                     indices_v_vn.push_back({v, vn});
                     break;
                 case MultiIndexFormat::V_VT_VN:
-                    if (n == 1) {
-                        i_first = indices_v_vt_vn.size();
-                    } else if (n > 3) {
-                        auto i_last = indices_v_vt_vn.size() - 1;
-                        indices_v_vt_vn.push_back(indices_v_vt_vn[i_first]);
-                        indices_v_vt_vn.push_back(indices_v_vt_vn[i_last]);
-                    }
                     v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
                     vt = static_cast<GLuint>(std::stoi(matches[2].str())) - 1;
                     vn = static_cast<GLuint>(std::stoi(matches[3].str())) - 1;
@@ -212,6 +184,23 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
                     break;
                 }
                 ++n;
+            }
+            switch (miFormat) {
+            case MultiIndexFormat::V:
+                indices_v.push_back({restartIndex});
+                break;
+            case MultiIndexFormat::V_VT:
+                indices_v_vt.push_back({restartIndex, restartIndex});
+                break;
+            case MultiIndexFormat::V_VN:
+                indices_v_vn.push_back({restartIndex, restartIndex});
+                break;
+            case MultiIndexFormat::V_VT_VN:
+                indices_v_vt_vn.push_back({restartIndex, restartIndex, restartIndex});
+                break;
+            default:
+                myAssert(false);
+                break;
             }
             myAssert(n >= 3);
         } else {
@@ -290,7 +279,8 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
         {
             CPUVertexArray va_v {layout_v,
                                 toByteVector(verts_v)};
-            CPUMultiIndexBuffer<GLuint, 1> mib {indices_v};
+            CPUMultiIndexBuffer<GLuint, 1> mib {indices_v, GL_TRIANGLE_FAN, true,
+                                                std::array<GLuint, 1>{restartIndex}};
             CPUMultiIndexMesh<GLuint, 1> miMesh {mib, std::array<CPUVertexArray, 1>{va_v}};
             return unifyIndexBuffer(miMesh);
         }
@@ -301,7 +291,8 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
                                  toByteVector(verts_v)};
             CPUVertexArray va_vt {layout_vt,
                                   toByteVector(verts_vt)};
-            CPUMultiIndexBuffer<GLuint, 2> mib {indices_v_vt};
+            CPUMultiIndexBuffer<GLuint, 2> mib {indices_v_vt, GL_TRIANGLE_FAN, true,
+                                                std::array<GLuint, 2>{restartIndex, restartIndex}};
             CPUMultiIndexMesh<GLuint, 2> miMesh {mib, std::array<CPUVertexArray, 2>{va_v, va_vt}};
             return unifyIndexBuffer(miMesh);
         }
@@ -312,7 +303,8 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
                                  toByteVector(verts_v)};
             CPUVertexArray va_vn {layout_vn,
                                   toByteVector(verts_vn)};
-            CPUMultiIndexBuffer<GLuint, 2> mib {indices_v_vn};
+            CPUMultiIndexBuffer<GLuint, 2> mib {indices_v_vn, GL_TRIANGLE_FAN, true,
+                                                std::array<GLuint, 2>{restartIndex, restartIndex}};
             CPUMultiIndexMesh<GLuint, 2> miMesh {mib, std::array<CPUVertexArray, 2>{va_v, va_vn}};
             return unifyIndexBuffer(miMesh);
         }
@@ -325,7 +317,8 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
                                   toByteVector(verts_vt)};
             CPUVertexArray va_vn {layout_vn,
                                   toByteVector(verts_vn)};
-            CPUMultiIndexBuffer<GLuint, 3> mib {indices_v_vt_vn};
+            CPUMultiIndexBuffer<GLuint, 3> mib {indices_v_vt_vn, GL_TRIANGLE_FAN, true,
+                                                std::array<GLuint, 3>{restartIndex, restartIndex, restartIndex}};
             CPUMultiIndexMesh<GLuint, 3> miMesh {mib, std::array<CPUVertexArray, 3>{va_v, va_vt, va_vn}};
             return unifyIndexBuffer(miMesh);
         }
