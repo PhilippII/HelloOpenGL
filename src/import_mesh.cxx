@@ -25,6 +25,37 @@ static std::vector<GLbyte> toByteVector(const std::vector<Elem_Src>& v) {
 }
 
 
+template <typename Index>
+static CPUIndexBuffer<Index> applyTriangleFan(const CPUIndexBuffer<Index>& ib) {
+    using ib_count_t = typename std::vector<Index>::size_type;
+    CPUIndexBuffer<Index> res = {std::vector<Index>{},
+                          GL_TRIANGLES,
+                          false,
+                          std::numeric_limits<Index>::max()};
+    myAssert(ib.primitiveType == GL_TRIANGLE_FAN);
+    myAssert(ib.primitiveRestart);
+
+    ib_count_t i = 0;
+    while (i < ib.indices.size()) {
+        if (i + 2 >= ib.indices.size()) {
+            cerr << "warning polygon with less than 3 vertices detected.\n";
+            continue;
+        }
+        Index baseVert = ib.indices[i];
+        i += 2;
+        while (i < ib.indices.size() && ib.indices[i] != ib.primitiveRestartIndex) {
+            res.indices.push_back(baseVert);
+            res.indices.push_back(ib.indices[i-1]);
+            res.indices.push_back(ib.indices[i]);
+            ++i;
+        }
+        if (i < ib.indices.size()) { // restart index encountered
+            ++i;
+        }
+    }
+    return res;
+}
+
 CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
 {
     ifstream ifs {filepath};
@@ -282,7 +313,9 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
             CPUMultiIndexBuffer<GLuint, 1> mib {indices_v, GL_TRIANGLE_FAN, true,
                                                 std::array<GLuint, 1>{restartIndex}};
             CPUMultiIndexMesh<GLuint, 1> miMesh {mib, std::array<CPUVertexArray, 1>{va_v}};
-            return unifyIndexBuffer(miMesh);
+            CPUMesh<GLuint> res = unifyIndexBuffer(miMesh);
+            res.ib = applyTriangleFan(res.ib);
+            return res;
         }
         break;
     case MultiIndexFormat::V_VT:
@@ -294,7 +327,9 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
             CPUMultiIndexBuffer<GLuint, 2> mib {indices_v_vt, GL_TRIANGLE_FAN, true,
                                                 std::array<GLuint, 2>{restartIndex, restartIndex}};
             CPUMultiIndexMesh<GLuint, 2> miMesh {mib, std::array<CPUVertexArray, 2>{va_v, va_vt}};
-            return unifyIndexBuffer(miMesh);
+            CPUMesh<GLuint> res = unifyIndexBuffer(miMesh);
+            res.ib = applyTriangleFan(res.ib);
+            return res;
         }
         break;
     case MultiIndexFormat::V_VN:
@@ -306,7 +341,9 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
             CPUMultiIndexBuffer<GLuint, 2> mib {indices_v_vn, GL_TRIANGLE_FAN, true,
                                                 std::array<GLuint, 2>{restartIndex, restartIndex}};
             CPUMultiIndexMesh<GLuint, 2> miMesh {mib, std::array<CPUVertexArray, 2>{va_v, va_vn}};
-            return unifyIndexBuffer(miMesh);
+            CPUMesh<GLuint> res = unifyIndexBuffer(miMesh);
+            res.ib = applyTriangleFan(res.ib);
+            return res;
         }
         break;
     case MultiIndexFormat::V_VT_VN:
@@ -320,7 +357,9 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
             CPUMultiIndexBuffer<GLuint, 3> mib {indices_v_vt_vn, GL_TRIANGLE_FAN, true,
                                                 std::array<GLuint, 3>{restartIndex, restartIndex, restartIndex}};
             CPUMultiIndexMesh<GLuint, 3> miMesh {mib, std::array<CPUVertexArray, 3>{va_v, va_vt, va_vn}};
-            return unifyIndexBuffer(miMesh);
+            CPUMesh<GLuint> res = unifyIndexBuffer(miMesh);
+            res.ib = applyTriangleFan(res.ib);
+            return res;
         }
         break;
     default:
