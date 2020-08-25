@@ -65,8 +65,8 @@ void GLRenderer::draw(GLVertexArray &va, GLIndexBuffer &ib, GLShaderProgram &sha
     va.bind();
     ib.bind();
     shaderP.bind();
-    GLCall(glDrawElements(GL_TRIANGLES, ib.getCount(),
-                          ib.getType(), nullptr));
+    GLCall(glDrawElements(ib.getPrimitiveType(), ib.getCount(),
+                          ib.getIndexType(), nullptr));
     shaderP.unbind();
     va.unbind(); // automatically unbinds ib
 }
