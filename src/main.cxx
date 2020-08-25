@@ -195,7 +195,9 @@ int main(void)
     suzanneVA.addBuffer(suzanneVB, suzanneCPUMesh.va.layout);
     GLIndexBuffer suzanneIB(GL_UNSIGNED_INT,
                             static_cast<GLIndexBuffer::count_type>(suzanneCPUMesh.ib.indices.size()),
-                            suzanneCPUMesh.ib.indices.data());
+                            suzanneCPUMesh.ib.indices.data(),
+                            suzanneCPUMesh.ib.primitiveType,
+                            suzanneCPUMesh.ib.primitiveRestartIndex);
 
     GLRenderer renderer;
     renderer.setClearColor(.2f, .8f, .2f, 0.f);
