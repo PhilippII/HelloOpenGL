@@ -63,7 +63,7 @@ template <typename Index>
 CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
                               Index count,
                               const GLbyte* data,
-                              GLbyte* restartVertex = nullptr,
+                              const GLbyte* restartVertex = nullptr,
                               Index restartIndex = 0) { // TODO: restartIndex = max_value
     // TODO:
     // - loop over stride is confusing
@@ -135,12 +135,19 @@ CPUVertexArray applyMultiIndex(const CPUMultiIndexMesh<Index, N>& miMesh) {
 }
 
 template <typename Index, int N>
-CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh) {
+CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
+                                bool useRestartIndex = false,
+                                std::array<Index, N> restartMultiIndex = std::array<Index, N>{},
+                                Index restartIndex = 0) {
     VertexBufferLayout mibLayout;
     mibLayout.append<Index>(N);
     CPUMesh<Index> res = addIndexBuffer<Index>(mibLayout,
                                                static_cast<Index>(miMesh.mib.indices.size()),
-                                               reinterpret_cast<const GLbyte*>(miMesh.mib.indices.data()));
+                                               reinterpret_cast<const GLbyte*>(miMesh.mib.indices.data()),
+                                               (useRestartIndex) ?
+                                                   reinterpret_cast<const GLbyte*>(restartMultiIndex.data())
+                                                   : nullptr,
+                                               restartIndex);
     // right now res.va contains the multi-dimensional indices instead of the actual data.
     // To replace the multi-dimensional indices with the actual data we do:
     res.va = applyMultiIndex<Index, N>(res.va.data.size() / sizeof(std::array<Index, N>),
