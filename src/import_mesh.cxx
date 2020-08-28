@@ -201,10 +201,10 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
             if (!(iss >> opcodeStr)) {
                 continue;
             }
-            if (opcodeStr == "#") {
+            if (opcodeStr[0] == '#') {
                 string commentStr;
                 getline(iss, commentStr);
-                cout << "OBJ-file comment: " << commentStr << '\n';
+                cout << "OBJ-file comment: " << opcodeStr << " " << commentStr << '\n';
             } else if (opcodeStr == "v") {
                 std::array<float, 3> v;
                 unsigned int i;
