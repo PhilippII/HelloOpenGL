@@ -185,24 +185,36 @@ int main(void)
 
     // import from OBJ-file:
     GLShaderProgram suzanneSP("res/shaders/Suzanne.shader");
-    std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj", true);
+    //std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj", true);
+    std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = readOBJ("res/meshes/suzanne_with_sphere_and_plane.obj", true);
     if (suzanneCPUMeshes.empty()) {
         std::cerr << "error no object was found in obj file\n";
         return 1;
     }
-    CPUMesh<GLuint>& suzanneCPUMesh = suzanneCPUMeshes[0];
-    suzanneCPUMesh.va.layout.setDefaultLocations(); // assumes vertex attributes
-                                                    // were added to layout in order
-                                                    // position, texCoordinate, normal
-    GLVertexBuffer suzanneVB(suzanneCPUMesh.va.data.size(),
-                             suzanneCPUMesh.va.data.data());
-    GLVertexArray suzanneVA;
-    suzanneVA.addBuffer(suzanneVB, suzanneCPUMesh.va.layout);
-    GLIndexBuffer suzanneIB(GL_UNSIGNED_INT,
-                            static_cast<GLIndexBuffer::count_type>(suzanneCPUMesh.ib.indices.size()),
-                            suzanneCPUMesh.ib.indices.data());
-//                            suzanneCPUMesh.ib.primitiveType,
-//                            suzanneCPUMesh.ib.primitiveRestartIndex);
+
+    struct GLMesh {
+        GLVertexBuffer vb;
+        GLVertexArray va; // contains vb but does not own it
+        GLIndexBuffer ib;
+    };
+    std::vector<GLMesh> suzanneMeshes;
+    for (auto& cpuMesh : suzanneCPUMeshes) {
+        cpuMesh.va.layout.setDefaultLocations(); // assumes vertex attributes
+                                                 // were added to layout in order
+                                                 // position, texCoordinate, normal
+        GLVertexBuffer vb(cpuMesh.va.data.size(),
+                          cpuMesh.va.data.data());
+        GLVertexArray va;
+        va.addBuffer(vb, cpuMesh.va.layout);
+        GLIndexBuffer ib(GL_UNSIGNED_INT,
+                         static_cast<GLIndexBuffer::count_type>(cpuMesh.ib.indices.size()),
+                         cpuMesh.ib.indices.data());
+                         // suzanneCPUMesh.ib.primitiveType,
+                         // suzanneCPUMesh.ib.primitiveRestartIndex);
+        suzanneMeshes.push_back(GLMesh{std::move(vb),
+                                       std::move(va),
+                                       std::move(ib)});
+    }
 
     GLRenderer renderer;
     renderer.setClearColor(.2f, .8f, .2f, 0.f);
@@ -246,7 +258,9 @@ int main(void)
 
         // 3 draw suzanne:
         renderer.enableDepthTest();
-        renderer.draw(suzanneVA, suzanneIB, suzanneSP);
+        for (auto& mesh : suzanneMeshes) {
+            renderer.draw(mesh.va, mesh.ib, suzanneSP);
+        }
 
 
         /* Swap front and back buffers */
