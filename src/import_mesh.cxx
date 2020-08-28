@@ -149,10 +149,10 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
     }
 
     vector<std::regex> mi_pats = {  // indices should align to WavefrontObject::MultiIndexFormat
-        std::regex{R"((\d+))"}, // V
-        std::regex{R"((\d+)/(\d+))"}, // V_VT
-        std::regex{R"((\d+)//(\d+))"}, // V_VN
-        std::regex{R"((\d+)/(\d+)/(\d+))"} // V_VT_VN
+        std::regex{R"(([+-]?\d+))"}, // V
+        std::regex{R"(([+-]?\d+)/([+-]?\d+))"}, // V_VT
+        std::regex{R"(([+-]?\d+)//([+-]?\d+))"}, // V_VN
+        std::regex{R"(([+-]?\d+)/([+-]?\d+)/([+-]?\d+))"} // V_VT_VN
     };
 
     vector<CPUMesh<GLuint>> results;
@@ -286,57 +286,99 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
                         myAssert(false);
                         return vector<CPUMesh<GLuint>>();
                     }
-                    GLuint v_raw, vt_raw, vn_raw;
+                    GLint v_raw, vt_raw, vn_raw;
                     GLuint v, vt, vn;
                     switch (obj.miFormat) {
                     case WavefrontObject::MultiIndexFormat::V:
                         v_raw = static_cast<GLuint>(std::stoi(matches[1].str()));
-                        if (v_raw <= count_sum.v) {
+                        if (v_raw < 0) {
+                            v = static_cast<GLuint>(obj.verts_v.size()) + v_raw;
+                        } else if (static_cast<GLuint>(v_raw) <= count_sum.v) {
                             cerr << "error: sharing vertices between different object is not supported by this implementation\n";
                             myAssert(false);
                             return vector<CPUMesh<GLuint>>();
+                        } else {
+                            v = v_raw - count_sum.v - 1;
                         }
-                        v = v_raw - count_sum.v - 1;
-                            // regular expression does not allow negative numbers here anyway
-                            // so we can cast to unsigned
                         obj.mib_v.indices.push_back({v});
                         break;
                     case WavefrontObject::MultiIndexFormat::V_VT:
                         v_raw = static_cast<GLuint>(std::stoi(matches[1].str()));
                         vt_raw = static_cast<GLuint>(std::stoi(matches[2].str()));
-                        if (v_raw <= count_sum.v || vt_raw <= count_sum.vt) {
+                        if (v_raw < 0) {
+                            v = static_cast<GLuint>(obj.verts_v.size()) + v_raw;
+                        } else if (static_cast<GLuint>(v_raw) <= count_sum.v) {
                             cerr << "error: sharing vertices between different object is not supported by this implementation\n";
                             myAssert(false);
                             return vector<CPUMesh<GLuint>>();
+                        } else {
+                            v = v_raw - count_sum.v - 1;
                         }
-                        v = v_raw - count_sum.v - 1;
-                        vt = vt_raw - count_sum.vt - 1;
+                        if (vt_raw < 0) {
+                            vt = static_cast<GLuint>(obj.verts_vt.size()) + vt_raw;
+                        } else if (static_cast<GLuint>(vt_raw) <= count_sum.vt) {
+                            cerr << "error: sharing vertices between different object is not supported by this implementation\n";
+                            myAssert(false);
+                            return vector<CPUMesh<GLuint>>();
+                        } else {
+                            vt = vt_raw - count_sum.vt - 1;
+                        }
                         obj.mib_v_vt.indices.push_back({v, vt});
                         break;
                     case WavefrontObject::MultiIndexFormat::V_VN:
                         v_raw = static_cast<GLuint>(std::stoi(matches[1].str()));
                         vn_raw = static_cast<GLuint>(std::stoi(matches[2].str()));
-                        if (v_raw <= count_sum.v || vn_raw <= count_sum.vn) {
+                        if (v_raw < 0) {
+                            v = static_cast<GLuint>(obj.verts_v.size()) + v_raw;
+                        } else if (static_cast<GLuint>(v_raw) <= count_sum.v) {
                             cerr << "error: sharing vertices between different object is not supported by this implementation\n";
                             myAssert(false);
                             return vector<CPUMesh<GLuint>>();
+                        } else {
+                            v = v_raw - count_sum.v - 1;
                         }
-                        v = v_raw - count_sum.v - 1;
-                        vn = vn_raw - count_sum.vn - 1;
+                        if (vn_raw < 0) {
+                            vn = static_cast<GLuint>(obj.verts_vn.size()) + vn_raw;
+                        } else if (static_cast<GLuint>(vn_raw) <= count_sum.vn) {
+                            cerr << "error: sharing vertices between different object is not supported by this implementation\n";
+                            myAssert(false);
+                            return vector<CPUMesh<GLuint>>();
+                        } else {
+                            vn = vn_raw - count_sum.vn - 1;
+                        }
                         obj.mib_v_vn.indices.push_back({v, vn});
                         break;
                     case WavefrontObject::MultiIndexFormat::V_VT_VN:
                         v_raw = static_cast<GLuint>(std::stoi(matches[1].str()));
                         vt_raw = static_cast<GLuint>(std::stoi(matches[2].str()));
                         vn_raw = static_cast<GLuint>(std::stoi(matches[3].str()));
-                        if (v_raw <= count_sum.v || vt_raw <= count_sum.vt || vn_raw <= count_sum.vn) {
+                        if (v_raw < 0) {
+                            v = static_cast<GLuint>(obj.verts_v.size()) + v_raw;
+                        } else if (static_cast<GLuint>(v_raw) <= count_sum.v) {
                             cerr << "error: sharing vertices between different object is not supported by this implementation\n";
                             myAssert(false);
                             return vector<CPUMesh<GLuint>>();
+                        } else {
+                            v = v_raw - count_sum.v - 1;
                         }
-                        v = v_raw - count_sum.v - 1;
-                        vt = vt_raw - count_sum.vt - 1;
-                        vn = vn_raw - count_sum.vn - 1;
+                        if (vt_raw < 0) {
+                            vt = static_cast<GLuint>(obj.verts_vt.size()) + vt_raw;
+                        } else if (static_cast<GLuint>(vt_raw) <= count_sum.vt) {
+                            cerr << "error: sharing vertices between different object is not supported by this implementation\n";
+                            myAssert(false);
+                            return vector<CPUMesh<GLuint>>();
+                        } else {
+                            vt = vt_raw - count_sum.vt - 1;
+                        }
+                        if (vn_raw < 0) {
+                            vn = static_cast<GLuint>(obj.verts_vn.size()) + vn_raw;
+                        } else if (static_cast<GLuint>(vn_raw) <= count_sum.vn) {
+                            cerr << "error: sharing vertices between different object is not supported by this implementation\n";
+                            myAssert(false);
+                            return vector<CPUMesh<GLuint>>();
+                        } else {
+                            vn = vn_raw - count_sum.vn - 1;
+                        }
                         obj.mib_v_vt_vn.indices.push_back({v, vt, vn});
                         break;
                     default:
