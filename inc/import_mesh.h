@@ -168,7 +168,7 @@ CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
 }
 
 // TODO: change return type to CPUMesh
-CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z = false);
+std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z = false);
 //{
 //    // ...
 //    CPUMultiIndexMesh mim(...);

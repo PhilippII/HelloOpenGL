@@ -185,7 +185,12 @@ int main(void)
 
     // import from OBJ-file:
     GLShaderProgram suzanneSP("res/shaders/Suzanne.shader");
-    CPUMesh<GLuint> suzanneCPUMesh = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj", true);
+    std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj", true);
+    if (suzanneCPUMeshes.empty()) {
+        std::cerr << "error no object was found in obj file\n";
+        return 1;
+    }
+    CPUMesh<GLuint>& suzanneCPUMesh = suzanneCPUMeshes[0];
     suzanneCPUMesh.va.layout.setDefaultLocations(); // assumes vertex attributes
                                                     // were added to layout in order
                                                     // position, texCoordinate, normal
