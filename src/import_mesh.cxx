@@ -256,7 +256,7 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
                 }
             } else if (opcodeStr == "f") {
                 string multIndStr;
-                int n = 1;
+                debugDo(int n = 1);
                 while (iss >> multIndStr) {
                     std::smatch matches;
                     bool success = false;
@@ -305,7 +305,7 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
                         myAssert(false);
                         break;
                     }
-                    ++n;
+                    debugDo(++n);
                 }
                 switch (obj.miFormat) {
                 case WavefrontObject::MultiIndexFormat::V:
