@@ -10,6 +10,12 @@
 #endif
 
 #ifdef NDEBUG
+#define debugDo(x)
+#else
+#define debugDo(x) x
+#endif
+
+#ifdef NDEBUG
 #define GLCall(x) x
 #else
 #define GLCall(x) GLClearError();\
