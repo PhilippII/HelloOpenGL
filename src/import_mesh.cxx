@@ -9,7 +9,7 @@
 
 using std::string, std::vector;
 using std::cout, std::cerr;
-using std::ifstream, std::istringstream, std::getline;
+using std::ifstream, std::istringstream, std::ostream, std::getline;
 
 
 template <typename Elem_Src>
@@ -78,6 +78,65 @@ struct WavefrontObject {
     CPUMultiIndexBuffer<GLuint, 2> mib_v_vn;
     CPUMultiIndexBuffer<GLuint, 3> mib_v_vt_vn;
 };
+
+ostream& operator<<(ostream& os, const WavefrontObject& obj) {
+    cout << "vertex positions:\n";
+    for (auto& v : obj.verts_v) {
+        cout << "x=" << v[0]
+             << " y=" << v[1]
+             << " z=" << v[2] << '\n';
+    }
+    cout << '\n';
+    cout << "texture coordinates:\n";
+    for (auto& vt : obj.verts_vt) {
+        cout << "u=" << vt[0]
+             << " v=" << vt[1] << '\n';
+    }
+    cout << '\n';
+    cout << "normals:\n";
+    for (auto& vn : obj.verts_vn) {
+        cout << "nx=" << vn[0]
+             << " ny=" << vn[1]
+             << " nz=" << vn[2] << '\n';
+    }
+    cout << '\n';
+    cout << "faces:\n";
+    switch (obj.miFormat) {
+    case WavefrontObject::MultiIndexFormat::UNKNOWN:
+        cout << "error no faces specified\n";
+        break;
+    case WavefrontObject::MultiIndexFormat::V:
+        for (auto& v : obj.mib_v.indices) {
+            cout << "vertex: v=" << v[0] << '\n';
+        }
+        break;
+    case WavefrontObject::MultiIndexFormat::V_VT:
+        for (auto& v : obj.mib_v_vt.indices) {
+            cout << "vertex: v=" << v[0]
+                 << " vt=" << v[1]
+                 << '\n';
+        }
+        break;
+    case WavefrontObject::MultiIndexFormat::V_VN:
+        for (auto& v : obj.mib_v_vn.indices) {
+            cout << "vertex: v=" << v[0]
+                 << " vn=" << v[1]
+                 << '\n';
+        }
+        break;
+    case WavefrontObject::MultiIndexFormat::V_VT_VN:
+        for (auto& v : obj.mib_v_vt_vn.indices) {
+            cout << "vertex: v=" << v[0]
+                 << " vt=" << v[1]
+                 << " vn=" << v[2]
+                 << '\n';
+        }
+        break;
+    default:
+        break;
+    }
+    return os;
+}
 
 CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
 {
@@ -262,61 +321,7 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
     }
 
     cout << "finished parsing OBJfile " << filepath << '\n';
-    cout << "vertex positions:\n";
-    for (auto& v : obj.verts_v) {
-        cout << "x=" << v[0]
-             << " y=" << v[1]
-             << " z=" << v[2] << '\n';
-    }
-    cout << '\n';
-    cout << "texture coordinates:\n";
-    for (auto& vt : obj.verts_vt) {
-        cout << "u=" << vt[0]
-             << " v=" << vt[1] << '\n';
-    }
-    cout << '\n';
-    cout << "normals:\n";
-    for (auto& vn : obj.verts_vn) {
-        cout << "nx=" << vn[0]
-             << " ny=" << vn[1]
-             << " nz=" << vn[2] << '\n';
-    }
-    cout << '\n';
-    cout << "faces:\n";
-    switch (obj.miFormat) {
-    case WavefrontObject::MultiIndexFormat::UNKNOWN:
-        cout << "error no faces specified\n";
-        break;
-    case WavefrontObject::MultiIndexFormat::V:
-        for (auto& v : obj.mib_v.indices) {
-            cout << "vertex: v=" << v[0] << '\n';
-        }
-        break;
-    case WavefrontObject::MultiIndexFormat::V_VT:
-        for (auto& v : obj.mib_v_vt.indices) {
-            cout << "vertex: v=" << v[0]
-                 << " vt=" << v[1]
-                 << '\n';
-        }
-        break;
-    case WavefrontObject::MultiIndexFormat::V_VN:
-        for (auto& v : obj.mib_v_vn.indices) {
-            cout << "vertex: v=" << v[0]
-                 << " vn=" << v[1]
-                 << '\n';
-        }
-        break;
-    case WavefrontObject::MultiIndexFormat::V_VT_VN:
-        for (auto& v : obj.mib_v_vt_vn.indices) {
-            cout << "vertex: v=" << v[0]
-                 << " vt=" << v[1]
-                 << " vn=" << v[2]
-                 << '\n';
-        }
-        break;
-    default:
-        break;
-    }
+    // cout << obj;
 
     VertexBufferLayout layout_v;
     layout_v.append<float>(3);
