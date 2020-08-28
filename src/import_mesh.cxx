@@ -157,6 +157,15 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
 
     vector<CPUMesh<GLuint>> results;
 
+
+    struct VertexCountSum {
+        GLuint v;
+        GLuint vt;
+        GLuint vn;
+    };
+
+    VertexCountSum count_sum = {0, 0, 0};
+
     string nextName;
 
     while (ifs) {
@@ -280,25 +289,25 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
                     GLuint v, vt, vn;
                     switch (obj.miFormat) {
                     case WavefrontObject::MultiIndexFormat::V:
-                        v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
+                        v = static_cast<GLuint>(std::stoi(matches[1].str())) - count_sum.v - 1;
                             // regular expression does not allow negative numbers here anyway
                             // so we can cast to unsigned
                         obj.mib_v.indices.push_back({v});
                         break;
                     case WavefrontObject::MultiIndexFormat::V_VT:
-                        v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
-                        vt = static_cast<GLuint>(std::stoi(matches[2].str())) - 1;
+                        v = static_cast<GLuint>(std::stoi(matches[1].str())) - count_sum.v - 1;
+                        vt = static_cast<GLuint>(std::stoi(matches[2].str())) - count_sum.vt - 1;
                         obj.mib_v_vt.indices.push_back({v, vt});
                         break;
                     case WavefrontObject::MultiIndexFormat::V_VN:
-                        v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
-                        vn = static_cast<GLuint>(std::stoi(matches[2].str())) - 1;
+                        v = static_cast<GLuint>(std::stoi(matches[1].str())) - count_sum.v - 1;
+                        vn = static_cast<GLuint>(std::stoi(matches[2].str())) - count_sum.vn - 1;
                         obj.mib_v_vn.indices.push_back({v, vn});
                         break;
                     case WavefrontObject::MultiIndexFormat::V_VT_VN:
-                        v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
-                        vt = static_cast<GLuint>(std::stoi(matches[2].str())) - 1;
-                        vn = static_cast<GLuint>(std::stoi(matches[3].str())) - 1;
+                        v = static_cast<GLuint>(std::stoi(matches[1].str())) - count_sum.v - 1;
+                        vt = static_cast<GLuint>(std::stoi(matches[2].str())) - count_sum.vt - 1;
+                        vn = static_cast<GLuint>(std::stoi(matches[3].str())) - count_sum.vn - 1;
                         obj.mib_v_vt_vn.indices.push_back({v, vt, vn});
                         break;
                     default:
@@ -403,6 +412,11 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
             myAssert(false);
             break;
         }
+        // better use bigger type for sum (as all meshes together might have much more vertices
+        // than each individual mesh on its own)?
+        count_sum.v += static_cast<GLuint>(obj.verts_v.size());
+        count_sum.vt += static_cast<GLuint>(obj.verts_vt.size());
+        count_sum.vn += static_cast<GLuint>(obj.verts_vn.size());
         // TODO: should res also store obj.name?
     }
 
