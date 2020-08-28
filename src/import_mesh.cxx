@@ -56,14 +56,7 @@ static CPUIndexBuffer<Index> applyTriangleFan(const CPUIndexBuffer<Index>& ib) {
     return res;
 }
 
-CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
-{
-    ifstream ifs {filepath};
-    if (!ifs) {
-        cerr << "error opening file " << filepath << '\n';
-        return CPUMesh<GLuint>{};
-    }
-
+struct WavefrontObject {
     enum class MultiIndexFormat {
         UNKNOWN = -1,
         V = 0,
@@ -72,33 +65,55 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
         V_VT_VN = 3
     };
 
-    MultiIndexFormat miFormat = MultiIndexFormat::UNKNOWN;
+    MultiIndexFormat miFormat;
 
-    vector<std::regex> mi_pats = {
+    // we keep verts_* as vectors instead of using CPUVertexArrays directly
+    // to avoid casting to vectors of GLbyte:
+    std::vector<std::array<float, 3>> verts_v;
+    std::vector<std::array<float, 2>> verts_vt;
+    std::vector<std::array<float, 3>> verts_vn;
+
+    CPUMultiIndexBuffer<GLuint, 1> mib_v;
+    CPUMultiIndexBuffer<GLuint, 2> mib_v_vt;
+    CPUMultiIndexBuffer<GLuint, 2> mib_v_vn;
+    CPUMultiIndexBuffer<GLuint, 3> mib_v_vt_vn;
+};
+
+CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
+{
+    ifstream ifs {filepath};
+    if (!ifs) {
+        cerr << "error opening file " << filepath << '\n';
+        return CPUMesh<GLuint>{};
+    }
+
+    vector<std::regex> mi_pats = {  // indices should align to WavefrontObject::MultiIndexFormat
         std::regex{R"((\d+))"}, // V
         std::regex{R"((\d+)/(\d+))"}, // V_VT
         std::regex{R"((\d+)//(\d+))"}, // V_VN
         std::regex{R"((\d+)/(\d+)/(\d+))"} // V_VT_VN
     };
 
-    // we keep those as vectors instead of using CPUVertexArrays directly
-    // to avoid casting to vectors of GLbyte
-    std::vector<std::array<float, 3>> verts_v;
-    std::vector<std::array<float, 2>> verts_vt;
-    std::vector<std::array<float, 3>> verts_vn;
+    WavefrontObject obj;
 
-    CPUMultiIndexBuffer<GLuint, 1> mib_v {std::vector<std::array<GLuint, 1>>(), GL_TRIANGLE_FAN, true,
-                                          std::array<GLuint, 1>{std::numeric_limits<GLuint>::max()}};
-    CPUMultiIndexBuffer<GLuint, 2> mib_v_vt {std::vector<std::array<GLuint, 2>>(), GL_TRIANGLE_FAN, true,
-                                             std::array<GLuint, 2>{std::numeric_limits<GLuint>::max(),
-                                                                   std::numeric_limits<GLuint>::max()}};
-    CPUMultiIndexBuffer<GLuint, 2> mib_v_vn {std::vector<std::array<GLuint, 2>>(), GL_TRIANGLE_FAN, true,
-                                             std::array<GLuint, 2>{std::numeric_limits<GLuint>::max(),
-                                                                  std::numeric_limits<GLuint>::max()}};
-    CPUMultiIndexBuffer<GLuint, 3> mib_v_vt_vn {std::vector<std::array<GLuint, 3>>(), GL_TRIANGLE_FAN, true,
-                                                std::array<GLuint, 3>{std::numeric_limits<GLuint>::max(),
-                                                                     std::numeric_limits<GLuint>::max(),
-                                                                     std::numeric_limits<GLuint>::max()}};
+    obj.miFormat = WavefrontObject::MultiIndexFormat::UNKNOWN;
+
+    obj.mib_v.primitiveType = GL_TRIANGLE_FAN;
+    obj.mib_v.primitiveRestart = true;
+    obj.mib_v.primitiveRestartMultiIndex = std::array<GLuint, 1>{std::numeric_limits<GLuint>::max()};
+    obj.mib_v_vt.primitiveType = GL_TRIANGLE_FAN;
+    obj.mib_v_vt.primitiveRestart = true;
+    obj.mib_v_vt.primitiveRestartMultiIndex = std::array<GLuint, 2>{std::numeric_limits<GLuint>::max(),
+                                                                    std::numeric_limits<GLuint>::max()};
+    obj.mib_v_vn.primitiveType = GL_TRIANGLE_FAN;
+    obj.mib_v_vn.primitiveRestart = true;
+    obj.mib_v_vn.primitiveRestartMultiIndex = std::array<GLuint, 2>{std::numeric_limits<GLuint>::max(),
+                                                                    std::numeric_limits<GLuint>::max()};
+    obj.mib_v_vt_vn.primitiveType = GL_TRIANGLE_FAN;
+    obj.mib_v_vt_vn.primitiveRestart = true;
+    obj.mib_v_vt_vn.primitiveRestartMultiIndex = std::array<GLuint, 3>{std::numeric_limits<GLuint>::max(),
+                                                                       std::numeric_limits<GLuint>::max(),
+                                                                       std::numeric_limits<GLuint>::max()};
 
     string line;
     while (getline(ifs, line)) {
@@ -126,7 +141,7 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
             if (invert_z) {
                 v[2] = -v[2];
             }
-            verts_v.push_back(v);
+            obj.verts_v.push_back(v);
             float value;
             if (iss >> value) {
                 cout << "warning: only 3 dimensional positions are not supported by this implementation\n";
@@ -143,7 +158,7 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
                 myAssert(false);
                 return CPUMesh<GLuint>{};
             }
-            verts_vt.push_back(vt);
+            obj.verts_vt.push_back(vt);
             float value;
             if (iss >> value) {
                 cout << "warning: only 2-dimensional texture coordinates are supported by this implementation\n";
@@ -162,7 +177,7 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
             if (invert_z) {
                 vn[2] = -vn[2];
             }
-            verts_vn.push_back(vn);
+            obj.verts_vn.push_back(vn);
             float value;
             if (iss >> value) {
                 cerr << "error normal should only have three dimensions:\n";
@@ -176,16 +191,16 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
             while (iss >> multIndStr) {
                 std::smatch matches;
                 bool success = false;
-                if (miFormat == MultiIndexFormat::UNKNOWN) {
+                if (obj.miFormat == WavefrontObject::MultiIndexFormat::UNKNOWN) {
                     for (unsigned int i = 0; i < mi_pats.size() && !success; ++i) {
                         if (regex_match(multIndStr, matches, mi_pats[i])) {
                             success = true;
-                            miFormat = static_cast<MultiIndexFormat>(i); // or static_cast ?
+                            obj.miFormat = static_cast<WavefrontObject::MultiIndexFormat>(i); // or static_cast ?
                         }
                     }
                 } else {
                     success = regex_match(multIndStr, matches,
-                                          mi_pats[static_cast<int>(miFormat)]);
+                                          mi_pats[static_cast<int>(obj.miFormat)]);
                 }
                 if (!success) {
                     cerr << "error parsing vertex: " << multIndStr << '\n';
@@ -194,28 +209,28 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
                     return CPUMesh<GLuint>{};
                 }
                 GLuint v, vt, vn;
-                switch (miFormat) {
-                case MultiIndexFormat::V:
+                switch (obj.miFormat) {
+                case WavefrontObject::MultiIndexFormat::V:
                     v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
                         // regular expression does not allow negative numbers here anyway
                         // so we can cast to unsigned
-                    mib_v.indices.push_back({v});
+                    obj.mib_v.indices.push_back({v});
                     break;
-                case MultiIndexFormat::V_VT:
+                case WavefrontObject::MultiIndexFormat::V_VT:
                     v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
                     vt = static_cast<GLuint>(std::stoi(matches[2].str())) - 1;
-                    mib_v_vt.indices.push_back({v, vt});
+                    obj.mib_v_vt.indices.push_back({v, vt});
                     break;
-                case MultiIndexFormat::V_VN:
+                case WavefrontObject::MultiIndexFormat::V_VN:
                     v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
                     vn = static_cast<GLuint>(std::stoi(matches[2].str())) - 1;
-                    mib_v_vn.indices.push_back({v, vn});
+                    obj.mib_v_vn.indices.push_back({v, vn});
                     break;
-                case MultiIndexFormat::V_VT_VN:
+                case WavefrontObject::MultiIndexFormat::V_VT_VN:
                     v = static_cast<GLuint>(std::stoi(matches[1].str())) - 1;
                     vt = static_cast<GLuint>(std::stoi(matches[2].str())) - 1;
                     vn = static_cast<GLuint>(std::stoi(matches[3].str())) - 1;
-                    mib_v_vt_vn.indices.push_back({v, vt, vn});
+                    obj.mib_v_vt_vn.indices.push_back({v, vt, vn});
                     break;
                 default:
                     myAssert(false);
@@ -223,18 +238,18 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
                 }
                 ++n;
             }
-            switch (miFormat) {
-            case MultiIndexFormat::V:
-                mib_v.indices.push_back(mib_v.primitiveRestartMultiIndex);
+            switch (obj.miFormat) {
+            case WavefrontObject::MultiIndexFormat::V:
+                obj.mib_v.indices.push_back(obj.mib_v.primitiveRestartMultiIndex);
                 break;
-            case MultiIndexFormat::V_VT:
-                mib_v_vt.indices.push_back(mib_v_vt.primitiveRestartMultiIndex);
+            case WavefrontObject::MultiIndexFormat::V_VT:
+                obj.mib_v_vt.indices.push_back(obj.mib_v_vt.primitiveRestartMultiIndex);
                 break;
-            case MultiIndexFormat::V_VN:
-                mib_v_vn.indices.push_back(mib_v_vn.primitiveRestartMultiIndex);
+            case WavefrontObject::MultiIndexFormat::V_VN:
+                obj.mib_v_vn.indices.push_back(obj.mib_v_vn.primitiveRestartMultiIndex);
                 break;
-            case MultiIndexFormat::V_VT_VN:
-                mib_v_vt_vn.indices.push_back(mib_v_vt_vn.primitiveRestartMultiIndex);
+            case WavefrontObject::MultiIndexFormat::V_VT_VN:
+                obj.mib_v_vt_vn.indices.push_back(obj.mib_v_vt_vn.primitiveRestartMultiIndex);
                 break;
             default:
                 myAssert(false);
@@ -248,51 +263,51 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
 
     cout << "finished parsing OBJfile " << filepath << '\n';
     cout << "vertex positions:\n";
-    for (auto& v : verts_v) {
+    for (auto& v : obj.verts_v) {
         cout << "x=" << v[0]
              << " y=" << v[1]
              << " z=" << v[2] << '\n';
     }
     cout << '\n';
     cout << "texture coordinates:\n";
-    for (auto& vt : verts_vt) {
+    for (auto& vt : obj.verts_vt) {
         cout << "u=" << vt[0]
              << " v=" << vt[1] << '\n';
     }
     cout << '\n';
     cout << "normals:\n";
-    for (auto& vn : verts_vn) {
+    for (auto& vn : obj.verts_vn) {
         cout << "nx=" << vn[0]
              << " ny=" << vn[1]
              << " nz=" << vn[2] << '\n';
     }
     cout << '\n';
     cout << "faces:\n";
-    switch (miFormat) {
-    case MultiIndexFormat::UNKNOWN:
+    switch (obj.miFormat) {
+    case WavefrontObject::MultiIndexFormat::UNKNOWN:
         cout << "error no faces specified\n";
         break;
-    case MultiIndexFormat::V:
-        for (auto& v : mib_v.indices) {
+    case WavefrontObject::MultiIndexFormat::V:
+        for (auto& v : obj.mib_v.indices) {
             cout << "vertex: v=" << v[0] << '\n';
         }
         break;
-    case MultiIndexFormat::V_VT:
-        for (auto& v : mib_v_vt.indices) {
+    case WavefrontObject::MultiIndexFormat::V_VT:
+        for (auto& v : obj.mib_v_vt.indices) {
             cout << "vertex: v=" << v[0]
                  << " vt=" << v[1]
                  << '\n';
         }
         break;
-    case MultiIndexFormat::V_VN:
-        for (auto& v : mib_v_vn.indices) {
+    case WavefrontObject::MultiIndexFormat::V_VN:
+        for (auto& v : obj.mib_v_vn.indices) {
             cout << "vertex: v=" << v[0]
                  << " vn=" << v[1]
                  << '\n';
         }
         break;
-    case MultiIndexFormat::V_VT_VN:
-        for (auto& v : mib_v_vt_vn.indices) {
+    case WavefrontObject::MultiIndexFormat::V_VT_VN:
+        for (auto& v : obj.mib_v_vt_vn.indices) {
             cout << "vertex: v=" << v[0]
                  << " vt=" << v[1]
                  << " vn=" << v[2]
@@ -309,53 +324,53 @@ CPUMesh<GLuint> readOBJ(std::string filepath, bool invert_z)
     layout_vt.append<float>(2);
     VertexBufferLayout layout_vn;
     layout_vn.append<float>(3);
-    switch (miFormat) {
-    case MultiIndexFormat::UNKNOWN:
+    switch (obj.miFormat) {
+    case WavefrontObject::MultiIndexFormat::UNKNOWN:
         cout << "error no faces specified\n";
         break;
-    case MultiIndexFormat::V:
+    case WavefrontObject::MultiIndexFormat::V:
         {
             CPUVertexArray va_v {layout_v,
-                                toByteVector(verts_v)};
-            CPUMultiIndexMesh<GLuint, 1> miMesh {mib_v, std::array<CPUVertexArray, 1>{va_v}};
+                                toByteVector(obj.verts_v)};
+            CPUMultiIndexMesh<GLuint, 1> miMesh {obj.mib_v, std::array<CPUVertexArray, 1>{va_v}};
             CPUMesh<GLuint> res = unifyIndexBuffer(miMesh);
             res.ib = applyTriangleFan(res.ib);
             return res;
         }
         break;
-    case MultiIndexFormat::V_VT:
+    case WavefrontObject::MultiIndexFormat::V_VT:
         {
             CPUVertexArray va_v {layout_v,
-                                 toByteVector(verts_v)};
+                                 toByteVector(obj.verts_v)};
             CPUVertexArray va_vt {layout_vt,
-                                  toByteVector(verts_vt)};
-            CPUMultiIndexMesh<GLuint, 2> miMesh {mib_v_vt, std::array<CPUVertexArray, 2>{va_v, va_vt}};
+                                  toByteVector(obj.verts_vt)};
+            CPUMultiIndexMesh<GLuint, 2> miMesh {obj.mib_v_vt, std::array<CPUVertexArray, 2>{va_v, va_vt}};
             CPUMesh<GLuint> res = unifyIndexBuffer(miMesh);
             res.ib = applyTriangleFan(res.ib);
             return res;
         }
         break;
-    case MultiIndexFormat::V_VN:
+    case WavefrontObject::MultiIndexFormat::V_VN:
         {
             CPUVertexArray va_v {layout_v,
-                                 toByteVector(verts_v)};
+                                 toByteVector(obj.verts_v)};
             CPUVertexArray va_vn {layout_vn,
-                                  toByteVector(verts_vn)};
-            CPUMultiIndexMesh<GLuint, 2> miMesh {mib_v_vn, std::array<CPUVertexArray, 2>{va_v, va_vn}};
+                                  toByteVector(obj.verts_vn)};
+            CPUMultiIndexMesh<GLuint, 2> miMesh {obj.mib_v_vn, std::array<CPUVertexArray, 2>{va_v, va_vn}};
             CPUMesh<GLuint> res = unifyIndexBuffer(miMesh);
             res.ib = applyTriangleFan(res.ib);
             return res;
         }
         break;
-    case MultiIndexFormat::V_VT_VN:
+    case WavefrontObject::MultiIndexFormat::V_VT_VN:
         {
             CPUVertexArray va_v {layout_v,
-                                 toByteVector(verts_v)};
+                                 toByteVector(obj.verts_v)};
             CPUVertexArray va_vt {layout_vt,
-                                  toByteVector(verts_vt)};
+                                  toByteVector(obj.verts_vt)};
             CPUVertexArray va_vn {layout_vn,
-                                  toByteVector(verts_vn)};
-            CPUMultiIndexMesh<GLuint, 3> miMesh {mib_v_vt_vn, std::array<CPUVertexArray, 3>{va_v, va_vt, va_vn}};
+                                  toByteVector(obj.verts_vn)};
+            CPUMultiIndexMesh<GLuint, 3> miMesh {obj.mib_v_vt_vn, std::array<CPUVertexArray, 3>{va_v, va_vt, va_vn}};
             CPUMesh<GLuint> res = unifyIndexBuffer(miMesh);
             res.ib = applyTriangleFan(res.ib);
             return res;
