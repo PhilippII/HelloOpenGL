@@ -20,17 +20,16 @@ OpenGL:
 		-> also if array to be copied from is a line of a 2D-array?
 	-> and is it guaranteed to have the same memory layout as a normal C-style array?
 
-readOBJ:
-- move (debug-)printing of read WavefrontOBJ file in readOBJ(...) to separate function
-- move triangulation code to separate function
-- handle import of multiple objects from the same OBJ file
+GLShaderProgram:
+- also cache vertex attribute locations (similar to the uniform locations)
+	-> how to avoid making getAttribLocation(...) non-const?
+
 
 VertexBufferLayout:
-- store string and add method to automatically synchronize the locations
-of all of the vertex attributes with the loctations of the input variables
-in the vertex shader
 - add templated versions of the other overloads of append(..) as well
-
+	-> maybe add helper-function/variable-template/whatever that converts
+		OpenGL types to their corresponding GLenum constant
+		(How does this work?)
 
 
 abstraction into classes me vs. cherno:
