@@ -473,6 +473,9 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
             }());
         if (success) {
             results.back().ib = applyTriangleFan(results.back().ib);
+            results.back().va.layout.setDefaultLocations(); // concatenating the separate layouts
+                                                            // for v, vt and vn leads to repetition
+                                                            // of vertex attribute locations
             // TODO: should CPUMesh also store obj.name?
         } else {
             results.pop_back();

@@ -199,9 +199,6 @@ int main(void)
     };
     std::vector<GLMesh> suzanneMeshes;
     for (auto& cpuMesh : suzanneCPUMeshes) {
-        cpuMesh.va.layout.setDefaultLocations(); // assumes vertex attributes
-                                                 // were added to layout in order
-                                                 // position, texCoordinate, normal
         GLVertexBuffer vb(cpuMesh.va.data.size(),
                           cpuMesh.va.data.data());
         GLVertexArray va;
