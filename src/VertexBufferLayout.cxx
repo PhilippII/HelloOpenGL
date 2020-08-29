@@ -6,7 +6,7 @@ VertexBufferLayout::VertexBufferLayout()
 
 }
 
-void VertexBufferLayout::append(GLint dimCount, GLenum componentType)
+void VertexBufferLayout::append(GLint dimCount, GLenum componentType, std::string name)
 {
     VariableType castTo;
     switch (getTypeCategory(componentType)) {
@@ -25,14 +25,14 @@ void VertexBufferLayout::append(GLint dimCount, GLenum componentType)
         castTo = VariableType::FLOAT;
         break;
     }
-    append(dimCount, componentType, castTo);
+    append(dimCount, componentType, castTo, name);
 }
 
-void VertexBufferLayout::append(GLint dimCount, GLenum componentType, VariableType castTo, loc_type location)
+void VertexBufferLayout::append(GLint dimCount, GLenum componentType, VariableType castTo, loc_type location, std::string name)
 {
     m_attributes.push_back({static_cast<unsigned int>(m_stride),
                             dimCount, componentType, castTo,
-                            location});
+                            location, name});
     m_stride += getAttributeSize(dimCount, componentType);
 }
 

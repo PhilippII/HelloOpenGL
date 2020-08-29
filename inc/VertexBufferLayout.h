@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 
 #include <vector>
+#include <string>
 
 #include "debug_utils.h"
 
@@ -27,6 +28,7 @@ struct VertexAttributeLayout {
     // glVertexAttribFormat (GLuint)
     // glVertexAttribPointer(GLuint)
     GLuint location;
+    std::string name;
 };
 
 class VertexBufferLayout
@@ -55,19 +57,24 @@ public:
 
     VertexBufferLayout();
 
-    void append(GLint dimCount, GLenum componentType, VariableType castTo, loc_type location);
+    void append(GLint dimCount, GLenum componentType, VariableType castTo, loc_type location, std::string name = std::string());
 
-    void append(GLint dimCount, GLenum componentType, VariableType castTo)
+    void append(GLint dimCount, GLenum componentType, VariableType castTo, std::string name = std::string())
     {
         append(dimCount, componentType, castTo,
-               static_cast<loc_type>(m_attributes.size()));
+               static_cast<loc_type>(m_attributes.size()), name);
     }
 
-    void append(GLint dimCount, GLenum componentType);
+    void append(GLint dimCount, GLenum componentType, std::string name = std::string());
+
+    template<typename T>
+    void append(GLint dimCount, std::string name) {
+        myAssert(false);
+    }
 
     template<typename T>
     void append(GLint dimCount) {
-        myAssert(false);
+        append<T>(dimCount, std::string());
     }
 
     VertexBufferLayout& operator+=(const VertexBufferLayout& other);
@@ -113,50 +120,50 @@ VertexBufferLayout operator+(VertexBufferLayout a, const VertexBufferLayout& b);
 //              -> cannot be distinguished from GLushort
 
 template <>
-inline void VertexBufferLayout::append<GLfloat>(GLint dimCount) {
-    append(dimCount, GL_FLOAT);
+inline void VertexBufferLayout::append<GLfloat>(GLint dimCount, std::string name) {
+    append(dimCount, GL_FLOAT, name);
 }
 
 template <>
-inline void VertexBufferLayout::append<GLdouble>(GLint dimCount) {
-    append(dimCount, GL_DOUBLE);
+inline void VertexBufferLayout::append<GLdouble>(GLint dimCount, std::string name) {
+    append(dimCount, GL_DOUBLE, name);
 }
 
 //template <>
-//inline void VertexBufferLayout::append<GLfixed>(GLint dimCount) {
-//    append(dimCount, GL_FIXED);
+//inline void VertexBufferLayout::append<GLfixed>(GLint dimCount, std::string name) {
+//    append(dimCount, GL_FIXED, name);
 //}
 // -> cannot be distinguished from GLint
 
 
 template <>
-inline void VertexBufferLayout::append<GLbyte>(GLint dimCount) {
-    append(dimCount, GL_BYTE);
+inline void VertexBufferLayout::append<GLbyte>(GLint dimCount, std::string name) {
+    append(dimCount, GL_BYTE, name);
 }
 
 template <>
-inline void VertexBufferLayout::append<GLubyte>(GLint dimCount) {
-    append(dimCount, GL_UNSIGNED_BYTE);
+inline void VertexBufferLayout::append<GLubyte>(GLint dimCount, std::string name) {
+    append(dimCount, GL_UNSIGNED_BYTE, name);
 }
 
 template <>
-inline void VertexBufferLayout::append<GLshort>(GLint dimCount) {
-    append(dimCount, GL_SHORT);
+inline void VertexBufferLayout::append<GLshort>(GLint dimCount, std::string name) {
+    append(dimCount, GL_SHORT, name);
 }
 
 template <>
-inline void VertexBufferLayout::append<GLushort>(GLint dimCount) {
-    append(dimCount, GL_UNSIGNED_SHORT);
+inline void VertexBufferLayout::append<GLushort>(GLint dimCount, std::string name) {
+    append(dimCount, GL_UNSIGNED_SHORT, name);
 }
 
 template <>
-inline void VertexBufferLayout::append<GLint>(GLint dimCount) {
-    append(dimCount, GL_INT);
+inline void VertexBufferLayout::append<GLint>(GLint dimCount, std::string name) {
+    append(dimCount, GL_INT, name);
 }
 
 template <>
-inline void VertexBufferLayout::append<GLuint>(GLint dimCount) {
-    append(dimCount, GL_UNSIGNED_INT);
+inline void VertexBufferLayout::append<GLuint>(GLint dimCount, std::string name) {
+    append(dimCount, GL_UNSIGNED_INT, name);
 }
 
 // TODO: append-template-specialization for packed integer types
