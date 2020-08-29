@@ -140,7 +140,7 @@ ostream& operator<<(ostream& os, const WavefrontObject& obj) {
     return os;
 }
 
-static bool parsePosition(WavefrontObject& obj, istringstream& iss, bool invert_z) {
+inline bool parsePosition(WavefrontObject& obj, istringstream& iss, bool invert_z) {
     std::array<float, 3> v;
     unsigned int i;
     for (i = 0; i < v.size() && iss >> v[i]; ++i)
@@ -161,7 +161,7 @@ static bool parsePosition(WavefrontObject& obj, istringstream& iss, bool invert_
     return true;
 }
 
-static bool parseTexCoord(WavefrontObject& obj, istringstream& iss) {
+inline bool parseTexCoord(WavefrontObject& obj, istringstream& iss) {
     std::array<float, 2> vt;
     unsigned int i;
     for (i = 0; i < vt.size() && iss >> vt[i]; ++i)
@@ -179,7 +179,7 @@ static bool parseTexCoord(WavefrontObject& obj, istringstream& iss) {
     return true;
 }
 
-static bool parseNormal(WavefrontObject& obj, istringstream& iss, bool invert_z) {
+inline bool parseNormal(WavefrontObject& obj, istringstream& iss, bool invert_z) {
     std::array<float, 3> vn;
     unsigned int i;
     for (i = 0; i < vn.size() && iss >> vn[i]; ++i)
@@ -208,7 +208,7 @@ struct VertexCountSum {
     GLuint vn;
 };
 
-static bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCountSum& count_sum, const vector<std::regex>& mi_pats) {
+inline bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCountSum& count_sum, const vector<std::regex>& mi_pats) {
     string multIndStr;
     debugDo(int n = 1);
     while (iss >> multIndStr) {
