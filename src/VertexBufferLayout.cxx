@@ -1,5 +1,7 @@
 #include "VertexBufferLayout.h"
 
+#include <iostream>
+
 VertexBufferLayout::VertexBufferLayout()
     : m_stride(0)
 {
@@ -50,6 +52,20 @@ void VertexBufferLayout::setDefaultLocations()
 {
     for (unsigned int i = 0; i < m_attributes.size(); ++i) {
         m_attributes[i].location = i;
+    }
+}
+
+void VertexBufferLayout::setLocations(const GLShaderProgram &program)
+{
+    for (auto& attr: m_attributes) {
+        if (!attr.name.empty()) {
+            auto loc = program.getAttribLocation(attr.name);
+            if (loc == -1) {
+                std::cout << "warning: did not find attribute location " << attr.name << '\n';
+            } else {
+                attr.location = loc;
+            }
+        }
     }
 }
 

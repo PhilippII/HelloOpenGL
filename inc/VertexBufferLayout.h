@@ -7,6 +7,7 @@
 #include <string>
 
 #include "debug_utils.h"
+#include "GLShaderProgram.h" // to query attribute locations
 
 enum class VariableType {
     // type of the actual shader variable
@@ -89,6 +90,7 @@ public:
         return m_stride;
     }
 
+    void setLocations(const GLShaderProgram& program);
 
     static TypeCategory getTypeCategory(GLenum componentType);
 
