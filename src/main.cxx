@@ -26,6 +26,7 @@
 #include "GLRenderer.h"
 
 #include "import_mesh.h"
+#include "cpu_mesh_utils.h" // to test addIndexBuffer(...)
 
 
 struct Vertex {

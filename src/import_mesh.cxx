@@ -1,5 +1,7 @@
 #include "import_mesh.h"
 
+#include "cpu_mesh_utils.h"
+
 #include <fstream>
 #include <sstream>
 #include <regex>

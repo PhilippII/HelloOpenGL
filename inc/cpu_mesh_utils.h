@@ -1,66 +1,10 @@
 #ifndef CPU_MESH_UTILS_H
 #define CPU_MESH_UTILS_H
 
-#include <vector>
-#include <array>
-#include <GL/glew.h>
-#include <iostream>
+#include "cpu_mesh_structs.h"
+
 #include <limits>
 
-#include "VertexBufferLayout.h"
-
-template <typename Index>
-struct CPUIndexBuffer {
-    std::vector<Index> indices;
-    GLenum primitiveType = GL_TRIANGLES;
-    bool primitiveRestart = false;
-    Index primitiveRestartIndex;
-};
-
-template <typename Index>
-std::ostream& operator<<(std::ostream& os, const CPUIndexBuffer<Index>& ib) {
-    os << "CPUIndexBuffer {";
-    if (!ib.indices.empty()) {
-        os << ib.indices[0];
-    }
-    for (unsigned int i = 1; i < ib.indices.size(); ++i) {
-        os << ", " << ib.indices[i];
-    }
-    return os << "}\n";
-}
-
-// TODO: N should be unsigned int?
-template <typename Index, int N>
-struct CPUMultiIndexBuffer {
-    std::vector<std::array<Index, N>> indices;
-    GLenum primitiveType = GL_TRIANGLES;
-    bool primitiveRestart = false;
-    std::array<Index, N> primitiveRestartMultiIndex;
-};
-
-struct CPUVertexArray {
-    VertexBufferLayout layout;
-    std::vector<GLbyte> data;
-};
-
-std::ostream& operator<<(std::ostream& os, const CPUVertexArray& va);
-
-template <typename Index>
-struct CPUMesh {
-    CPUIndexBuffer<Index> ib;
-    CPUVertexArray va;
-};
-
-template <typename Index>
-std::ostream& operator<<(std::ostream& os, const CPUMesh<Index>& cpuMesh) {
-    return os << cpuMesh.ib << cpuMesh.va;
-}
-
-template <typename Index, int N>
-struct CPUMultiIndexMesh {
-    CPUMultiIndexBuffer<Index, N> mib;
-    std::array<CPUVertexArray, N> vas;
-};
 
 bool areBytesEqual(const GLbyte* a, const GLbyte* b, unsigned int size);
 
