@@ -314,7 +314,79 @@ inline bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCoun
     return true;
 }
 
-std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
+// does not return valid CPUMesh if obj.miFormat is ...::UNKNOWN
+inline CPUMesh<GLuint> wavefrontObjectToMesh(const WavefrontObject obj, bool* success) {
+    VertexBufferLayout layout_v;
+    layout_v.append<float>(3);
+    VertexBufferLayout layout_vt;
+    layout_vt.append<float>(2);
+    VertexBufferLayout layout_vn;
+    layout_vn.append<float>(3);
+    *success = true;
+    CPUMesh<GLuint> res(
+        [&](){
+            switch (obj.miFormat) {
+            case WavefrontObject::MultiIndexFormat::UNKNOWN:
+                break;
+            case WavefrontObject::MultiIndexFormat::V:
+                {
+                    CPUVertexArray va_v {layout_v,
+                                        toByteVector(obj.verts_v)};
+                    CPUMultiIndexMesh<GLuint, 1> miMesh {obj.mib_v, std::array<CPUVertexArray, 1>{va_v}};
+                    return unifyIndexBuffer(miMesh);
+                }
+                break;
+            case WavefrontObject::MultiIndexFormat::V_VT:
+                {
+                    CPUVertexArray va_v {layout_v,
+                                         toByteVector(obj.verts_v)};
+                    CPUVertexArray va_vt {layout_vt,
+                                          toByteVector(obj.verts_vt)};
+                    CPUMultiIndexMesh<GLuint, 2> miMesh {obj.mib_v_vt, std::array<CPUVertexArray, 2>{va_v, va_vt}};
+                    return unifyIndexBuffer(miMesh);
+                }
+                break;
+            case WavefrontObject::MultiIndexFormat::V_VN:
+                {
+                    CPUVertexArray va_v {layout_v,
+                                         toByteVector(obj.verts_v)};
+                    CPUVertexArray va_vn {layout_vn,
+                                          toByteVector(obj.verts_vn)};
+                    CPUMultiIndexMesh<GLuint, 2> miMesh {obj.mib_v_vn, std::array<CPUVertexArray, 2>{va_v, va_vn}};
+                    return unifyIndexBuffer(miMesh);
+                }
+                break;
+            case WavefrontObject::MultiIndexFormat::V_VT_VN:
+                {
+                    CPUVertexArray va_v {layout_v,
+                                         toByteVector(obj.verts_v)};
+                    CPUVertexArray va_vt {layout_vt,
+                                          toByteVector(obj.verts_vt)};
+                    CPUVertexArray va_vn {layout_vn,
+                                          toByteVector(obj.verts_vn)};
+                    CPUMultiIndexMesh<GLuint, 3> miMesh {obj.mib_v_vt_vn, std::array<CPUVertexArray, 3>{va_v, va_vt, va_vn}};
+                    return unifyIndexBuffer(miMesh);
+                }
+                break;
+            default:
+                myAssert(false);
+                break;
+            }
+            *success = false;
+            return CPUMesh<GLuint>();
+        }());
+    if (!(*success)) {
+        return CPUMesh<GLuint>();
+    }
+    // TODO: should CPUMesh also store obj.name?
+    res.ib = applyTriangleFan(res.ib);
+    res.va.layout.setDefaultLocations(); // concatenating the separate layouts for
+                                         // v, vt and vn in unifyIndexBuffer(..) leads to
+                                         // repetition of vertex attribute locations
+    return res;
+}
+
+std::vector<CPUMesh<GLuint>> loadOBJfile(std::string filepath, bool invert_z)
 {
     ifstream ifs {filepath};
     if (!ifs) {
@@ -409,76 +481,16 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
         // cout << obj;
 
         // now convert parsed object to a CPUMesh:
-        VertexBufferLayout layout_v;
-        layout_v.append<float>(3);
-        VertexBufferLayout layout_vt;
-        layout_vt.append<float>(2);
-        VertexBufferLayout layout_vn;
-        layout_vn.append<float>(3);
-        bool success = true;
-        results.push_back(
-            [&](){
-                switch (obj.miFormat) {
-                case WavefrontObject::MultiIndexFormat::UNKNOWN:
-                    if (!obj.name.empty()) {
-                        cout << "error no faces specified\n";
-                    }
-                    break;
-                case WavefrontObject::MultiIndexFormat::V:
-                    {
-                        CPUVertexArray va_v {layout_v,
-                                            toByteVector(obj.verts_v)};
-                        CPUMultiIndexMesh<GLuint, 1> miMesh {obj.mib_v, std::array<CPUVertexArray, 1>{va_v}};
-                        return unifyIndexBuffer(miMesh);
-                    }
-                    break;
-                case WavefrontObject::MultiIndexFormat::V_VT:
-                    {
-                        CPUVertexArray va_v {layout_v,
-                                             toByteVector(obj.verts_v)};
-                        CPUVertexArray va_vt {layout_vt,
-                                              toByteVector(obj.verts_vt)};
-                        CPUMultiIndexMesh<GLuint, 2> miMesh {obj.mib_v_vt, std::array<CPUVertexArray, 2>{va_v, va_vt}};
-                        return unifyIndexBuffer(miMesh);
-                    }
-                    break;
-                case WavefrontObject::MultiIndexFormat::V_VN:
-                    {
-                        CPUVertexArray va_v {layout_v,
-                                             toByteVector(obj.verts_v)};
-                        CPUVertexArray va_vn {layout_vn,
-                                              toByteVector(obj.verts_vn)};
-                        CPUMultiIndexMesh<GLuint, 2> miMesh {obj.mib_v_vn, std::array<CPUVertexArray, 2>{va_v, va_vn}};
-                        return unifyIndexBuffer(miMesh);
-                    }
-                    break;
-                case WavefrontObject::MultiIndexFormat::V_VT_VN:
-                    {
-                        CPUVertexArray va_v {layout_v,
-                                             toByteVector(obj.verts_v)};
-                        CPUVertexArray va_vt {layout_vt,
-                                              toByteVector(obj.verts_vt)};
-                        CPUVertexArray va_vn {layout_vn,
-                                              toByteVector(obj.verts_vn)};
-                        CPUMultiIndexMesh<GLuint, 3> miMesh {obj.mib_v_vt_vn, std::array<CPUVertexArray, 3>{va_v, va_vt, va_vn}};
-                        return unifyIndexBuffer(miMesh);
-                    }
-                    break;
-                default:
-                    myAssert(false);
-                    break;
-                }
-                success = false;
-                return CPUMesh<GLuint>();
-            }());
-        if (success) {
-            results.back().ib = applyTriangleFan(results.back().ib);
-            results.back().va.layout.setDefaultLocations(); // concatenating the separate layouts
-                                                            // for v, vt and vn leads to repetition
-                                                            // of vertex attribute locations
-            // TODO: should CPUMesh also store obj.name?
+        if (obj.miFormat == WavefrontObject::MultiIndexFormat::UNKNOWN) {
+            if (!obj.name.empty()) {
+                cerr << "error: object " << obj.name << " has no faces\n";
+            } // else { no faces where specified before the first object declared with
+              // opcode "o" }
+              // we do not consider this latter case to be an error.
         } else {
-            results.pop_back();
+            bool success;
+            results.push_back(wavefrontObjectToMesh(obj, &success));
+            myAssert(success);
         }
     }
 

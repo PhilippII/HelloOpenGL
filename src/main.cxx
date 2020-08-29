@@ -186,7 +186,7 @@ int main(void)
     // import from OBJ-file:
     GLShaderProgram suzanneSP("res/shaders/Suzanne.shader");
     //std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj", true);
-    std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = readOBJ("res/meshes/suzanne_with_sphere_and_plane.obj", true);
+    std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = loadOBJfile("res/meshes/suzanne_with_sphere_and_plane.obj", true);
     if (suzanneCPUMeshes.empty()) {
         std::cerr << "error no object was found in obj file\n";
         return 1;
