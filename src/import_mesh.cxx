@@ -230,11 +230,11 @@ static bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCoun
             myAssert(false);
             return false;
         }
-        GLint v_raw, vt_raw, vn_raw;
+
         GLuint v, vt, vn;
-        switch (obj.miFormat) {
-        case WavefrontObject::MultiIndexFormat::V:
-            v_raw = static_cast<GLuint>(std::stoi(matches[1].str()));
+        int i = 1;
+        { // if (true)
+            GLint v_raw = static_cast<GLuint>(std::stoi(matches[i++].str()));
             if (v_raw < 0) {
                 v = static_cast<GLuint>(obj.verts_v.size()) + v_raw;
             } else if (static_cast<GLuint>(v_raw) <= count_sum.v) {
@@ -244,85 +244,47 @@ static bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCoun
             } else {
                 v = v_raw - count_sum.v - 1;
             }
+        }
+
+        if (obj.miFormat == WavefrontObject::MultiIndexFormat::V_VT
+                || obj.miFormat == WavefrontObject::MultiIndexFormat::V_VT_VN) {
+            GLint vt_raw = static_cast<GLuint>(std::stoi(matches[i++].str()));
+            if (vt_raw < 0) {
+                vt = static_cast<GLuint>(obj.verts_vt.size()) + vt_raw;
+            } else if (static_cast<GLuint>(vt_raw) <= count_sum.vt) {
+                cerr << "error: sharing vertices between different object is not supported by this implementation\n";
+                myAssert(false);
+                return false;
+            } else {
+                vt = vt_raw - count_sum.vt - 1;
+            }
+        }
+
+        if (obj.miFormat == WavefrontObject::MultiIndexFormat::V_VN
+                || obj.miFormat == WavefrontObject::MultiIndexFormat::V_VT_VN) {
+            GLint vn_raw = static_cast<GLuint>(std::stoi(matches[i++].str()));
+            if (vn_raw < 0) {
+                vn = static_cast<GLuint>(obj.verts_vn.size()) + vn_raw;
+            } else if (static_cast<GLuint>(vn_raw) <= count_sum.vn) {
+                cerr << "error: sharing vertices between different object is not supported by this implementation\n";
+                myAssert(false);
+                return false;
+            } else {
+                vn = vn_raw - count_sum.vn - 1;
+            }
+        }
+
+        switch (obj.miFormat) {
+        case WavefrontObject::MultiIndexFormat::V:
             obj.mib_v.indices.push_back({v});
             break;
         case WavefrontObject::MultiIndexFormat::V_VT:
-            v_raw = static_cast<GLuint>(std::stoi(matches[1].str()));
-            vt_raw = static_cast<GLuint>(std::stoi(matches[2].str()));
-            if (v_raw < 0) {
-                v = static_cast<GLuint>(obj.verts_v.size()) + v_raw;
-            } else if (static_cast<GLuint>(v_raw) <= count_sum.v) {
-                cerr << "error: sharing vertices between different object is not supported by this implementation\n";
-                myAssert(false);
-                return false;
-            } else {
-                v = v_raw - count_sum.v - 1;
-            }
-            if (vt_raw < 0) {
-                vt = static_cast<GLuint>(obj.verts_vt.size()) + vt_raw;
-            } else if (static_cast<GLuint>(vt_raw) <= count_sum.vt) {
-                cerr << "error: sharing vertices between different object is not supported by this implementation\n";
-                myAssert(false);
-                return false;
-            } else {
-                vt = vt_raw - count_sum.vt - 1;
-            }
             obj.mib_v_vt.indices.push_back({v, vt});
             break;
         case WavefrontObject::MultiIndexFormat::V_VN:
-            v_raw = static_cast<GLuint>(std::stoi(matches[1].str()));
-            vn_raw = static_cast<GLuint>(std::stoi(matches[2].str()));
-            if (v_raw < 0) {
-                v = static_cast<GLuint>(obj.verts_v.size()) + v_raw;
-            } else if (static_cast<GLuint>(v_raw) <= count_sum.v) {
-                cerr << "error: sharing vertices between different object is not supported by this implementation\n";
-                myAssert(false);
-                return false;
-            } else {
-                v = v_raw - count_sum.v - 1;
-            }
-            if (vn_raw < 0) {
-                vn = static_cast<GLuint>(obj.verts_vn.size()) + vn_raw;
-            } else if (static_cast<GLuint>(vn_raw) <= count_sum.vn) {
-                cerr << "error: sharing vertices between different object is not supported by this implementation\n";
-                myAssert(false);
-                return false;
-            } else {
-                vn = vn_raw - count_sum.vn - 1;
-            }
             obj.mib_v_vn.indices.push_back({v, vn});
             break;
         case WavefrontObject::MultiIndexFormat::V_VT_VN:
-            v_raw = static_cast<GLuint>(std::stoi(matches[1].str()));
-            vt_raw = static_cast<GLuint>(std::stoi(matches[2].str()));
-            vn_raw = static_cast<GLuint>(std::stoi(matches[3].str()));
-            if (v_raw < 0) {
-                v = static_cast<GLuint>(obj.verts_v.size()) + v_raw;
-            } else if (static_cast<GLuint>(v_raw) <= count_sum.v) {
-                cerr << "error: sharing vertices between different object is not supported by this implementation\n";
-                myAssert(false);
-                return false;
-            } else {
-                v = v_raw - count_sum.v - 1;
-            }
-            if (vt_raw < 0) {
-                vt = static_cast<GLuint>(obj.verts_vt.size()) + vt_raw;
-            } else if (static_cast<GLuint>(vt_raw) <= count_sum.vt) {
-                cerr << "error: sharing vertices between different object is not supported by this implementation\n";
-                myAssert(false);
-                return false;
-            } else {
-                vt = vt_raw - count_sum.vt - 1;
-            }
-            if (vn_raw < 0) {
-                vn = static_cast<GLuint>(obj.verts_vn.size()) + vn_raw;
-            } else if (static_cast<GLuint>(vn_raw) <= count_sum.vn) {
-                cerr << "error: sharing vertices between different object is not supported by this implementation\n";
-                myAssert(false);
-                return false;
-            } else {
-                vn = vn_raw - count_sum.vn - 1;
-            }
             obj.mib_v_vt_vn.indices.push_back({v, vt, vn});
             break;
         default:
