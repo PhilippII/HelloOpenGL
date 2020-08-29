@@ -408,70 +408,72 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
         layout_vt.append<float>(2);
         VertexBufferLayout layout_vn;
         layout_vn.append<float>(3);
-        switch (obj.miFormat) {
-        case WavefrontObject::MultiIndexFormat::UNKNOWN:
-            if (!obj.name.empty()) {
-                cout << "error no faces specified\n";
-            }
-            break;
-        case WavefrontObject::MultiIndexFormat::V:
-            {
-                CPUVertexArray va_v {layout_v,
-                                    toByteVector(obj.verts_v)};
-                CPUMultiIndexMesh<GLuint, 1> miMesh {obj.mib_v, std::array<CPUVertexArray, 1>{va_v}};
-                CPUMesh<GLuint> res = unifyIndexBuffer(miMesh);
-                res.ib = applyTriangleFan(res.ib);
-                results.push_back(res);
-            }
-            break;
-        case WavefrontObject::MultiIndexFormat::V_VT:
-            {
-                CPUVertexArray va_v {layout_v,
-                                     toByteVector(obj.verts_v)};
-                CPUVertexArray va_vt {layout_vt,
-                                      toByteVector(obj.verts_vt)};
-                CPUMultiIndexMesh<GLuint, 2> miMesh {obj.mib_v_vt, std::array<CPUVertexArray, 2>{va_v, va_vt}};
-                CPUMesh<GLuint> res = unifyIndexBuffer(miMesh);
-                res.ib = applyTriangleFan(res.ib);
-                results.push_back(res);
-            }
-            break;
-        case WavefrontObject::MultiIndexFormat::V_VN:
-            {
-                CPUVertexArray va_v {layout_v,
-                                     toByteVector(obj.verts_v)};
-                CPUVertexArray va_vn {layout_vn,
-                                      toByteVector(obj.verts_vn)};
-                CPUMultiIndexMesh<GLuint, 2> miMesh {obj.mib_v_vn, std::array<CPUVertexArray, 2>{va_v, va_vn}};
-                CPUMesh<GLuint> res = unifyIndexBuffer(miMesh);
-                res.ib = applyTriangleFan(res.ib);
-                results.push_back(res);
-            }
-            break;
-        case WavefrontObject::MultiIndexFormat::V_VT_VN:
-            {
-                CPUVertexArray va_v {layout_v,
-                                     toByteVector(obj.verts_v)};
-                CPUVertexArray va_vt {layout_vt,
-                                      toByteVector(obj.verts_vt)};
-                CPUVertexArray va_vn {layout_vn,
-                                      toByteVector(obj.verts_vn)};
-                CPUMultiIndexMesh<GLuint, 3> miMesh {obj.mib_v_vt_vn, std::array<CPUVertexArray, 3>{va_v, va_vt, va_vn}};
-                CPUMesh<GLuint> res = unifyIndexBuffer(miMesh);
-                res.ib = applyTriangleFan(res.ib);
-                results.push_back(res);
-            }
-            break;
-        default:
-            myAssert(false);
-            break;
+        bool success = true;
+        CPUMesh<GLuint> res(
+            [&](){
+                switch (obj.miFormat) {
+                case WavefrontObject::MultiIndexFormat::UNKNOWN:
+                    if (!obj.name.empty()) {
+                        cout << "error no faces specified\n";
+                    }
+                    break;
+                case WavefrontObject::MultiIndexFormat::V:
+                    {
+                        CPUVertexArray va_v {layout_v,
+                                            toByteVector(obj.verts_v)};
+                        CPUMultiIndexMesh<GLuint, 1> miMesh {obj.mib_v, std::array<CPUVertexArray, 1>{va_v}};
+                        return unifyIndexBuffer(miMesh);
+                    }
+                    break;
+                case WavefrontObject::MultiIndexFormat::V_VT:
+                    {
+                        CPUVertexArray va_v {layout_v,
+                                             toByteVector(obj.verts_v)};
+                        CPUVertexArray va_vt {layout_vt,
+                                              toByteVector(obj.verts_vt)};
+                        CPUMultiIndexMesh<GLuint, 2> miMesh {obj.mib_v_vt, std::array<CPUVertexArray, 2>{va_v, va_vt}};
+                        return unifyIndexBuffer(miMesh);
+                    }
+                    break;
+                case WavefrontObject::MultiIndexFormat::V_VN:
+                    {
+                        CPUVertexArray va_v {layout_v,
+                                             toByteVector(obj.verts_v)};
+                        CPUVertexArray va_vn {layout_vn,
+                                              toByteVector(obj.verts_vn)};
+                        CPUMultiIndexMesh<GLuint, 2> miMesh {obj.mib_v_vn, std::array<CPUVertexArray, 2>{va_v, va_vn}};
+                        return unifyIndexBuffer(miMesh);
+                    }
+                    break;
+                case WavefrontObject::MultiIndexFormat::V_VT_VN:
+                    {
+                        CPUVertexArray va_v {layout_v,
+                                             toByteVector(obj.verts_v)};
+                        CPUVertexArray va_vt {layout_vt,
+                                              toByteVector(obj.verts_vt)};
+                        CPUVertexArray va_vn {layout_vn,
+                                              toByteVector(obj.verts_vn)};
+                        CPUMultiIndexMesh<GLuint, 3> miMesh {obj.mib_v_vt_vn, std::array<CPUVertexArray, 3>{va_v, va_vt, va_vn}};
+                        return unifyIndexBuffer(miMesh);
+                    }
+                    break;
+                default:
+                    myAssert(false);
+                    break;
+                }
+                success = false;
+                return CPUMesh<GLuint>();
+            }());
+        if (success) {
+            res.ib = applyTriangleFan(res.ib);
+            results.push_back(res);
+            // TODO: should res also store obj.name?
         }
         // better use bigger type for sum (as all meshes together might have much more vertices
         // than each individual mesh on its own)?
         count_sum.v += static_cast<GLuint>(obj.verts_v.size());
         count_sum.vt += static_cast<GLuint>(obj.verts_vt.size());
         count_sum.vn += static_cast<GLuint>(obj.verts_vn.size());
-        // TODO: should res also store obj.name?
     }
 
     return results;
