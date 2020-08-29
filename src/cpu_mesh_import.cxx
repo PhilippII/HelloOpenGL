@@ -12,7 +12,7 @@
 using std::string, std::vector;
 using std::cout, std::cerr;
 using std::ifstream, std::istringstream, std::ostream, std::getline;
-
+using namespace std::literals::string_literals;
 
 // used by wavefrontObjectToMesh(...)
 template <typename Elem_Src>
@@ -290,11 +290,11 @@ inline bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCoun
 // does not return valid CPUMesh if obj.miFormat is ...::UNKNOWN
 inline CPUMesh<GLuint> wavefrontObjectToMesh(const WavefrontObject obj, bool* success) {
     VertexBufferLayout layout_v;
-    layout_v.append<float>(3);
+    layout_v.append<float>(3, "position_oc"s);
     VertexBufferLayout layout_vt;
-    layout_vt.append<float>(2);
+    layout_vt.append<float>(2, "texCoord"s);
     VertexBufferLayout layout_vn;
-    layout_vn.append<float>(3);
+    layout_vn.append<float>(3, "normal_oc"s);
     *success = true;
     CPUMesh<GLuint> res(
         [&](){

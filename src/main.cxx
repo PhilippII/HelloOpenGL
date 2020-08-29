@@ -202,6 +202,7 @@ int main(void)
     for (auto& cpuMesh : suzanneCPUMeshes) {
         GLVertexBuffer vb(cpuMesh.va.data.size(),
                           cpuMesh.va.data.data());
+        cpuMesh.va.layout.setLocations(suzanneSP);
         GLVertexArray va;
         va.addBuffer(vb, cpuMesh.va.layout);
         GLIndexBuffer ib(GL_UNSIGNED_INT,
