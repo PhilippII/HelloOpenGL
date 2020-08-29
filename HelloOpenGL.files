@@ -9,10 +9,10 @@ inc/GLShaderProgram.h
 inc/GLVertexArray.h
 inc/GLVertexBuffer.h
 inc/VertexBufferLayout.h
+inc/cpu_mesh_import.h
 inc/cpu_mesh_structs.h
 inc/cpu_mesh_utils.h
 inc/debug_utils.h
-inc/import_mesh.h
 res/shaders/Basic.shader
 res/shaders/Suzanne.shader
 src/GLBufferObject.cxx
@@ -24,8 +24,8 @@ src/GLShaderProgram.cxx
 src/GLVertexArray.cxx
 src/GLVertexBuffer.cxx
 src/VertexBufferLayout.cxx
+src/cpu_mesh_import.cxx
 src/cpu_mesh_structs.cxx
 src/cpu_mesh_utils.cxx
 src/debug_utils.cxx
-src/import_mesh.cxx
 src/main.cxx
