@@ -12,6 +12,7 @@ using std::cout, std::cerr;
 using std::ifstream, std::istringstream, std::ostream, std::getline;
 
 
+// used by wavefrontObjectToMesh(...)
 template <typename Elem_Src>
 static std::vector<GLbyte> toByteVector(const std::vector<Elem_Src>& v) {
     using res_size_t = std::vector<GLbyte>::size_type;
@@ -25,36 +26,6 @@ static std::vector<GLbyte> toByteVector(const std::vector<Elem_Src>& v) {
 }
 
 
-template <typename Index>
-static CPUIndexBuffer<Index> applyTriangleFan(const CPUIndexBuffer<Index>& ib) {
-    using ib_count_t = typename std::vector<Index>::size_type;
-    CPUIndexBuffer<Index> res = {std::vector<Index>{},
-                          GL_TRIANGLES,
-                          false,
-                          std::numeric_limits<Index>::max()};
-    myAssert(ib.primitiveType == GL_TRIANGLE_FAN);
-    myAssert(ib.primitiveRestart);
-
-    ib_count_t i = 0;
-    while (i < ib.indices.size()) {
-        if (i + 2 >= ib.indices.size()) {
-            cerr << "warning polygon with less than 3 vertices detected.\n";
-            continue;
-        }
-        Index baseVert = ib.indices[i];
-        i += 2;
-        while (i < ib.indices.size() && ib.indices[i] != ib.primitiveRestartIndex) {
-            res.indices.push_back(baseVert);
-            res.indices.push_back(ib.indices[i-1]);
-            res.indices.push_back(ib.indices[i]);
-            ++i;
-        }
-        if (i < ib.indices.size()) { // restart index encountered
-            ++i;
-        }
-    }
-    return res;
-}
 
 struct WavefrontObject {
     string name;
@@ -497,95 +468,3 @@ std::vector<CPUMesh<GLuint>> loadOBJfile(std::string filepath, bool invert_z)
     return results;
 }
 
-template <typename T>
-static void printVec(std::ostream& os, GLint dimCount, T* p) {
-    os << "{";
-    if (dimCount > 0) {
-        os << p[0];
-    }
-    for (int i = 1; i < dimCount; ++i) {
-        os << ", " << p[i];
-    }
-    os << "}";
-}
-
-static void printAttribute(std::ostream& os, GLint dimCount, GLenum componentType, const GLvoid* data) {
-    switch (componentType) {
-      case GL_HALF_FLOAT:
-        printVec(os, dimCount, reinterpret_cast<const GLhalf*>(data));
-        break;
-      case GL_FLOAT:
-        printVec(os, dimCount, reinterpret_cast<const GLfloat*>(data));
-        break;
-      case GL_DOUBLE:
-        printVec(os, dimCount, reinterpret_cast<const GLdouble*>(data));
-        break;
-      case GL_FIXED:
-        printVec(os, dimCount, reinterpret_cast<const GLfixed*>(data));
-        break;
-      case GL_BYTE:
-        printVec(os, dimCount, reinterpret_cast<const GLbyte*>(data));
-        break;
-      case GL_UNSIGNED_BYTE:
-        printVec(os, dimCount, reinterpret_cast<const GLubyte*>(data));
-        break;
-      case GL_SHORT:
-        printVec(os, dimCount, reinterpret_cast<const GLshort*>(data));
-        break;
-      case GL_UNSIGNED_SHORT:
-        printVec(os, dimCount, reinterpret_cast<const GLushort*>(data));
-        break;
-      case GL_INT:
-        printVec(os, dimCount, reinterpret_cast<const GLint*>(data));
-        break;
-      case GL_UNSIGNED_INT:
-        printVec(os, dimCount, reinterpret_cast<const GLuint*>(data));
-        break;
-      case GL_INT_2_10_10_10_REV:
-      case GL_UNSIGNED_INT_2_10_10_10_REV:
-        // myAssert(dimCount == 4 || dimCount == GL_BGRA);
-        cerr << "printing of types GL_INT_2_10_10_10_REV, GL_UNSIGNED_INT_2_10_10_10_REV\n";
-        cerr << "and GL_UNSIGNED_INT_10F_11F_11F_REV not supported\n";
-        myAssert(false);
-        break;
-      case GL_UNSIGNED_INT_10F_11F_11F_REV:
-        // myAssert(dimCount == 3);
-        cerr << "printing of types GL_INT_2_10_10_10_REV, GL_UNSIGNED_INT_2_10_10_10_REV\n";
-        cerr << "and GL_UNSIGNED_INT_10F_11F_11F_REV not supported\n";
-        myAssert(false);
-        break;
-      default:
-        myAssert(false);
-        break;
-    }
-}
-
-
-std::ostream &operator<<(std::ostream &os, const CPUVertexArray &va)
-{
-    using va_size_t = std::vector<GLbyte>::size_type;
-    using attrs_count_t = VertexBufferLayout::count_type;
-
-    GLsizei stride = va.layout.getStride();
-    va_size_t count = va.data.size() / stride;
-    for (va_size_t i_v = 0; i_v < count; ++i_v) {
-        os << "vertex " << i_v << ":\n{";
-        const auto& attrs = va.layout.getAttributes();
-        if (!attrs.empty()) {
-            printAttribute(os, attrs[0].dimCount, attrs[0].componentType, &(va.data[i_v * stride + attrs[0].offset]));
-        }
-        for (attrs_count_t i_a = 1; i_a < attrs.size(); ++i_a) {
-            os << ", ";
-            printAttribute(os, attrs[i_a].dimCount, attrs[i_a].componentType, &(va.data[i_v * stride + attrs[i_a].offset]));
-        }
-        os << "}\n";
-    }
-    return os;
-}
-
-bool areBytesEqual(const GLbyte *a, const GLbyte *b, unsigned int size)
-{
-    unsigned int i;
-    for (i = 0; i < size && a[i] == b[i]; ++i) {}
-    return i == size;
-}
