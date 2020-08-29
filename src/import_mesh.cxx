@@ -398,10 +398,17 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
             }
         }
 
+        // better use bigger type for sum (as all meshes together might have much more vertices
+        // than each individual mesh on its own)?
+        count_sum.v += static_cast<GLuint>(obj.verts_v.size());
+        count_sum.vt += static_cast<GLuint>(obj.verts_vt.size());
+        count_sum.vn += static_cast<GLuint>(obj.verts_vn.size());
+
         cout << "finished parsing object " << obj.name
              << " from file " << filepath << '\n';
         // cout << obj;
 
+        // now convert parsed object to a CPUMesh:
         VertexBufferLayout layout_v;
         layout_v.append<float>(3);
         VertexBufferLayout layout_vt;
@@ -409,7 +416,7 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
         VertexBufferLayout layout_vn;
         layout_vn.append<float>(3);
         bool success = true;
-        CPUMesh<GLuint> res(
+        results.push_back(
             [&](){
                 switch (obj.miFormat) {
                 case WavefrontObject::MultiIndexFormat::UNKNOWN:
@@ -465,15 +472,11 @@ std::vector<CPUMesh<GLuint>> readOBJ(std::string filepath, bool invert_z)
                 return CPUMesh<GLuint>();
             }());
         if (success) {
-            res.ib = applyTriangleFan(res.ib);
-            results.push_back(res);
-            // TODO: should res also store obj.name?
+            results.back().ib = applyTriangleFan(results.back().ib);
+            // TODO: should CPUMesh also store obj.name?
+        } else {
+            results.pop_back();
         }
-        // better use bigger type for sum (as all meshes together might have much more vertices
-        // than each individual mesh on its own)?
-        count_sum.v += static_cast<GLuint>(obj.verts_v.size());
-        count_sum.vt += static_cast<GLuint>(obj.verts_vt.size());
-        count_sum.vn += static_cast<GLuint>(obj.verts_vn.size());
     }
 
     return results;
