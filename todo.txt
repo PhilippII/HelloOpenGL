@@ -7,6 +7,8 @@ GLFW:
 
 c++-stdlib:
 - use ios_base::sync_with_stdio(false) to improve performance?
+- compile with gcc specific macro  -D_GLIBCXX_DEBUG ?
+	-> and what do those do?: -D_GLIBCXX_CONCEPT_CHECKS -D_GLIBCXX_DEBUG_PEDANTIC
 
 OpenGL:
 - GLCall(...) macro is fragile
