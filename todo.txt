@@ -5,6 +5,9 @@ GLFW:
 - static vs. dynamic linking against glfw and glew. which is better?
 	-> and why does pkg-config --libs --static not include -Wl,-Bstatic -Wl,-Bdynamic ?
 
+c++-stdlib:
+- use ios_base::sync_with_stdio(false) to improve performance?
+
 OpenGL:
 - GLCall(...) macro is fragile
 	-> e.g. 
