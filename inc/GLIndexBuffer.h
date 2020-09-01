@@ -47,6 +47,9 @@ public:
           m_primitiveRestartIndex(other.m_primitiveRestartIndex)
     {}
     GLIndexBuffer& operator=(GLIndexBuffer&& other) {
+        if (this == &other) {
+            return *this;
+        }
         GLBufferObject::operator=(std::move(other));
         m_indexType = other.m_indexType;
         m_count = other.m_count;

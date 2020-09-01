@@ -58,6 +58,9 @@ GLShaderProgram::GLShaderProgram(GLShaderProgram&& other)
 }
 
 GLShaderProgram& GLShaderProgram::operator=(GLShaderProgram&& other) {
+    if (this == &other) {
+        return *this;
+    }
     if (m_rendererID) {
         if (isBound()) {
             unbind();

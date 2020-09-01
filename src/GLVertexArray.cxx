@@ -17,6 +17,9 @@ GLVertexArray::GLVertexArray(GLVertexArray&& other)
 }
 
 GLVertexArray& GLVertexArray::operator=(GLVertexArray&& other) {
+    if (this == &other) {
+        return *this;
+    }
     if (m_rendererID) {
         GLCall(glDeleteVertexArrays(1, &m_rendererID));
     }

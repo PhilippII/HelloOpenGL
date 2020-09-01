@@ -20,6 +20,10 @@ public:
         : GLBufferObject(std::move(other))
     {}
     GLVertexBuffer& operator=(GLVertexBuffer&& other) {
+        if (this == &other) {   // in theory not necessary as
+            return *this;       // move operator of superclass GLBufferObject
+        }                       // will do this check anyway (and we don't do anything
+                                // else except calling the superclass move operator here)
         GLBufferObject::operator=(std::move(other));
         return *this;
     }

@@ -17,6 +17,9 @@ GLBufferObject::GLBufferObject(GLBufferObject&& other) {
 }
 
 GLBufferObject& GLBufferObject::operator=(GLBufferObject&& other) {
+    if (this == &other) {
+        return *this;
+    }
     if (m_rendererId) {
         GLCall(glDeleteBuffers(1, &m_rendererId));
 	}
