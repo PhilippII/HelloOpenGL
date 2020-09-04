@@ -127,7 +127,6 @@ inline bool parsePosition(WavefrontObject& obj, istringstream& iss, bool invert_
         v[2] = -v[2];
     }
     obj.verts_v.push_back(v);
-    float value;
     if (!(iss >> std::ws).eof()) {
         cout << "warning: only 3 dimensional positions are supported by this implementation\n";
     }
@@ -145,7 +144,6 @@ inline bool parseTexCoord(WavefrontObject& obj, istringstream& iss) {
         return false;
     }
     obj.verts_vt.push_back(vt);
-    float value;
     if (!(iss >> std::ws).eof()) {
         cout << "warning: only 2-dimensional texture coordinates are supported by this implementation\n";
     }
@@ -166,7 +164,6 @@ inline bool parseNormal(WavefrontObject& obj, istringstream& iss, bool invert_z)
         vn[2] = -vn[2];
     }
     obj.verts_vn.push_back(vn);
-    float value;
     if (!(iss >> std::ws).eof()) {
         cerr << "error normal should only have three dimensions\n";
         myAssert(false);
