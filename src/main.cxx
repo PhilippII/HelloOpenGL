@@ -28,6 +28,7 @@
 #include "cpu_mesh_import.h"
 #include "cpu_mesh_utils.h" // to test addIndexBuffer(...)
 
+namespace fs = std::filesystem;
 
 struct Vertex {
     std::array<float, 2> pos;
@@ -73,7 +74,7 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << '\n';
 
     // initialize shader:
-    GLShaderProgram shaderProgram("res/shaders/Basic.shader");
+    GLShaderProgram shaderProgram(fs::path("res/shaders/Basic.shader", fs::path::format::generic_format));
     // shaderProgram.bind() is called automatically in constructor
 
     //int location = shaderProgram.getUniformLocation("u_Color");
@@ -185,9 +186,10 @@ int main(void)
                          starIndices.data());
 
     // import from OBJ-file:
-    GLShaderProgram suzanneSP("res/shaders/Suzanne.shader");
+    GLShaderProgram suzanneSP(fs::path("res/shaders/Suzanne.shader", fs::path::format::generic_format));
     //std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj", true);
-    std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = loadOBJfile("res/meshes/suzanne_with_sphere_and_plane.obj", true);
+    std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = loadOBJfile(fs::path("res/meshes/suzanne_with_sphere_and_plane.obj", fs::path::format::generic_format),
+                                                                true);
     if (suzanneCPUMeshes.empty()) {
         std::cerr << "error no object was found in obj file\n";
         return 1;

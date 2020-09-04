@@ -7,8 +7,7 @@ GLFW:
 
 c++-stdlib:
 - use ios_base::sync_with_stdio(false) to improve performance?
-- use path instead of string?
-	-> e.g. for platform independent filename separator ( '/' vs '\' )
+
 
 OpenGL:
 - GLCall(...) macro is fragile
@@ -97,6 +96,9 @@ DONE:
 	-> what happens if I compile with -D_GLIBCXX_DEBUG but link against a library
 		that was compiled without -D_GLIBCXX_DEBUG?
 		-> from my experiment (with *.o files instead of libraries) it seems to give a linker error
-
+- use path instead of string?
+	-> e.g. for platform independent filename separator ( '/' vs '\' )
+		(I hope that passing path::format::generic_format to the path constructor will take
+		 care of that)
 
 
