@@ -63,18 +63,18 @@ CPUVertexArray applyMultiIndex(std::size_t count, // std::vector<...>::size_type
                                const std::array<Index, N>* multiIndices,
                                const std::array<CPUVertexArray, N>& vas) {
     CPUVertexArray res;
-    for (std::size_t i_v = 0; i_v < count; ++i_v) {
+    for (std::size_t i_vert = 0; i_vert < count; ++i_vert) {
         // TODO: i_buff and N should be unsigned int ?
-        for (int i_buf = 0; i_buf < N; ++i_buf) {
-            VertexBufferLayout::stride_type stride_buf = vas[i_buf].layout.getStride();
-            Index index = multiIndices[i_v][i_buf];
-            for (VertexBufferLayout::stride_type offset = 0; offset < stride_buf; ++offset) {
-                res.data.push_back(vas[i_buf].data[stride_buf * index + offset]);
+        for (int i_va = 0; i_va < N; ++i_va) {
+            VertexBufferLayout::stride_type stride_va = vas[i_va].layout.getStride();
+            Index index = multiIndices[i_vert][i_va];
+            for (VertexBufferLayout::stride_type offset = 0; offset < stride_va; ++offset) {
+                res.data.push_back(vas[i_va].data[index * stride_va + offset]);
             }
         }
     }
 
-    for (auto& va : vas) {
+    for (const auto& va : vas) {
         res.layout += va.layout;
     }
 
