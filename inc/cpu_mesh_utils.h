@@ -25,21 +25,24 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
     Index copiedCount = 0;
     for (Index i_in = 0; i_in < count; ++i_in) {
         myAssert(copiedCount == res.va.data.size() / stride);
-        if (restartVertex != nullptr && std::equal(&data[i_in * stride], &data[(i_in+1) * stride], restartVertex)) {
+        if (restartVertex != nullptr && std::equal(data+(i_in * stride), data+((i_in+1) * stride), restartVertex)) {
             res.ib.indices.push_back(primitiveRestartIndex);
             continue;
         }
         bool found = false;
         Index i_out;
         for (i_out = 0; i_out < copiedCount && !found; ++i_out) {
-            if (std::equal(&data[i_in * stride], &data[(i_in+1) * stride], &res.va.data[i_out * stride])) {
+            if (std::equal(data+( i_in    * stride),
+                           data+((i_in+1) * stride),
+                           res.va.data.data()+(i_out * stride))) {
                 found = true;
             }
         }
         if (found) {
             res.ib.indices.push_back(i_out - 1);
         } else {
-            std::copy(&data[i_in * stride], &data[(i_in+1) * stride],
+            std::copy(data+( i_in    * stride),
+                      data+((i_in+1) * stride),
                       std::back_inserter(res.va.data));
             ++copiedCount;
             res.ib.indices.push_back(copiedCount - 1);
