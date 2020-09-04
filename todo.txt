@@ -7,10 +7,6 @@ GLFW:
 
 c++-stdlib:
 - use ios_base::sync_with_stdio(false) to improve performance?
-- compile with gcc specific macro  -D_GLIBCXX_DEBUG ?
-	-> and what do those do?: -D_GLIBCXX_CONCEPT_CHECKS -D_GLIBCXX_DEBUG_PEDANTIC
-	-> what happens if I compile with -D_GLIBCXX_DEBUG but link against a library
-		that was compiled without -D_GLIBCXX_DEBUG?
 - use path instead of string?
 	-> e.g. for platform independent filename separator ( '/' vs '\' )
 
@@ -94,6 +90,13 @@ DONE:
 - in assignment operator do delete previous content if there is any!!
 - after reading chapters 9 + 10 in stroustrup look again at function ParseShader(...)
 - rename getName to getRendererID()
+- compile with gcc specific macro  -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC
+	-> and what do those do?: -D_GLIBCXX_CONCEPT_CHECKS 
+		-> I don't know I added a comment line to the makefile to remind me
+			I might consider looking this up and maybe use it
+	-> what happens if I compile with -D_GLIBCXX_DEBUG but link against a library
+		that was compiled without -D_GLIBCXX_DEBUG?
+		-> from my experiment (with *.o files instead of libraries) it seems to give a linker error
 
 
 
