@@ -45,6 +45,8 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
             res.ib.indices.push_back(copiedCount - 1);
         }
     }
+    debugDo(std::cout << "removed " << (count - copiedCount) << " doubles\n");
+    debugDo(std::cout << copiedCount << " vertices remaining\n");
     return res;
 }
 
