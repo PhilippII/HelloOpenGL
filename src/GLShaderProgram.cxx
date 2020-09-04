@@ -8,6 +8,8 @@
 #include <sstream>
 #include <regex>
 
+#include <variant>
+
 using namespace std::literals::string_literals;
 
 
@@ -234,19 +236,18 @@ std::vector<ShaderSource> GLShaderProgram::parseShader(const std::filesystem::pa
 
     std::vector<ShaderSource> sources;
 
-    GLenum type;
-    bool validType = false;
+    std::variant<std::monostate, GLenum> type = std::monostate(); // monostate means invalid shader type
     while (stream) {
         // 1. find next '#shader' directive or eof and
         //      store the shader source encountered before that
         std::string line;
         std::ostringstream oss;
         std::smatch matches;
-        if (validType) {
+        if (std::holds_alternative<GLenum>(type)) { // valid shader type
             while (std::getline(stream, line) && !std::regex_match(line, matches, pat)) {
                 oss << line << '\n';
             }
-            sources.push_back(ShaderSource{type, oss.str()});
+            sources.push_back(ShaderSource{std::get<GLenum>(type), oss.str()});
         } else {
             while (std::getline(stream, line) && !std::regex_match(line, matches, pat)) {}
         }
@@ -254,14 +255,13 @@ std::vector<ShaderSource> GLShaderProgram::parseShader(const std::filesystem::pa
         // 2. figure out type for next shader to parse:
         if (stream) {
             std::string typeStr = matches[1].str();
-            if (shaderTypes.find(typeStr) == shaderTypes.end()) {
-                std::cerr << "warining: invalid shader type " << typeStr << '\n';
+            auto search = shaderTypes.find(typeStr);
+            if (search == shaderTypes.end()) {
+                std::cerr << "warning: invalid shader type " << typeStr << '\n';
                 myAssert(false);
-                validType = false;
+                type = std::monostate(); // monostate means invalid shader type
             } else {
-                // TODO: difference between at(...) and operator[](...)?
-                type = shaderTypes.at(typeStr);
-                validType = true;
+                type = search->second;
             }
         }
     }
