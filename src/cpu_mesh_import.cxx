@@ -356,7 +356,7 @@ inline CPUMesh<GLuint> wavefrontObjectToMesh(const WavefrontObject obj, bool* su
     return res;
 }
 
-std::vector<CPUMesh<GLuint>> loadOBJfile(std::string filepath, bool invert_z)
+std::vector<CPUMesh<GLuint>> loadOBJfile(std::filesystem::path filepath, bool invert_z)
 {
     ifstream ifs {filepath};
     if (!ifs) {
