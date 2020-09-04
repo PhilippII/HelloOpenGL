@@ -4,9 +4,8 @@
 #include "cpu_mesh_structs.h"
 
 #include <limits>
+#include <algorithm> // for st::equal()
 
-
-bool areBytesEqual(const GLbyte* a, const GLbyte* b, unsigned int size);
 
 template <typename Index>
 CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
@@ -25,14 +24,14 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
     Index copiedCount = 0;
     for (Index i_in = 0; i_in < count; ++i_in) {
         myAssert(copiedCount == res.va.data.size() / stride);
-        if (restartVertex != nullptr && areBytesEqual(&data[i_in * stride], restartVertex, stride)) {
+        if (restartVertex != nullptr && std::equal(&data[i_in * stride], &data[(i_in+1) * stride], restartVertex)) {
             res.ib.indices.push_back(primitiveRestartIndex);
             continue;
         }
         bool found = false;
         Index i_out;
         for (i_out = 0; i_out < copiedCount && !found; ++i_out) {
-            if (areBytesEqual(&data[i_in * stride], &res.va.data[i_out * stride], stride)) {
+            if (std::equal(&data[i_in * stride], &data[(i_in+1) * stride], &res.va.data[i_out * stride])) {
                 found = true;
             }
         }
