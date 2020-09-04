@@ -8,6 +8,8 @@
 
 #include "debug_utils.h"
 
+#include <algorithm>
+
 
 using std::string, std::vector;
 using std::cout, std::cerr;
@@ -16,14 +18,12 @@ using namespace std::literals::string_literals;
 
 // used by wavefrontObjectToMesh(...)
 template <typename Elem_Src>
-static std::vector<GLbyte> toByteVector(const std::vector<Elem_Src>& v) {
-    using res_size_t = std::vector<GLbyte>::size_type;
-    res_size_t resSize = v.size() * sizeof(Elem_Src);
+inline std::vector<GLbyte> toByteVector(const std::vector<Elem_Src>& v) {
+    auto resSize = v.size() * sizeof(Elem_Src);
     std::vector<GLbyte> res;
+    res.reserve(resSize);
     const GLbyte* p = reinterpret_cast<const GLbyte*>(v.data());
-    for (res_size_t i = 0; i < resSize; ++i) {
-        res.push_back(p[i]);
-    }
+    std::copy(p, p + resSize, std::back_inserter(res));
     return res;
 }
 
