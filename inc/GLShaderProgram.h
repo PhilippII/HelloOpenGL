@@ -6,6 +6,8 @@
 
 #include "GLShader.h"
 
+#include <filesystem> // for std::filesystem::path
+
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -23,7 +25,7 @@ class GLShaderProgram
 {
 public:
     GLShaderProgram();
-    GLShaderProgram(const std::string& filepath, SPReadiness readiness = SPReadiness::BIND);
+    GLShaderProgram(const std::filesystem::path& filepath, SPReadiness readiness = SPReadiness::BIND);
     GLShaderProgram(std::vector<ShaderSource> sources, SPReadiness readiness = SPReadiness::BIND);
 
     GLShaderProgram(const GLShaderProgram& other) = delete;
@@ -78,7 +80,7 @@ public:
     bool isBound() const;
 
 private:
-    static std::vector<ShaderSource> parseShader(const std::string& filepath);
+    static std::vector<ShaderSource> parseShader(const std::filesystem::path& filepath);
     static const std::unordered_map<std::string, GLenum> shaderTypes;
 
     void printShaderProgramInfoLog() const;

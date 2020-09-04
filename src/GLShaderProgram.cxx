@@ -27,7 +27,7 @@ GLShaderProgram::GLShaderProgram()
     m_rendererID = glCreateProgram();
 }
 
-GLShaderProgram::GLShaderProgram(const std::string &filepath, SPReadiness readiness)
+GLShaderProgram::GLShaderProgram(const std::filesystem::path& filepath, SPReadiness readiness)
 {
     m_rendererID = glCreateProgram();
 
@@ -221,7 +221,7 @@ bool GLShaderProgram::isBound() const
     return (m_rendererID == static_cast<GLuint>(currID));
 }
 
-std::vector<ShaderSource> GLShaderProgram::parseShader(const std::string &filepath)
+std::vector<ShaderSource> GLShaderProgram::parseShader(const std::filesystem::path& filepath)
 {
     std::ifstream stream(filepath);
     if (!stream) {
