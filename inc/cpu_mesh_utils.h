@@ -68,9 +68,9 @@ CPUVertexArray applyMultiIndex(std::size_t count, // std::vector<...>::size_type
         for (int i_va = 0; i_va < N; ++i_va) {
             VertexBufferLayout::stride_type stride_va = vas[i_va].layout.getStride();
             Index index = multiIndices[i_vert][i_va];
-            for (VertexBufferLayout::stride_type offset = 0; offset < stride_va; ++offset) {
-                res.data.push_back(vas[i_va].data[index * stride_va + offset]);
-            }
+            std::copy(vas[i_va].data.data() +  index    * stride_va,
+                      vas[i_va].data.data() + (index+1) * stride_va,
+                      std::back_inserter(res.data));
         }
     }
 
