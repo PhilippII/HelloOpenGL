@@ -4,7 +4,8 @@
 #include "cpu_mesh_structs.h"
 
 #include <limits>
-#include <algorithm> // for st::equal()
+#include <algorithm> // for std::equal(), std::copy()
+#include <iterator> // for std::back_inserter()
 
 
 template <typename Index>
@@ -38,9 +39,8 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
         if (found) {
             res.ib.indices.push_back(i_out - 1);
         } else {
-            for (VertexBufferLayout::stride_type offset = 0; offset < stride; ++offset) {
-                res.va.data.push_back(data[i_in * stride + offset]);
-            }
+            std::copy(&data[i_in * stride], &data[(i_in+1) * stride],
+                      std::back_inserter(res.va.data));
             ++copiedCount;
             res.ib.indices.push_back(copiedCount - 1);
         }
