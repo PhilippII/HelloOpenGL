@@ -285,7 +285,7 @@ inline bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCoun
 }
 
 // does not return valid CPUMesh if obj.miFormat is ...::UNKNOWN
-inline CPUMesh<GLuint> wavefrontObjectToMesh(const WavefrontObject obj, bool* success) {
+inline CPUMesh<GLuint> wavefrontObjectToMesh(const WavefrontObject& obj, bool* success) {
     VertexBufferLayout layout_v;
     layout_v.append<float>(3, "position_oc"s);
     VertexBufferLayout layout_vt;
