@@ -4,6 +4,7 @@
 #include "cpu_mesh_structs.h"
 
 #include <limits>
+#include <map>
 #include <algorithm> // for std::equal(), std::copy()
 #include <iterator> // for std::back_inserter()
 
@@ -15,41 +16,46 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
                               const GLbyte* restartVertex = nullptr,
                               Index primitiveRestartIndex = std::numeric_limits<Index>::max()) {
     // TODO:
-    // - loop over stride is confusing
-    // - linear search over i_out has bad performance
+    // - make res.ib.primitiveRestartIndex a std::variant<std::monostate, Index> and
+    //      remove boolean res.ib.primitiveRestart?
+    // - pass restartVertex as std::variant<std::monostate, std::vector<GLbyte>> ?
+    // - make vertex and vertex_to_index's mapped_type a kind of a vector_view in order to avoid overhead
+    //       of some unnecessary copy operations
+    // - try a version of this function that casts function argument data
+    //      to std::array<GLbyte, Stride>*
+    //      -> advantage: avoids unnecessary copy to temp. variable vertex
+    //              (we can just use data[i_in] directly instead of vertex)
+    //              (but still does not avoid unnecessary copy to the map vertex_to_index)
+    //      -> advantage: avoids complicated index calculation (i_in * stride) and ((i_in+1) * stride)
+    //      -> disadvantage: needs to take Stride as template argument, because it must be constexpr
+    //          -> add check: myAssert(Stride == layout.getStride())
     CPUMesh<Index> res;
     res.va.layout = layout;
     res.ib.primitiveRestart = (restartVertex != nullptr);
     res.ib.primitiveRestartIndex = primitiveRestartIndex;
     VertexBufferLayout::stride_type stride = layout.getStride();
-    Index copiedCount = 0;
+    std::map<std::vector<GLbyte>, Index> vertex_to_index;
     for (Index i_in = 0; i_in < count; ++i_in) {
-        myAssert(copiedCount == res.va.data.size() / stride);
-        if (restartVertex != nullptr && std::equal(data+(i_in * stride), data+((i_in+1) * stride), restartVertex)) {
+        myAssert(vertex_to_index.size() == res.va.data.size() / stride);
+        std::vector<GLbyte> vertex(data+(i_in * stride), data+((i_in+1) * stride));
+        if (restartVertex != nullptr && std::equal(vertex.begin(), vertex.end(), restartVertex)) {
             res.ib.indices.push_back(primitiveRestartIndex);
             continue;
         }
-        bool found = false;
-        Index i_out;
-        for (i_out = 0; i_out < copiedCount && !found; ++i_out) {
-            if (std::equal(data+( i_in    * stride),
-                           data+((i_in+1) * stride),
-                           res.va.data.data()+(i_out * stride))) {
-                found = true;
-            }
-        }
-        if (found) {
-            res.ib.indices.push_back(i_out - 1);
+        auto search = vertex_to_index.find(vertex);
+        if (search != vertex_to_index.end()) {
+            res.ib.indices.push_back(search->second);
         } else {
-            std::copy(data+( i_in    * stride),
-                      data+((i_in+1) * stride),
+            Index i_out = static_cast<Index>(vertex_to_index.size()); // index, where the new vertex
+                                                                      // will be added to the output vertex array
+            std::copy(vertex.begin(), vertex.end(),
                       std::back_inserter(res.va.data));
-            ++copiedCount;
-            res.ib.indices.push_back(copiedCount - 1);
+            vertex_to_index.insert({vertex, i_out});
+            res.ib.indices.push_back(i_out);
         }
     }
-    debugDo(std::cout << "removed " << (count - copiedCount) << " doubles\n");
-    debugDo(std::cout << copiedCount << " vertices remaining\n");
+    debugDo(std::cout << "removed " << (count - vertex_to_index.size()) << " doubles\n");
+    debugDo(std::cout << vertex_to_index.size() << " vertices remaining\n");
     return res;
 }
 
