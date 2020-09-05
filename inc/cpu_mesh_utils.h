@@ -37,22 +37,23 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
     std::map<std::vector<GLbyte>, Index> vertex_to_index;
     for (Index i_in = 0; i_in < count; ++i_in) {
         myAssert(vertex_to_index.size() == res.va.data.size() / stride);
+        Index i_out;
         std::vector<GLbyte> vertex(data+(i_in * stride), data+((i_in+1) * stride));
         if (restartVertex != nullptr && std::equal(vertex.begin(), vertex.end(), restartVertex)) {
-            res.ib.indices.push_back(primitiveRestartIndex);
-            continue;
-        }
-        auto search = vertex_to_index.find(vertex);
-        if (search != vertex_to_index.end()) {
-            res.ib.indices.push_back(search->second);
+            i_out = primitiveRestartIndex;
         } else {
-            Index i_out = static_cast<Index>(vertex_to_index.size()); // index, where the new vertex
-                                                                      // will be added to the output vertex array
-            std::copy(vertex.begin(), vertex.end(),
-                      std::back_inserter(res.va.data));
-            vertex_to_index.insert({vertex, i_out});
-            res.ib.indices.push_back(i_out);
+            auto search = vertex_to_index.find(vertex);
+            if (search != vertex_to_index.end()) {
+                i_out = search->second;
+            } else {
+                i_out = static_cast<Index>(vertex_to_index.size()); // index, where the new vertex
+                                                                    // will be added to the output vertex array
+                std::copy(vertex.begin(), vertex.end(),
+                          std::back_inserter(res.va.data));
+                vertex_to_index.insert({vertex, i_out});
+            }
         }
+        res.ib.indices.push_back(i_out);
     }
     debugDo(std::cout << "removed " << (count - vertex_to_index.size()) << " doubles\n");
     debugDo(std::cout << vertex_to_index.size() << " vertices remaining\n");
