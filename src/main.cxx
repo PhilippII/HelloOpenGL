@@ -104,10 +104,12 @@ int main(void)
     VertexBufferLayout houseLayout;
     houseLayout.append(2, GL_FLOAT, VariableType::FLOAT, posAttrIndex);
     houseLayout.append(4, GL_FLOAT, VariableType::FLOAT, colAttrIndex);
-    CPUMesh<GLuint> houseCPUMesh = addIndexBuffer<GLuint>(CPUVertexArray{houseLayout,
-                                                                 std::vector<GLbyte>(reinterpret_cast<const GLbyte*>(houseVertices),
-                                                                                     reinterpret_cast<const GLbyte*>(houseVertices)
-                                                                                                        + 9 * sizeof(Vertex))});
+    constexpr VertexBufferLayout::stride_type hStride = 6 * sizeof(GLfloat);
+    myAssert(hStride == houseLayout.getStride());
+    CPUMesh<GLuint> houseCPUMesh = addIndexBuffer<GLuint, hStride>(CPUVertexArray{houseLayout,
+                                                                                  std::vector<GLbyte>(reinterpret_cast<const GLbyte*>(houseVertices),
+                                                                                                      reinterpret_cast<const GLbyte*>(houseVertices)
+                                                                                                      + 9 * sizeof(Vertex))});
     std::cout << "houseCPUMesh:\n";
     std::cout << houseCPUMesh;
     GLVertexBuffer houseVB(houseCPUMesh.va.data.size(), houseCPUMesh.va.data.data());
