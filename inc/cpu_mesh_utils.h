@@ -19,16 +19,10 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
     // - make res.ib.primitiveRestartIndex a std::optional<Index> and
     //      remove boolean res.ib.primitiveRestart?
     // - pass restartVertex as std::optional<std::vector<GLbyte>> ?
-    // - make vertex and vertex_to_index's mapped_type a kind of a vector_view in order to avoid overhead
+    // - make vertex_to_index's mapped_type a pointer to an element of verts to avoid overhead
     //       of some unnecessary copy operations
-    // - try a version of this function that casts function argument data
-    //      to std::array<GLbyte, Stride>*
-    //      -> advantage: avoids unnecessary copy to temp. variable vertex
-    //              (we can just use data[i_in] directly instead of vertex)
-    //              (but still does not avoid unnecessary copy to the map vertex_to_index)
-    //      -> advantage: avoids complicated index calculation (i_in * stride) and ((i_in+1) * stride)
-    //      -> disadvantage: needs to take Stride as template argument, because it must be constexpr
-    //          -> add check: myAssert(Stride == layout.getStride())
+    //      -> problem: how to redefine < and == operators (or <= >?) so the pointed to vertices
+    //              are compared rather than the pointers themselves?
     using Vertex = std::array<GLbyte, Stride>;
     myAssert(Stride == layout.getStride());
     CPUMesh<Index> res;
