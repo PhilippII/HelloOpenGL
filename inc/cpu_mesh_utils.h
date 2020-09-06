@@ -25,12 +25,13 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
     //              are compared rather than the pointers themselves?
     using Vertex = std::array<GLbyte, Stride>;
     myAssert(Stride == layout.getStride());
-    CPUMesh<Index> res;
-    res.va.layout = layout;
-    res.ib.primitiveRestart = (restartVertex != nullptr);
-    res.ib.primitiveRestartIndex = primitiveRestartIndex;
     const Vertex* verts = reinterpret_cast<const Vertex*>(data);
     const Vertex* l_restartVertex = reinterpret_cast<const Vertex*>(restartVertex);
+
+    CPUMesh<Index> res;
+    res.va.layout = layout;
+    res.ib.primitiveRestart = (l_restartVertex != nullptr);
+    res.ib.primitiveRestartIndex = primitiveRestartIndex;
     std::map<Vertex, Index> vertex_to_index;
     for (Index i_in = 0; i_in < count; ++i_in) {
         myAssert(vertex_to_index.size() == res.va.data.size() / Stride);
