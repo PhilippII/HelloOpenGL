@@ -55,8 +55,8 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
         }
         res.ib.indices.push_back(i_out);
     }
-    debugDo(std::cout << "removed " << (count - vertex_to_index.size()) << " doubles\n");
-    debugDo(std::cout << vertex_to_index.size() << " vertices remaining\n");
+    debugDo(std::cout << "removed " << (count - vertex_to_index.size()) << " doubles and/or restartVertices\n");
+    debugDo(std::cout << vertex_to_index.size() << " vertices remaining in vertex array\n");
     return res;
 }
 
