@@ -7,7 +7,16 @@ GLFW:
 
 c++-stdlib:
 - use ios_base::sync_with_stdio(false) to improve performance?
-
+- std::optional<...>
+	-> in parseShader() use std::optional<GLenum> instead of std::variant<std::monostate, GLenum> to store the shader type
+	-> use std::optional<...> for CPUIndexBuffer::primitiveRestartIndex
+		and remove boolean primitiveRestart
+		(same for CPUMultiIndexBuffer and for GLIndexBuffer)
+	-> use std::optional<std::vector<GLbyte>> for parameter restartVertex
+		in addIndexBuffer()
+	-> generally use std::optional<..> everywhere where there is a boolean that keeps track of 
+		whether another variable is valid 
+		(maybe also where there is a pointer where nullptr represents an invalid value?)
 
 OpenGL:
 - GLCall(...) macro is fragile

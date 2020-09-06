@@ -16,9 +16,9 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
                               const GLbyte* restartVertex = nullptr,
                               Index primitiveRestartIndex = std::numeric_limits<Index>::max()) {
     // TODO:
-    // - make res.ib.primitiveRestartIndex a std::variant<std::monostate, Index> and
+    // - make res.ib.primitiveRestartIndex a std::optional<Index> and
     //      remove boolean res.ib.primitiveRestart?
-    // - pass restartVertex as std::variant<std::monostate, std::vector<GLbyte>> ?
+    // - pass restartVertex as std::optional<std::vector<GLbyte>> ?
     // - make vertex and vertex_to_index's mapped_type a kind of a vector_view in order to avoid overhead
     //       of some unnecessary copy operations
     // - try a version of this function that casts function argument data
