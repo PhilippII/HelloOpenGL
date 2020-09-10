@@ -13,7 +13,7 @@ template <typename Index>
 CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
                               Index count,
                               const GLbyte* data,
-                              const GLbyte* restartVertex = nullptr,
+                              std::optional<std::vector<GLbyte>> restartVertex = {},
                               Index primitiveRestartIndex = std::numeric_limits<Index>::max()) {
     // TODO:
     // - make res.ib.primitiveRestartIndex a std::optional<Index> and
@@ -31,14 +31,15 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
     //          -> add check: myAssert(Stride == layout.getStride())
     CPUMesh<Index> res;
     res.va.layout = layout;
-    res.ib.primitiveRestartIndex = (restartVertex != nullptr) ? std::optional<Index>{primitiveRestartIndex} : std::nullopt;
+    res.ib.primitiveRestartIndex = (restartVertex) ? std::optional<Index>{primitiveRestartIndex} : std::nullopt;
     VertexBufferLayout::stride_type stride = layout.getStride();
+    myAssert(!restartVertex.has_value() || restartVertex->size() == static_cast<std::size_t>(stride));
     std::map<std::vector<GLbyte>, Index> vertex_to_index;
     for (Index i_in = 0; i_in < count; ++i_in) {
         myAssert(vertex_to_index.size() == res.va.data.size() / stride);
         Index i_out;
         std::vector<GLbyte> vertex(data+(i_in * stride), data+((i_in+1) * stride));
-        if (restartVertex != nullptr && std::equal(vertex.begin(), vertex.end(), restartVertex)) {
+        if (restartVertex && vertex == *restartVertex) {
             i_out = primitiveRestartIndex;
         } else {
             auto search = vertex_to_index.find(vertex);
@@ -106,9 +107,10 @@ CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
     CPUMesh<Index> res = addIndexBuffer<Index>(mibLayout,
                                                static_cast<Index>(miMesh.mib.indices.size()),
                                                reinterpret_cast<const GLbyte*>(miMesh.mib.indices.data()),
-                                               (miMesh.mib.primitiveRestartMultiIndex) ?
-                                                   reinterpret_cast<const GLbyte*>(miMesh.mib.primitiveRestartMultiIndex->data())
-                                                   : nullptr,
+                                               (miMesh.mib.primitiveRestartMultiIndex.has_value()) ?
+                                                   std::optional<std::vector<GLbyte>>{std::vector<GLbyte>(reinterpret_cast<const GLbyte*>(miMesh.mib.primitiveRestartMultiIndex->data()),
+                                                                                                          reinterpret_cast<const GLbyte*>(miMesh.mib.primitiveRestartMultiIndex->data()) + mibLayout.getStride())}
+                                                   : std::nullopt,
                                                restartIndex);
     res.ib.primitiveType = miMesh.mib.primitiveType;
     // right now res.va contains the multi-dimensional indices instead of the actual data.
