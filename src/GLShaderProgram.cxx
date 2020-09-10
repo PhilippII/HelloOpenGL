@@ -8,7 +8,7 @@
 #include <sstream>
 #include <regex>
 
-#include <variant>
+#include <optional>
 
 using namespace std::literals::string_literals;
 
@@ -236,18 +236,19 @@ std::vector<ShaderSource> GLShaderProgram::parseShader(const std::filesystem::pa
 
     std::vector<ShaderSource> sources;
 
-    std::variant<std::monostate, GLenum> type = std::monostate(); // monostate means invalid shader type
+    std::optional<GLenum> type = {}; // empty object {} means either no '#shader xxx'-directive was encountered yet
+                                     // or an invalid shader type was specified in the last '#shader xxx'-directive
     while (stream) {
         // 1. find next '#shader' directive or eof and
         //      store the shader source encountered before that
         std::string line;
         std::ostringstream oss;
         std::smatch matches;
-        if (std::holds_alternative<GLenum>(type)) { // valid shader type
+        if (type) {
             while (std::getline(stream, line) && !std::regex_match(line, matches, pat)) {
                 oss << line << '\n';
             }
-            sources.push_back(ShaderSource{std::get<GLenum>(type), oss.str()});
+            sources.push_back(ShaderSource{*type, oss.str()});
         } else {
             while (std::getline(stream, line) && !std::regex_match(line, matches, pat)) {}
         }
@@ -259,7 +260,7 @@ std::vector<ShaderSource> GLShaderProgram::parseShader(const std::filesystem::pa
             if (search == shaderTypes.end()) {
                 std::cerr << "warning: invalid shader type " << typeStr << '\n';
                 myAssert(false);
-                type = std::monostate(); // monostate means invalid shader type
+                type = {};
             } else {
                 type = search->second;
             }
