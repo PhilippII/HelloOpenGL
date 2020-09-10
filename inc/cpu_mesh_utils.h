@@ -16,19 +16,16 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
                               std::optional<std::vector<GLbyte>> restartVertex = {},
                               Index primitiveRestartIndex = std::numeric_limits<Index>::max()) {
     // TODO:
-    // - make res.ib.primitiveRestartIndex a std::optional<Index> and
-    //      remove boolean res.ib.primitiveRestart?
-    // - pass restartVertex as std::optional<std::vector<GLbyte>> ?
-    // - make vertex and vertex_to_index's mapped_type a kind of a vector_view in order to avoid overhead
+    // - make vertex's type and vertex_to_index's key_type a kind of a vector_view in order to avoid overhead
     //       of some unnecessary copy operations
-    // - try a version of this function that casts function argument data
-    //      to std::array<GLbyte, Stride>*
-    //      -> advantage: avoids unnecessary copy to temp. variable vertex
-    //              (we can just use data[i_in] directly instead of vertex)
-    //              (but still does not avoid unnecessary copy to the map vertex_to_index)
-    //      -> advantage: avoids complicated index calculation (i_in * stride) and ((i_in+1) * stride)
-    //      -> disadvantage: needs to take Stride as template argument, because it must be constexpr
-    //          -> add check: myAssert(Stride == layout.getStride())
+    //      -> problem: need to implement class vector_view myself
+    //      -> even span from Guidlines Support Library may be tricky to use here as
+    //              it does not have any comparison operators
+    //          -> would need to pass my own comparison functor to map
+    //          -> need to use less concise
+    //              std::equal(vertex.begin(), vertex.end(), restartVertex->begin())
+    //              instead of
+    //              vertex == *restartVertex
     CPUMesh<Index> res;
     res.va.layout = layout;
     res.ib.primitiveRestartIndex = (restartVertex) ? std::optional<Index>{primitiveRestartIndex} : std::nullopt;
