@@ -5,6 +5,7 @@
 #include <array>
 #include <GL/glew.h>
 #include <iostream>
+#include <optional>
 
 #include "VertexBufferLayout.h"
 
@@ -12,8 +13,7 @@ template <typename Index>
 struct CPUIndexBuffer {
     std::vector<Index> indices;
     GLenum primitiveType = GL_TRIANGLES;
-    bool primitiveRestart = false;
-    Index primitiveRestartIndex;
+    std::optional<Index> primitiveRestartIndex = {};
 };
 
 // TODO: N should be unsigned int?
@@ -21,8 +21,7 @@ template <typename Index, int N>
 struct CPUMultiIndexBuffer {
     std::vector<std::array<Index, N>> indices;
     GLenum primitiveType = GL_TRIANGLES;
-    bool primitiveRestart = false;
-    std::array<Index, N> primitiveRestartMultiIndex;
+    std::optional<std::array<Index, N>> primitiveRestartMultiIndex = {};
 };
 
 struct CPUVertexArray {

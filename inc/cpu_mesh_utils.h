@@ -31,8 +31,7 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
     //          -> add check: myAssert(Stride == layout.getStride())
     CPUMesh<Index> res;
     res.va.layout = layout;
-    res.ib.primitiveRestart = (restartVertex != nullptr);
-    res.ib.primitiveRestartIndex = primitiveRestartIndex;
+    res.ib.primitiveRestartIndex = (restartVertex != nullptr) ? std::optional<Index>{primitiveRestartIndex} : std::nullopt;
     VertexBufferLayout::stride_type stride = layout.getStride();
     std::map<std::vector<GLbyte>, Index> vertex_to_index;
     for (Index i_in = 0; i_in < count; ++i_in) {
@@ -107,8 +106,8 @@ CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
     CPUMesh<Index> res = addIndexBuffer<Index>(mibLayout,
                                                static_cast<Index>(miMesh.mib.indices.size()),
                                                reinterpret_cast<const GLbyte*>(miMesh.mib.indices.data()),
-                                               (miMesh.mib.primitiveRestart) ?
-                                                   reinterpret_cast<const GLbyte*>(miMesh.mib.primitiveRestartMultiIndex.data())
+                                               (miMesh.mib.primitiveRestartMultiIndex) ?
+                                                   reinterpret_cast<const GLbyte*>(miMesh.mib.primitiveRestartMultiIndex->data())
                                                    : nullptr,
                                                restartIndex);
     res.ib.primitiveType = miMesh.mib.primitiveType;
@@ -124,11 +123,11 @@ template <typename Index>
 CPUIndexBuffer<Index> applyTriangleFan(const CPUIndexBuffer<Index>& ib) {
     using ib_count_t = typename std::vector<Index>::size_type;
     CPUIndexBuffer<Index> res = {std::vector<Index>{},
-                          GL_TRIANGLES,
-                          false,
-                          std::numeric_limits<Index>::max()};
+                                 GL_TRIANGLES,
+                                 {} // disable primitiveRestartIndex in result
+                                };
     myAssert(ib.primitiveType == GL_TRIANGLE_FAN);
-    myAssert(ib.primitiveRestart);
+    myAssert(ib.primitiveRestartIndex);
 
     ib_count_t i = 0;
     while (i < ib.indices.size()) {
@@ -138,7 +137,7 @@ CPUIndexBuffer<Index> applyTriangleFan(const CPUIndexBuffer<Index>& ib) {
         }
         Index baseVert = ib.indices[i];
         i += 2;
-        while (i < ib.indices.size() && ib.indices[i] != ib.primitiveRestartIndex) {
+        while (i < ib.indices.size() && ib.indices[i] != *ib.primitiveRestartIndex) {
             res.indices.push_back(baseVert);
             res.indices.push_back(ib.indices[i-1]);
             res.indices.push_back(ib.indices[i]);

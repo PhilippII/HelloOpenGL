@@ -265,16 +265,20 @@ inline bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCoun
     }
     switch (obj.miFormat) {
     case WavefrontObject::MultiIndexFormat::V:
-        obj.mib_v.indices.push_back(obj.mib_v.primitiveRestartMultiIndex);
+        myAssert(obj.mib_v.primitiveRestartMultiIndex);
+        obj.mib_v.indices.push_back(*obj.mib_v.primitiveRestartMultiIndex);
         break;
     case WavefrontObject::MultiIndexFormat::V_VT:
-        obj.mib_v_vt.indices.push_back(obj.mib_v_vt.primitiveRestartMultiIndex);
+        myAssert(obj.mib_v_vt.primitiveRestartMultiIndex);
+        obj.mib_v_vt.indices.push_back(*obj.mib_v_vt.primitiveRestartMultiIndex);
         break;
     case WavefrontObject::MultiIndexFormat::V_VN:
-        obj.mib_v_vn.indices.push_back(obj.mib_v_vn.primitiveRestartMultiIndex);
+        myAssert(obj.mib_v_vn.primitiveRestartMultiIndex);
+        obj.mib_v_vn.indices.push_back(*obj.mib_v_vn.primitiveRestartMultiIndex);
         break;
     case WavefrontObject::MultiIndexFormat::V_VT_VN:
-        obj.mib_v_vt_vn.indices.push_back(obj.mib_v_vt_vn.primitiveRestartMultiIndex);
+        myAssert(obj.mib_v_vt_vn.primitiveRestartMultiIndex);
+        obj.mib_v_vt_vn.indices.push_back(*obj.mib_v_vt_vn.primitiveRestartMultiIndex);
         break;
     default:
         myAssert(false);
@@ -385,18 +389,14 @@ std::vector<CPUMesh<GLuint>> loadOBJfile(const std::filesystem::path& filepath, 
         obj.miFormat = WavefrontObject::MultiIndexFormat::UNKNOWN;
 
         obj.mib_v.primitiveType = GL_TRIANGLE_FAN;
-        obj.mib_v.primitiveRestart = true;
         obj.mib_v.primitiveRestartMultiIndex = std::array<GLuint, 1>{std::numeric_limits<GLuint>::max()};
         obj.mib_v_vt.primitiveType = GL_TRIANGLE_FAN;
-        obj.mib_v_vt.primitiveRestart = true;
         obj.mib_v_vt.primitiveRestartMultiIndex = std::array<GLuint, 2>{std::numeric_limits<GLuint>::max(),
                                                                         std::numeric_limits<GLuint>::max()};
         obj.mib_v_vn.primitiveType = GL_TRIANGLE_FAN;
-        obj.mib_v_vn.primitiveRestart = true;
         obj.mib_v_vn.primitiveRestartMultiIndex = std::array<GLuint, 2>{std::numeric_limits<GLuint>::max(),
                                                                         std::numeric_limits<GLuint>::max()};
         obj.mib_v_vt_vn.primitiveType = GL_TRIANGLE_FAN;
-        obj.mib_v_vt_vn.primitiveRestart = true;
         obj.mib_v_vt_vn.primitiveRestartMultiIndex = std::array<GLuint, 3>{std::numeric_limits<GLuint>::max(),
                                                                            std::numeric_limits<GLuint>::max(),
                                                                            std::numeric_limits<GLuint>::max()};
