@@ -376,11 +376,11 @@ std::vector<CPUMesh<GLuint>> loadOBJfile(const std::filesystem::path& filepath, 
     VertexCountSum count_sum = {0, 0, 0};
 
     string nextName;
-
     while (ifs) {
         WavefrontObject obj;
 
         obj.name = nextName;
+        nextName.clear();
 
         obj.miFormat = WavefrontObject::MultiIndexFormat::UNKNOWN;
 
@@ -401,9 +401,8 @@ std::vector<CPUMesh<GLuint>> loadOBJfile(const std::filesystem::path& filepath, 
                                                                            std::numeric_limits<GLuint>::max(),
                                                                            std::numeric_limits<GLuint>::max()};
 
-        bool startNext = false;
         string line;
-        while (!startNext && getline(ifs, line)) {
+        while (nextName.empty() && getline(ifs, line)) {
             // cout << line << '\n';
             istringstream iss {line};
             string opcodeStr;
@@ -434,7 +433,6 @@ std::vector<CPUMesh<GLuint>> loadOBJfile(const std::filesystem::path& filepath, 
                 if (!(iss >> nextName) || nextName.empty()) {
                     cerr << "error parsing name of object\n";
                 }
-                startNext = true;
             } else {
                 cerr << "warning: unknown opcode " << opcodeStr << '\n';
             }
