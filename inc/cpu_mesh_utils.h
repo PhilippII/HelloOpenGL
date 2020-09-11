@@ -7,13 +7,13 @@
 #include <map>
 #include <algorithm> // for std::equal(), std::copy()
 #include <iterator> // for std::back_inserter()
-
+#include "gsl/gsl" // or "gsl/gsl" ?
 
 template <typename Index>
 CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
                               Index count,
                               const GLbyte* data,
-                              std::optional<std::vector<GLbyte>> restartVertex = {},
+                              std::optional<gsl::span<const GLbyte>> restartVertex = {},
                               Index primitiveRestartIndex = std::numeric_limits<Index>::max()) {
     // TODO:
     // - make vertex's type and vertex_to_index's key_type a kind of a vector_view in order to avoid overhead
@@ -36,7 +36,7 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
         myAssert(vertex_to_index.size() == res.va.data.size() / stride);
         Index i_out;
         std::vector<GLbyte> vertex(data+(i_in * stride), data+((i_in+1) * stride));
-        if (restartVertex && vertex == *restartVertex) {
+        if (restartVertex && std::equal(vertex.begin(), vertex.end(), restartVertex->begin())) {
             i_out = primitiveRestartIndex;
         } else {
             auto search = vertex_to_index.find(vertex);
@@ -105,8 +105,8 @@ CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
                                                static_cast<Index>(miMesh.mib.indices.size()),
                                                reinterpret_cast<const GLbyte*>(miMesh.mib.indices.data()),
                                                (miMesh.mib.primitiveRestartMultiIndex.has_value()) ?
-                                                   std::optional<std::vector<GLbyte>>{std::vector<GLbyte>(reinterpret_cast<const GLbyte*>(miMesh.mib.primitiveRestartMultiIndex->data()),
-                                                                                                          reinterpret_cast<const GLbyte*>(miMesh.mib.primitiveRestartMultiIndex->data()) + mibLayout.getStride())}
+                                                   std::optional<gsl::span<const GLbyte>>{gsl::span<const GLbyte>(reinterpret_cast<const GLbyte*>(miMesh.mib.primitiveRestartMultiIndex->data()),
+                                                                                                                  mibLayout.getStride())}
                                                    : std::nullopt,
                                                restartIndex);
     res.ib.primitiveType = miMesh.mib.primitiveType;
