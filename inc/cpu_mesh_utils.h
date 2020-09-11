@@ -73,11 +73,10 @@ CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va) {
 
 // assumes that there are no primitiveRestartIndices anymore in multiIndices
 template <typename Index, int N>
-CPUVertexArray applyMultiIndex(std::size_t count, // std::vector<...>::size_type does not work for some reason
-                               const std::array<Index, N>* multiIndices,
+CPUVertexArray applyMultiIndex(gsl::span<const std::array<Index, N>> multiIndices,
                                const std::array<CPUVertexArray, N>& vas) {
     CPUVertexArray res;
-    for (std::size_t i_vert = 0; i_vert < count; ++i_vert) {
+    for (std::size_t i_vert = 0; i_vert < multiIndices.size(); ++i_vert) {
         // TODO: i_buff and N should be unsigned int ?
         for (int i_va = 0; i_va < N; ++i_va) {
             VertexBufferLayout::stride_type stride_va = vas[i_va].layout.getStride();
@@ -98,8 +97,8 @@ CPUVertexArray applyMultiIndex(std::size_t count, // std::vector<...>::size_type
 template<typename Index, int N>
 CPUVertexArray applyMultiIndex(const CPUMultiIndexMesh<Index, N>& miMesh) {
     myAssert(miMesh.mib.primitiveRestart == false);
-    return applyMultiIndex<Index, N>(miMesh.mib.indices.size(),
-                                     miMesh.mib.indices.data(),
+    return applyMultiIndex<Index, N>({miMesh.mib.indices.data(),
+                                      miMesh.mib.indices.size()},
                                      miMesh.vas);
 }
 
@@ -118,8 +117,8 @@ CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
     res.ib.primitiveType = miMesh.mib.primitiveType;
     // right now res.va contains the multi-dimensional indices instead of the actual data.
     // To replace the multi-dimensional indices with the actual data we do:
-    res.va = applyMultiIndex<Index, N>(res.va.data.size() / sizeof(std::array<Index, N>),
-                                       reinterpret_cast<const std::array<Index, N>*>(res.va.data.data()),
+    res.va = applyMultiIndex<Index, N>({reinterpret_cast<const std::array<Index, N>*>(res.va.data.data()),
+                                        res.va.data.size() / sizeof(std::array<Index, N>)},
                                        miMesh.vas);
     return res;
 }
