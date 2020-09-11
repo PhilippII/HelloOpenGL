@@ -9,6 +9,19 @@
 #include <iterator> // for std::back_inserter()
 #include "gsl/gsl" // or "gsl/gsl" ?
 
+
+// TODO: maybe SpanDeepCompareLess out of public namespace?
+template <typename Elem>
+class SpanDeepCompareLess {
+public:
+    bool operator()(gsl::span<Elem> a, gsl::span<Elem> b) const {
+        return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
+    }
+    // using this comparison function map will consider two spans equivalent
+    // if they point to arrays with the same content, even if the
+    // actual memory adresses may be different
+};
+
 template <typename Index>
 CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
                               Index count,
@@ -31,11 +44,12 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
     res.ib.primitiveRestartIndex = (restartVertex) ? std::optional<Index>{primitiveRestartIndex} : std::nullopt;
     VertexBufferLayout::stride_type stride = layout.getStride();
     myAssert(!restartVertex || restartVertex->size() == static_cast<std::size_t>(stride));
-    std::map<std::vector<GLbyte>, Index> vertex_to_index;
+    SpanDeepCompareLess<const GLbyte> compare;
+    std::map<gsl::span<const GLbyte>, Index, decltype(compare)> vertex_to_index(compare);
     for (Index i_in = 0; i_in < count; ++i_in) {
         myAssert(vertex_to_index.size() == res.va.data.size() / stride);
         Index i_out;
-        std::vector<GLbyte> vertex(data+(i_in * stride), data+((i_in+1) * stride));
+        gsl::span<const GLbyte> vertex(data+(i_in * stride), stride);
         if (restartVertex && std::equal(vertex.begin(), vertex.end(), restartVertex->begin())) {
             i_out = primitiveRestartIndex;
         } else {
