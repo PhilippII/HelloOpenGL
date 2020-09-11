@@ -23,7 +23,7 @@ public:
 };
 
 template <typename Index>
-CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
+CPUMesh<Index> addIndexBuffer(const VertexBufferLayout& layout,
                               Index count,
                               const GLbyte* data,
                               std::optional<gsl::span<const GLbyte>> restartVertex = {},
