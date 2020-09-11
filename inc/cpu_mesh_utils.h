@@ -24,21 +24,25 @@ public:
 
 template <typename Index>
 CPUMesh<Index> addIndexBuffer(const VertexBufferLayout& layout,
-                              Index count,
-                              const GLbyte* data,
+                              gsl::span<const GLbyte> data,
                               std::optional<gsl::span<const GLbyte>> restartVertex = {},
                               Index primitiveRestartIndex = std::numeric_limits<Index>::max()) {
+    VertexBufferLayout::stride_type stride = layout.getStride();
+    myAssert(data.size() % stride == 0);
+    Index count = static_cast<Index>(data.size() / stride);
+
     CPUMesh<Index> res;
     res.va.layout = layout;
-    res.ib.primitiveRestartIndex = (restartVertex) ? std::optional<Index>{primitiveRestartIndex} : std::nullopt;
-    VertexBufferLayout::stride_type stride = layout.getStride();
     myAssert(!restartVertex || restartVertex->size() == static_cast<std::size_t>(stride));
+    res.ib.primitiveRestartIndex = (restartVertex) ? std::optional<Index>{primitiveRestartIndex} : std::nullopt;
+
     SpanDeepCompareLess<const GLbyte> compare;
     std::map<gsl::span<const GLbyte>, Index, decltype(compare)> vertex_to_index(compare);
+
     for (Index i_in = 0; i_in < count; ++i_in) {
         myAssert(vertex_to_index.size() == res.va.data.size() / stride);
         Index i_out;
-        gsl::span<const GLbyte> vertex(data+(i_in * stride), stride);
+        gsl::span<const GLbyte> vertex = data.subspan(i_in * stride, stride);
         if (restartVertex && std::equal(vertex.begin(), vertex.end(), restartVertex->begin())) {
             i_out = primitiveRestartIndex;
         } else {
@@ -57,14 +61,14 @@ CPUMesh<Index> addIndexBuffer(const VertexBufferLayout& layout,
     }
     debugDo(std::cout << "removed " << (count - vertex_to_index.size()) << " doubles and/or restartVertices\n");
     debugDo(std::cout << vertex_to_index.size() << " vertices remaining in vertex array\n");
+
     return res;
 }
 
 template <typename Index>
 CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va) {
     return addIndexBuffer<Index>(va.layout,
-                                 static_cast<Index>(va.data.size() / va.layout.getStride()),
-                                 va.data.data());
+                                 {va.data.data(), va.data.size()});
 }
 
 // assumes that there are no primitiveRestartIndices anymore in multiIndices
@@ -105,8 +109,7 @@ CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
     VertexBufferLayout mibLayout;
     mibLayout.append<Index>(N);
     CPUMesh<Index> res = addIndexBuffer<Index>(mibLayout,
-                                               static_cast<Index>(miMesh.mib.indices.size()),
-                                               reinterpret_cast<const GLbyte*>(miMesh.mib.indices.data()),
+                                               {reinterpret_cast<const GLbyte*>(miMesh.mib.indices.data()), miMesh.mib.indices.size() * mibLayout.getStride()},
                                                (miMesh.mib.primitiveRestartMultiIndex.has_value()) ?
                                                    std::optional<gsl::span<const GLbyte>>{gsl::span<const GLbyte>(reinterpret_cast<const GLbyte*>(miMesh.mib.primitiveRestartMultiIndex->data()),
                                                                                                                   mibLayout.getStride())}
