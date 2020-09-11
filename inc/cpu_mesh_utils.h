@@ -28,17 +28,6 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
                               const GLbyte* data,
                               std::optional<gsl::span<const GLbyte>> restartVertex = {},
                               Index primitiveRestartIndex = std::numeric_limits<Index>::max()) {
-    // TODO:
-    // - make vertex's type and vertex_to_index's key_type a kind of a vector_view in order to avoid overhead
-    //       of some unnecessary copy operations
-    //      -> problem: need to implement class vector_view myself
-    //      -> even span from Guidlines Support Library may be tricky to use here as
-    //              it does not have any comparison operators
-    //          -> would need to pass my own comparison functor to map
-    //          -> need to use less concise
-    //              std::equal(vertex.begin(), vertex.end(), restartVertex->begin())
-    //              instead of
-    //              vertex == *restartVertex
     CPUMesh<Index> res;
     res.va.layout = layout;
     res.ib.primitiveRestartIndex = (restartVertex) ? std::optional<Index>{primitiveRestartIndex} : std::nullopt;
