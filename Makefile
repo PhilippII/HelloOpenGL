@@ -11,6 +11,7 @@ INTDIR = $(CONFIGDIR)/intermediates
 OBJDIR = $(INTDIR)/obj
 DEPDIR = $(INTDIR)/.deps
 OUTDIR = $(CONFIGDIR)/run
+GSLDIR = 3rd_party/GSL-master
 
 CXXSFX = cxx
 CXXFILES = $(wildcard $(SRCDIR)/*.$(CXXSFX))
@@ -30,6 +31,10 @@ CXXFLAGS += -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC
 endif
 LDFLAGS =
 LDLIBS =
+
+#include Guidlines Support Library:
+CXXFLAGS += -I$(GSLDIR)/include
+# LDLIBS += nothing because it is basically a header only library
 
 # glfw3:
 CXXFLAGS += $(shell pkg-config --cflags glfw3)
