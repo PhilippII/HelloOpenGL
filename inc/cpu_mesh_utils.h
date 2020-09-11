@@ -30,7 +30,7 @@ CPUMesh<Index> addIndexBuffer(VertexBufferLayout layout,
     res.va.layout = layout;
     res.ib.primitiveRestartIndex = (restartVertex) ? std::optional<Index>{primitiveRestartIndex} : std::nullopt;
     VertexBufferLayout::stride_type stride = layout.getStride();
-    myAssert(!restartVertex.has_value() || restartVertex->size() == static_cast<std::size_t>(stride));
+    myAssert(!restartVertex || restartVertex->size() == static_cast<std::size_t>(stride));
     std::map<std::vector<GLbyte>, Index> vertex_to_index;
     for (Index i_in = 0; i_in < count; ++i_in) {
         myAssert(vertex_to_index.size() == res.va.data.size() / stride);
