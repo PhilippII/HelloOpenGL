@@ -15,7 +15,7 @@ void VertexBufferLayout::append(GLint dimCount, GLenum componentType, std::strin
 
 void VertexBufferLayout::append(GLint dimCount, GLenum componentType, VariableType castTo, loc_type location, std::string name)
 {
-    // TODO: assert that type is compatible with dimCount (in case it is a packed type)
+    myAssert(isValidDimension(dimCount, componentType, castTo)); // if dimCount == GL_BGRA check that castTo == NORMALIZED_FLOAT
     myAssert(isValidCast(componentType, castTo));
     m_attributes.push_back({static_cast<unsigned int>(m_stride),
                             dimCount, componentType, castTo,
@@ -173,6 +173,33 @@ VariableType VertexBufferLayout::getDefaultCast(GLenum componentType)
         break;
     }
     return result;
+}
+
+bool VertexBufferLayout::isValidDimension(GLint dimCount, GLenum componentType, VariableType castTo)
+{
+    bool valid;
+    if (dimCount == GL_BGRA) {
+        valid = (componentType == GL_UNSIGNED_BYTE
+                    || componentType == GL_INT_2_10_10_10_REV
+                    || componentType == GL_UNSIGNED_INT_2_10_10_10_REV
+                ) && castTo == VariableType::NORMALIZED_FLOAT;
+    } else {
+        switch (componentType) {
+        case GL_INT_2_10_10_10_REV:
+            valid = (dimCount == 4);
+            break;
+        case GL_UNSIGNED_INT_2_10_10_10_REV:
+            valid = (dimCount == 4);
+            break;
+        case GL_UNSIGNED_INT_10F_11F_11F_REV:
+            valid = (dimCount == 3);
+            break;
+        default:
+            valid = (dimCount >= 0 && dimCount <= 4);
+            break;
+        }
+    }
+    return valid;
 }
 
 VertexBufferLayout operator+(VertexBufferLayout a, const VertexBufferLayout &b)

@@ -123,6 +123,7 @@ private:
     static GLuint getAttributeSize(GLint dimCount, GLenum componentType);
     static bool isValidCast(GLenum componentType, VariableType castTo);
     static VariableType getDefaultCast(GLenum componentType);
+    static bool isValidDimension(GLint dimCount, GLenum componentType, VariableType castTo);
 };
 
 VertexBufferLayout operator+(VertexBufferLayout a, const VertexBufferLayout& b);
