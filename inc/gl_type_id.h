@@ -63,6 +63,8 @@ constexpr std::optional<VertexAttribType> gl_type_to_id<GLuint> = VertexAttribTy
 
 
 template<typename C, std::size_t N>
-constexpr std::optional<VertexAttribType> gl_type_to_id<std::array<C, N>> = VertexAttribType{gl_type_to_id<C>->id, N};
+constexpr std::optional<VertexAttribType> gl_type_to_id<std::array<C, N>> = (gl_type_to_id<C> && gl_type_to_id<C>->dimCount == 1)
+                                                                                    ? std::optional<VertexAttribType>(VertexAttribType{gl_type_to_id<C>->id, N})
+                                                                                      : std::nullopt;
 
 #endif // GL_TYPE_ID_H
