@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include <optional>
+#include <array>
 
 struct VertexAttribType {
     GLenum id;
@@ -59,5 +60,9 @@ constexpr std::optional<VertexAttribType> gl_type_to_id<GLuint> = VertexAttribTy
 //template <>
 //constexpr std::optional<GLenum> gl_type_to_id<GLuint> = GL_UNSIGNED_INT_10F_11F_11F_REV;
 // -> cannot be distinguished from GL_UNSIGNED_INT
+
+
+template<typename C, std::size_t N>
+constexpr std::optional<VertexAttribType> gl_type_to_id<std::array<C, N>> = VertexAttribType{gl_type_to_id<C>->id, N};
 
 #endif // GL_TYPE_ID_H

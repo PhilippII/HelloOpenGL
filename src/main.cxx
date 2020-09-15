@@ -102,8 +102,8 @@ int main(void)
         {{ .0f * hSz,  .75f * hSz}, {.5f, .5f, .5f, .0f}}
     };
     VertexBufferLayout houseLayout;
-    houseLayout.append(2, GL_FLOAT, VariableType::FLOAT, posAttrIndex);
-    houseLayout.append(4, GL_FLOAT, VariableType::FLOAT, colAttrIndex);
+    houseLayout.append<decltype(Vertex::pos)>(1, VariableType::FLOAT, posAttrIndex);
+    houseLayout.append<decltype(Vertex::color)>(1, VariableType::FLOAT, colAttrIndex);
     CPUMesh<GLuint> houseCPUMesh = addIndexBuffer<GLuint>(CPUVertexArray{houseLayout,
                                                                  std::vector<GLbyte>(reinterpret_cast<const GLbyte*>(houseVertices),
                                                                                      reinterpret_cast<const GLbyte*>(houseVertices)
