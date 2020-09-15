@@ -72,23 +72,44 @@ public:
 
     template<typename T>
     void append(GLint dimCount, VariableType castTo, loc_type location, std::string name = std::string()) {
-        constexpr std::optional<GLenum> gl_type_id = gl_type_to_id<T>;
-        static_assert(gl_type_id);
-        append(dimCount, *gl_type_id, castTo, location, name);
+        constexpr auto gl_type = gl_type_to_id<T>;
+        static_assert(gl_type);
+        if constexpr(gl_type->dimCount != 1) {
+            myAssert(dimCount == 1);
+            // NOTE: for packed types (like GL_INT_2_10_10_10_REV​)
+            //      I actually expect
+            //      myAssert(dimCount == gl_type->dimCount)
+            //      however packed types cannot be used with the templated
+            //      overload of append() anyway as they cannot be distinguished from
+            //      GL_UNSIGNED_INT
+            append(gl_type->dimCount, gl_type->id, castTo, location, name);
+        } else {
+            append(         dimCount, gl_type->id, castTo, location, name);
+        }
     }
 
     template<typename T>
     void append(GLint dimCount, VariableType castTo, std::string name = std::string()) {
-        constexpr std::optional<GLenum> gl_type_id = gl_type_to_id<T>;
-        static_assert(gl_type_id);
-        append(dimCount, *gl_type_id, castTo, name);
+        constexpr auto gl_type = gl_type_to_id<T>;
+        static_assert(gl_type);
+        if constexpr(gl_type->dimCount != 1) {
+            myAssert(dimCount == 1); // note comment on above overload
+            append(gl_type->dimCount, gl_type->id, castTo, name);
+        } else {
+            append(         dimCount, gl_type->id, castTo, name);
+        }
     }
 
     template<typename T>
     void append(GLint dimCount, std::string name = std::string()) {
-        constexpr std::optional<GLenum> gl_type_id = gl_type_to_id<T>;
-        static_assert(gl_type_id);
-        append(dimCount, *gl_type_id, name);
+        constexpr auto gl_type = gl_type_to_id<T>;
+        static_assert(gl_type);
+        if constexpr(gl_type->dimCount != 1) {
+            myAssert(dimCount == 1); // note comment on above overload
+            append(gl_type->dimCount, gl_type->id, name);
+        } else {
+            append(         dimCount, gl_type->id, name);
+        }
     }
 
     VertexBufferLayout& operator+=(const VertexBufferLayout& other);

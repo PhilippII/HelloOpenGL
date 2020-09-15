@@ -6,8 +6,13 @@
 
 #include <optional>
 
+struct VertexAttribType {
+    GLenum id;
+    GLint dimCount;
+};
+
 template<typename T>
-constexpr std::optional<GLenum> gl_type_to_id = {};
+constexpr std::optional<VertexAttribType> gl_type_to_id = {};
 
 //template <>
 //constexpr std::optional<GLenum> gl_type_id<GLhalf> = GL_HALF_FLOAT;
@@ -16,32 +21,32 @@ constexpr std::optional<GLenum> gl_type_to_id = {};
 //              -> cannot be distinguished from GLushort
 
 template <>
-constexpr std::optional<GLenum> gl_type_to_id<GLfloat> = GL_FLOAT;
+constexpr std::optional<VertexAttribType> gl_type_to_id<GLfloat> = VertexAttribType{GL_FLOAT, 1};
 
 template <>
-constexpr std::optional<GLenum> gl_type_to_id<GLdouble> = GL_DOUBLE;
+constexpr std::optional<VertexAttribType> gl_type_to_id<GLdouble> = VertexAttribType{GL_DOUBLE, 1};
 
 //template <>
 //constexpr std::optional<GLenum> gl_type_id<GLfixed> = GL_FIXED;
 // -> cannot be distinguished from GLint
 
 template <>
-constexpr std::optional<GLenum> gl_type_to_id<GLbyte> = GL_BYTE;
+constexpr std::optional<VertexAttribType> gl_type_to_id<GLbyte> = VertexAttribType{GL_BYTE, 1};
 
 template <>
-constexpr std::optional<GLenum> gl_type_to_id<GLubyte> = GL_UNSIGNED_BYTE;
+constexpr std::optional<VertexAttribType> gl_type_to_id<GLubyte> = VertexAttribType{GL_UNSIGNED_BYTE, 1};
 
 template <>
-constexpr std::optional<GLenum> gl_type_to_id<GLshort> = GL_SHORT;
+constexpr std::optional<VertexAttribType> gl_type_to_id<GLshort> = VertexAttribType{GL_SHORT, 1};
 
 template <>
-constexpr std::optional<GLenum> gl_type_to_id<GLushort> = GL_UNSIGNED_SHORT;
+constexpr std::optional<VertexAttribType> gl_type_to_id<GLushort> = VertexAttribType{GL_UNSIGNED_SHORT, 1};
 
 template <>
-constexpr std::optional<GLenum> gl_type_to_id<GLint> = GL_INT;
+constexpr std::optional<VertexAttribType> gl_type_to_id<GLint> = VertexAttribType{GL_INT, 1};
 
 template <>
-constexpr std::optional<GLenum> gl_type_to_id<GLuint> = GL_UNSIGNED_INT;
+constexpr std::optional<VertexAttribType> gl_type_to_id<GLuint> = VertexAttribType{GL_UNSIGNED_INT, 1};
 
 //template <>
 //constexpr std::optional<GLenum> gl_type_to_id<GLuint> = GL_INT_2_10_10_10_REV;
