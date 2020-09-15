@@ -55,6 +55,7 @@ public:
         INT_NOT_PACKED,     // glVertexAttribIPointer( )
                             // glVertexAttribPointer( normalized = GL_FALSE or GL_TRUE )
         INT_PACKED          // glVertexAttribPointer( normalized = GL_FALSE or GL_TRUE )
+                            //              ( if dimCount = GL_BGRA must be normalized = GL_TRUE )
     };
 
     VertexBufferLayout();
@@ -120,6 +121,8 @@ private:
     stride_type m_stride;
 
     static GLuint getAttributeSize(GLint dimCount, GLenum componentType);
+    static bool isValidCast(GLenum componentType, VariableType castTo);
+    static VariableType getDefaultCast(GLenum componentType);
 };
 
 VertexBufferLayout operator+(VertexBufferLayout a, const VertexBufferLayout& b);

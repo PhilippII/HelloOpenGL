@@ -10,29 +10,13 @@ VertexBufferLayout::VertexBufferLayout()
 
 void VertexBufferLayout::append(GLint dimCount, GLenum componentType, std::string name)
 {
-    VariableType castTo;
-    switch (getTypeCategory(componentType)) {
-    case TypeCategory::FLOAT_SINGLE_PREC:
-        castTo = VariableType::FLOAT;
-        break;
-    case TypeCategory::FLOAT_DOUBLE_PREC:
-        castTo = VariableType::DOUBLE;
-        break;
-    case TypeCategory::INT_PACKED:
-    case TypeCategory::INT_NOT_PACKED:
-        castTo = VariableType::NORMALIZED_FLOAT;
-        break;
-    default:
-        myAssert(false);
-        castTo = VariableType::FLOAT;
-        break;
-    }
-    append(dimCount, componentType, castTo, name);
+    append(dimCount, componentType, getDefaultCast(componentType), name);
 }
 
 void VertexBufferLayout::append(GLint dimCount, GLenum componentType, VariableType castTo, loc_type location, std::string name)
 {
     // TODO: assert that type is compatible with dimCount (in case it is a packed type)
+    myAssert(isValidCast(componentType, castTo));
     m_attributes.push_back({static_cast<unsigned int>(m_stride),
                             dimCount, componentType, castTo,
                             location, name});
@@ -139,6 +123,56 @@ GLuint VertexBufferLayout::getAttributeSize(GLint dimCount, GLenum componentType
         break;
     }
     return static_cast<GLuint>(result);
+}
+
+bool VertexBufferLayout::isValidCast(GLenum componentType, VariableType castTo)
+{
+    bool result = false;
+    switch (getTypeCategory(componentType)) {
+    case TypeCategory::FLOAT_SINGLE_PREC:
+        result = (castTo == VariableType::FLOAT);
+        break;
+    case TypeCategory::FLOAT_DOUBLE_PREC:
+        if (castTo == VariableType::FLOAT) {
+            std::cerr << "warning using doubles from the vertex buffer as floats in the vertex shader\n"
+                 << "is most likely a performance trap!\n";
+        }
+        result = (castTo == VariableType::DOUBLE || castTo == VariableType::FLOAT);
+        break;
+    case TypeCategory::INT_PACKED:
+        result = (castTo == VariableType::FLOAT || castTo == VariableType::NORMALIZED_FLOAT);
+        break;
+    case TypeCategory::INT_NOT_PACKED:
+        result = (castTo == VariableType::FLOAT || castTo == VariableType::NORMALIZED_FLOAT
+                    || castTo == VariableType::INT);
+        break;
+    default:
+        myAssert(false);
+        break;
+    }
+    return result;
+}
+
+VariableType VertexBufferLayout::getDefaultCast(GLenum componentType)
+{
+    VariableType result;
+    switch (getTypeCategory(componentType)) {
+    case TypeCategory::FLOAT_SINGLE_PREC:
+        result = VariableType::FLOAT;
+        break;
+    case TypeCategory::FLOAT_DOUBLE_PREC:
+        result = VariableType::DOUBLE;
+        break;
+    case TypeCategory::INT_PACKED:
+    case TypeCategory::INT_NOT_PACKED:
+        result = VariableType::NORMALIZED_FLOAT;
+        break;
+    default:
+        result = VariableType::NORMALIZED_FLOAT;
+        myAssert(false);
+        break;
+    }
+    return result;
 }
 
 VertexBufferLayout operator+(VertexBufferLayout a, const VertexBufferLayout &b)
