@@ -70,15 +70,24 @@ public:
     void append(GLint dimCount, GLenum componentType, std::string name = std::string());
 
     template<typename T>
-    void append(GLint dimCount, std::string name) {
+    void append(GLint dimCount, VariableType castTo, loc_type location, std::string name = std::string()) {
         constexpr std::optional<GLenum> gl_type_id = gl_type_to_id<T>;
         static_assert(gl_type_id);
-        append(dimCount, *gl_type_id, name);
+        append(dimCount, *gl_type_id, castTo, location, name);
     }
 
     template<typename T>
-    void append(GLint dimCount) {
-        append<T>(dimCount, std::string());
+    void append(GLint dimCount, VariableType castTo, std::string name = std::string()) {
+        constexpr std::optional<GLenum> gl_type_id = gl_type_to_id<T>;
+        static_assert(gl_type_id);
+        append(dimCount, *gl_type_id, castTo, name);
+    }
+
+    template<typename T>
+    void append(GLint dimCount, std::string name = std::string()) {
+        constexpr std::optional<GLenum> gl_type_id = gl_type_to_id<T>;
+        static_assert(gl_type_id);
+        append(dimCount, *gl_type_id, name);
     }
 
     VertexBufferLayout& operator+=(const VertexBufferLayout& other);
