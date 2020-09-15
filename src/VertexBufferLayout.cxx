@@ -32,6 +32,7 @@ void VertexBufferLayout::append(GLint dimCount, GLenum componentType, std::strin
 
 void VertexBufferLayout::append(GLint dimCount, GLenum componentType, VariableType castTo, loc_type location, std::string name)
 {
+    // TODO: assert that type is compatible with dimCount (in case it is a packed type)
     m_attributes.push_back({static_cast<unsigned int>(m_stride),
                             dimCount, componentType, castTo,
                             location, name});

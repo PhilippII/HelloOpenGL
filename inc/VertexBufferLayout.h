@@ -8,6 +8,7 @@
 
 #include "debug_utils.h"
 #include "GLShaderProgram.h" // to query attribute locations
+#include "gl_type_id.h"
 
 enum class VariableType {
     // type of the actual shader variable
@@ -70,7 +71,9 @@ public:
 
     template<typename T>
     void append(GLint dimCount, std::string name) {
-        myAssert(false);
+        constexpr std::optional<GLenum> gl_type_id = gl_type_to_id<T>;
+        static_assert(gl_type_id);
+        append(dimCount, *gl_type_id, name);
     }
 
     template<typename T>
@@ -113,61 +116,5 @@ private:
 VertexBufferLayout operator+(VertexBufferLayout a, const VertexBufferLayout& b);
 
 
-//template <>
-//inline void VertexBufferLayout::append<GLhalf>(GLint dimCount) {
-//    append(dimCount, GL_HALF_FLOAT);
-//}
-// -> problem: on CPU side half precision float is not availible
-//             so GLhalf is 16-bit unsigned integer on CPU
-//              -> cannot be distinguished from GLushort
-
-template <>
-inline void VertexBufferLayout::append<GLfloat>(GLint dimCount, std::string name) {
-    append(dimCount, GL_FLOAT, name);
-}
-
-template <>
-inline void VertexBufferLayout::append<GLdouble>(GLint dimCount, std::string name) {
-    append(dimCount, GL_DOUBLE, name);
-}
-
-//template <>
-//inline void VertexBufferLayout::append<GLfixed>(GLint dimCount, std::string name) {
-//    append(dimCount, GL_FIXED, name);
-//}
-// -> cannot be distinguished from GLint
-
-
-template <>
-inline void VertexBufferLayout::append<GLbyte>(GLint dimCount, std::string name) {
-    append(dimCount, GL_BYTE, name);
-}
-
-template <>
-inline void VertexBufferLayout::append<GLubyte>(GLint dimCount, std::string name) {
-    append(dimCount, GL_UNSIGNED_BYTE, name);
-}
-
-template <>
-inline void VertexBufferLayout::append<GLshort>(GLint dimCount, std::string name) {
-    append(dimCount, GL_SHORT, name);
-}
-
-template <>
-inline void VertexBufferLayout::append<GLushort>(GLint dimCount, std::string name) {
-    append(dimCount, GL_UNSIGNED_SHORT, name);
-}
-
-template <>
-inline void VertexBufferLayout::append<GLint>(GLint dimCount, std::string name) {
-    append(dimCount, GL_INT, name);
-}
-
-template <>
-inline void VertexBufferLayout::append<GLuint>(GLint dimCount, std::string name) {
-    append(dimCount, GL_UNSIGNED_INT, name);
-}
-
-// TODO: append-template-specialization for packed integer types
 
 #endif // VERTEXBUFFERLAYOUT_H

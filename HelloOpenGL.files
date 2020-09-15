@@ -13,6 +13,7 @@ inc/cpu_mesh_import.h
 inc/cpu_mesh_structs.h
 inc/cpu_mesh_utils.h
 inc/debug_utils.h
+inc/gl_type_id.h
 res/shaders/Basic.shader
 res/shaders/Suzanne.shader
 src/GLBufferObject.cxx
