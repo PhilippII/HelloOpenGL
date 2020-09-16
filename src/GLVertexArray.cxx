@@ -42,12 +42,12 @@ void GLVertexArray::addBuffer(const GLVertexBuffer &vb, const VertexBufferLayout
     const std::vector<VertexAttributeLayout>& attributes = layout.getAttributes();
     for (auto& attr : attributes) {
         GLCall(glEnableVertexAttribArray(attr.location));
+        myAssert(VertexBufferLayout::isValidCast(attr.componentType, attr.castTo));
         switch (attr.castTo) {
           case VariableType::NORMALIZED_FLOAT:
           case VariableType::FLOAT:
             {
                 bool normalized = (attr.castTo == VariableType::NORMALIZED_FLOAT);
-                myAssert(!normalized || VertexBufferLayout::isInteger(attr.componentType));
                 GLCall(glVertexAttribFormat(attr.location, attr.dimCount,
                                             attr.componentType, normalized,
                                             attr.offset));

@@ -128,21 +128,21 @@ public:
 
     static TypeCategory getTypeCategory(GLenum componentType);
 
-    static bool isFloat(GLenum componentType) {
-        TypeCategory category = getTypeCategory(componentType);
-        return category == TypeCategory::FLOAT_SINGLE_PREC || category == TypeCategory::FLOAT_DOUBLE_PREC;
-    }
+    //static bool isFloat(GLenum componentType) {
+    //    TypeCategory category = getTypeCategory(componentType);
+    //    return category == TypeCategory::FLOAT_SINGLE_PREC || category == TypeCategory::FLOAT_DOUBLE_PREC;
+    //}
 
-    static bool isInteger(GLenum componentType) {
-        TypeCategory category = getTypeCategory(componentType);
-        return category == TypeCategory::INT_PACKED || category == TypeCategory::INT_NOT_PACKED;
-    }
+    //static bool isInteger(GLenum componentType) {
+    //    TypeCategory category = getTypeCategory(componentType);
+    //    return category == TypeCategory::INT_PACKED || category == TypeCategory::INT_NOT_PACKED;
+    //}
+    static bool isValidCast(GLenum componentType, VariableType castTo);
 private:
     std::vector<VertexAttributeLayout> m_attributes;
     stride_type m_stride;
 
     static GLuint getAttributeSize(GLint dimCount, GLenum componentType);
-    static bool isValidCast(GLenum componentType, VariableType castTo);
     static VariableType getDefaultCast(GLenum componentType);
     static bool isValidDimension(GLint dimCount, GLenum componentType, VariableType castTo);
 };
