@@ -46,12 +46,9 @@ void GLVertexArray::addBuffer(const GLVertexBuffer &vb, const VertexBufferLayout
         switch (attr.castTo) {
           case VariableType::NORMALIZED_FLOAT:
           case VariableType::FLOAT:
-            {
-                bool normalized = (attr.castTo == VariableType::NORMALIZED_FLOAT);
-                GLCall(glVertexAttribFormat(attr.location, attr.dimCount,
-                                            attr.componentType, normalized,
-                                            attr.offset));
-            }
+            GLCall(glVertexAttribFormat(attr.location, attr.dimCount,
+                                        attr.componentType, (attr.castTo == VariableType::NORMALIZED_FLOAT),
+                                        attr.offset));
             break;
           case VariableType::INT:
             GLCall(glVertexAttribIFormat(attr.location, attr.dimCount,
