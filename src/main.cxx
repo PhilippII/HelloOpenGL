@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <cmath> // M_PI and cos(...) sin(...)
+#include <chrono>
 
 // #include <cassert>
 
@@ -187,9 +188,13 @@ int main(void)
 
     // import from OBJ-file:
     GLShaderProgram suzanneSP(fs::path("res/shaders/Suzanne.shader", fs::path::format::generic_format));
+    auto time_start = std::chrono::high_resolution_clock::now();
     //std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj", true);
     std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = loadOBJfile(fs::path("res/meshes/suzanne_with_sphere_and_plane.obj", fs::path::format::generic_format),
                                                                 true);
+    auto time_end = std::chrono::high_resolution_clock::now();
+    std::chrono::milliseconds time_delta = std::chrono::duration_cast<std::chrono::milliseconds>(time_end - time_start);
+    std::cout << "loading suzanne took " << time_delta.count() << " milliseconds\n";
     if (suzanneCPUMeshes.empty()) {
         std::cerr << "error no object was found in obj file\n";
         return 1;
