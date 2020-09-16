@@ -53,12 +53,12 @@ void GLVertexArray::addBuffer(const GLVertexBuffer &vb, const VertexBufferLayout
                                             attr.offset));
             }
             break;
-          case VariableType::DOUBLE:
+          case VariableType::INT:
             GLCall(glVertexAttribIFormat(attr.location, attr.dimCount,
                                          attr.componentType,
                                          attr.offset));
             break;
-          case VariableType::INT:
+          case VariableType::DOUBLE:
             GLCall(glVertexAttribLFormat(attr.location, attr.dimCount,
                                          attr.componentType,
                                          attr.offset));
