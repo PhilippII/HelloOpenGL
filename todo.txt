@@ -5,6 +5,17 @@ GLFW:
 - static vs. dynamic linking against glfw and glew. which is better?
 	-> and why does pkg-config --libs --static not include -Wl,-Bstatic -Wl,-Bdynamic ?
 
+
+c++:
+- gl_type_id.h 
+	template<typename C, std::size_t N>
+		constexpr std::optional<VertexAttribType> gl_type_to_id<std::array<C, N>> = ...
+	-> is partial template specialization allowed for variable templates
+		-> this says yes: https://www.fluentcpp.com/2017/08/11/how-to-do-partial-template-specialization-in-c/
+	-> does partial template specialization allow specializing template parameters in terms of new
+		template parameters (e.g. T=std::array<C, N> defines T but introduces new parameters C and N)
+	-> is this a partial template specialization or some kind of overload
+
 c++-stdlib:
 - use ios_base::sync_with_stdio(false) to improve performance?
 - std::optional<...>
