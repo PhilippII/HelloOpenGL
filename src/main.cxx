@@ -55,11 +55,11 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << '\n';
 
     {
-        float positions[12] = {
-            -.5f, -.5f, // 0
-            .5f, -.5f, // 1
-            .5f,  .5f, // 2
-            -.5f,  .5f  // 3
+        float positions[4 * (2+2)] = {
+            -.5f, -.5f, 0.0f, 0.0f, // 0
+             .5f, -.5f, 1.0f, 0.0f, // 1
+             .5f,  .5f, 1.0f, 1.0f, // 2
+            -.5f,  .5f, 0.0f, 1.0f  // 3
         };
 
         unsigned int indices[] = {
@@ -68,10 +68,11 @@ int main(void)
         };
 
         VertexArray va;
-        VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+        VertexBuffer vb(positions, 4 * (2+2) * sizeof(float));
 
         VertexBufferLayout layout;
-        layout.Push<float>(2);
+        layout.Push<float>(2); // position
+        layout.Push<float>(2); // texture coordinate
         va.AddBuffer(vb, layout);
 
         IndexBuffer ib(indices, 6);
@@ -81,7 +82,9 @@ int main(void)
         shader.SetUniform4f("u_Color", .8f, .3f, .8f, 1.0f);
 
         Texture texture("res/textures/face_test.png");
-        texture.Bind();
+        unsigned int texSlot = 0;
+        texture.Bind(texSlot);
+        shader.SetUniform1i("u_Texture", texSlot);
 
         va.Unbind();
         vb.Unbind();
