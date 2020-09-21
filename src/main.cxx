@@ -15,6 +15,8 @@
 
 #include "Shader.h"
 
+#include "Texture.h"
+
 
 int main(void)
 {
@@ -77,6 +79,9 @@ int main(void)
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         shader.SetUniform4f("u_Color", .8f, .3f, .8f, 1.0f);
+
+        Texture texture("res/textures/face_test.png");
+        texture.Bind();
 
         va.Unbind();
         vb.Unbind();
