@@ -1,3 +1,5 @@
+3rd_party/stb_image/stb_image.cxx
+3rd_party/stb_image/stb_image.h
 inc/IndexBuffer.h
 inc/Renderer.h
 inc/Shader.h
