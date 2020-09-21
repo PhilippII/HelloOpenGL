@@ -12,6 +12,9 @@ OBJDIR = $(INTDIR)/obj
 DEPDIR = $(INTDIR)/.deps
 OUTDIR = $(CONFIGDIR)/run
 
+STB_IMAGE_DIR = 3rd_party/stb_image
+STB_IMAGE_OBJ_DIR = $(OBJDIR)/3rd_party/stb_image
+
 CXXSFX = cxx
 CXXFILES = $(wildcard $(SRCDIR)/*.$(CXXSFX))
 OBJFILES = $(CXXFILES:$(SRCDIR)/%.$(CXXSFX)=$(OBJDIR)/%.o)
@@ -20,11 +23,14 @@ OUT = main
 
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Wconversion -Wshadow -Wcast-qual -Wwrite-strings -Wold-style-cast
-CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR)
+CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR) -I$(STB_IMAGE_DIR)
+CXXFLAGS_STB = -g -std=c++17 -pedantic-errors
 ifeq ($(CONFIG), release)
 CXXFLAGS += -O2 -DNDEBUG
+CXXFLAGS_STB += -O2 -DNDEBUG
 else
 # CXXFLAGS += -DDEBUG
+# CXXFLAGS_STB
 endif
 LDFLAGS =
 LDLIBS =
@@ -48,11 +54,14 @@ run: $(OUTDIR)/$(OUT)
 
 .PHONY: all run clean
 
-$(OUTDIR)/$(OUT): $(OBJFILES) | $(OUTDIR)
-	$(CXX) $(LDFLAGS) -o $@ $(OBJFILES) $(LDLIBS)
+$(OUTDIR)/$(OUT): $(OBJFILES) $(STB_IMAGE_OBJ_DIR)/stb_image.o | $(OUTDIR)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.$(CXXSFX) | $(OBJDIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
+$(STB_IMAGE_OBJ_DIR)/stb_image.o: $(STB_IMAGE_DIR)/stb_image.$(CXXSFX) | $(STB_IMAGE_OBJ_DIR)
+	$(CXX) -c $(CXXFLAGS_STB) -o $@ $<
 
 clean:
 	rm -f -r $(CONFIGDIR.debug) $(CONFIGDIR.release)
@@ -65,6 +74,9 @@ $(OUTDIR):
 	mkdir -p $@
 
 $(DEPDIR):
+	mkdir -p $@
+
+$(STB_IMAGE_OBJ_DIR):
 	mkdir -p $@
 
 # generate header dependencies:
