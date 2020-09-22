@@ -93,6 +93,8 @@ int main(void)
 
         Renderer renderer;
         GLCall(glClearColor(.5f, .5f, .5f, 1.f)); // TODO: maybe put this in Renderer class
+        GLCall(glEnable(GL_BLEND));
+        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
         float r = .0f;
         float increment = .05f;
