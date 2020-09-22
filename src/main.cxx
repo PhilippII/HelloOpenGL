@@ -81,7 +81,7 @@ int main(void)
         shader.Bind();
         shader.SetUniform4f("u_Color", .8f, .3f, .8f, 1.0f);
 
-        Texture texture("res/textures/face_test.png");
+        Texture texture("res/textures/face_transparent_test.png");
         unsigned int texSlot = 0;
         texture.Bind(texSlot);
         shader.SetUniform1i("u_Texture", texSlot);
@@ -92,7 +92,7 @@ int main(void)
         shader.Unbind();
 
         Renderer renderer;
-
+        GLCall(glClearColor(.5f, .5f, .5f, 1.f)); // TODO: maybe put this in Renderer class
 
         float r = .0f;
         float increment = .05f;
