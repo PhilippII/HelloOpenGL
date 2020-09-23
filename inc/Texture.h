@@ -9,6 +9,8 @@ public:
     Texture(const std::string& path);
     ~Texture();
 
+    // TODO: in https://www.khronos.org/opengl/wiki/Texture
+    // it is called texture-image-unit not slot
     void Bind(unsigned int slot = 0) const;
     void Unbind() const;
 
