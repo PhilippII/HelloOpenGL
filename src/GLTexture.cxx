@@ -22,10 +22,12 @@ GLTexture::GLTexture() : m_rendererId(0),
     std::vector<GLubyte> pix_data = makeCheckerPattern(m_width, m_height);
     // glTexSubImage2D(..)
     // glGenerateMipmap(..)
+    // glTexParameter*(..)
 
     // TODO:
     // 1) actually upload data to the allocated storage
-    // 2) implement move/copy-constructor/assignment
+    // 2) init sampling parameters
+    // 3) implement move/copy-constructor/assignment
 }
 
 GLTexture::~GLTexture()
