@@ -12,16 +12,26 @@ GLTexture::GLTexture() : m_rendererId(0),
 
     // allocate immutable storage:
     //  (immutable = immutable-format but contents may still be modified)
-    glTexStorage2D(GL_TEXTURE_2D
-                   , m_mipLevels
-                   , GL_RGB8 // guaranteed to be supported (socalled required format)
-                             // for textures but not guaranteed for renderbuffers
-                   , m_width
-                   , m_height);
+    glTexStorage2D(GL_TEXTURE_2D,
+                   m_mipLevels,
+                   GL_RGB8, // guaranteed to be supported (socalled required format)
+                            // for textures but not guaranteed for renderbuffers
+                   m_width,
+                   m_height);
 
+    // upload actual contents of the texture:
     std::vector<GLubyte> pix_data = makeCheckerPattern(m_width, m_height);
-    // glTexSubImage2D(..)
-    // glGenerateMipmap(..)
+    glTexSubImage2D(GL_TEXTURE_2D,
+                    0, // lod-level
+                    0, 0, // x, y-offset
+                    m_width, m_height,
+                    GL_RGB, GL_UNSIGNED_BYTE,
+                    pix_data.data());
+
+    // generate content of other mipmap levels:
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    // set texture parameters:
     // glTexParameter*(..)
 
     // TODO:
