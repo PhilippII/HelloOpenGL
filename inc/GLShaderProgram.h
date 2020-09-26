@@ -73,6 +73,10 @@ public:
 
     GLint getUniformLocation(const std::string& name);
 
+    void setUniform1i(GLint location, int v);
+
+    void setUniform1i(const std::string& name, int v);
+
     void setUniform4f(GLint location, float v0, float v1, float v2, float v3);
 
     void setUniform4f(const std::string& name, float v0, float v1, float v2, float v3);

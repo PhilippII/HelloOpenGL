@@ -202,6 +202,17 @@ GLint GLShaderProgram::getUniformLocation(const std::string &name) {
     //    to an active uniform variable in program, [...]"
 }
 
+void GLShaderProgram::setUniform1i(GLint location, int v)
+{
+    myAssert(isBound());
+    GLCall(glUniform1i(location, v));
+}
+
+void GLShaderProgram::setUniform1i(const std::string &name, int v)
+{
+    setUniform1i(getUniformLocation(name), v);
+}
+
 void GLShaderProgram::setUniform4f(GLint location, float v0, float v1, float v2, float v3)
 {
     myAssert(isBound());
