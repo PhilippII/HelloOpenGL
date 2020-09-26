@@ -24,6 +24,8 @@
 #include "GLShader.h"
 #include "GLShaderProgram.h"
 
+#include "GLTexture.h"
+
 #include "GLRenderer.h"
 
 #include "cpu_mesh_import.h"
@@ -221,6 +223,10 @@ int main(void)
                                        std::move(va),
                                        std::move(ib)});
     }
+
+    GLTexture texture;
+    int texUnit = 0;
+    texture.bind(texUnit);
 
     GLRenderer renderer;
     renderer.setClearColor(.2f, .8f, .2f, 0.f);
