@@ -1,6 +1,8 @@
 #include "GLTexture.h"
 #include <algorithm> // for std::min(..)
 
+#include "debug_utils.h"
+
 GLTexture::GLTexture() : m_rendererId(0),
                          m_width(256), m_height(256),
                          m_mipLevels(computeMipLevelCount(m_width, m_height)) // no mipmapping so far
@@ -66,11 +68,14 @@ std::vector<GLubyte> GLTexture::makeCheckerPattern(GLsizei &width, GLsizei &heig
     std::vector<GLubyte> res;
     for (GLsizei y = 0; y < height; ++y) {
         for (GLsizei x = 0; x < width; ++x) {
-            constexpr mask = (1 << 4);
-            int col_index = ((x & mask) ^ (y & mask) != 0) ? 1 : 0;
+            constexpr GLsizei mask = (1 << 4);
+            int col_index = !!((x & mask) ^ (y & mask)); // !! converts to bool after that
+                                                         // implicitly convert to int again
             std::copy(colors[col_index].begin(), colors[col_index].end(),
                       std::back_inserter(res));
         }
     }
+    myAssert(res.size() == colors[0].size() * width * height);
+    myAssert(colors[0].size() == colors[1].size());
     return res;
 }
