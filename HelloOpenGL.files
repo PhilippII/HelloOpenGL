@@ -17,6 +17,7 @@ inc/debug_utils.h
 inc/gl_type_id.h
 res/shaders/Basic.shader
 res/shaders/Suzanne.shader
+res/shaders/Texture.shader
 src/GLBufferObject.cxx
 src/GLFWInitialization.cpp
 src/GLIndexBuffer.cxx

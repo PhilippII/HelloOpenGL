@@ -189,7 +189,7 @@ int main(void)
                          starIndices.data());
 
     // import from OBJ-file:
-    GLShaderProgram suzanneSP(fs::path("res/shaders/Suzanne.shader", fs::path::format::generic_format));
+    GLShaderProgram suzanneSP(fs::path("res/shaders/Texture.shader", fs::path::format::generic_format));
     auto time_start = std::chrono::high_resolution_clock::now();
     //std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj", true);
     std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = loadOBJfile(fs::path("res/meshes/suzanne_with_sphere_and_plane.obj", fs::path::format::generic_format),
@@ -227,6 +227,7 @@ int main(void)
     GLTexture texture;
     int texUnit = 0;
     texture.bind(texUnit);
+    suzanneSP.setUniform1i("tex", texUnit);
 
     GLRenderer renderer;
     renderer.setClearColor(.2f, .8f, .2f, 0.f);
