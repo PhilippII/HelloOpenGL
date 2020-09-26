@@ -47,6 +47,25 @@ GLTexture::~GLTexture()
     GLCall(glDeleteTextures(1, &m_rendererId)); // docs.gl: "glDeleteTextures(..) silently ignores 0's [...]"
 }
 
+void GLTexture::bind(int texUnit)
+{
+    GLCall(glActiveTexture(GL_TEXTURE0 + texUnit));
+    GLCall(glBindTexture(GL_TEXTURE_2D, m_rendererId));
+}
+
+void GLTexture::unbind()
+{
+    myAssert(isBoundToActiveUnit());
+    GLCall(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
+bool GLTexture::isBoundToActiveUnit() const
+{
+    GLint currId = 0;
+    GLCall(glGetIntegerv(GL_TEXTURE_BINDING_2D, &currId));
+    return m_rendererId == static_cast<GLuint>(currId);
+}
+
 
 GLsizei GLTexture::computeMipLevelCount(GLsizei width, GLsizei height)
 {

@@ -11,9 +11,13 @@ class GLTexture
 public:
     GLTexture();
     ~GLTexture();
+    void bind(int texUnit = 0);
+    void unbind();
 private:
+    bool isBoundToActiveUnit() const;
     static GLsizei computeMipLevelCount(GLsizei width, GLsizei height);
     static std::vector<GLubyte> makeCheckerPattern(GLsizei& width, GLsizei& height);
+
     GLuint m_rendererId;
     GLsizei m_width;
     GLsizei m_height;
