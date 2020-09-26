@@ -46,6 +46,11 @@ OpenGL:
 		-> also if array to be copied from is a line of a 2D-array?
 	-> and is it guaranteed to have the same memory layout as a normal C-style array?
 
+GLTexture:
+- do GL_TEXTURE_MIN_FILTER, GL_TEXTURE_MAG_FILTER and GL_TEXTURE_WRAP_* really have no
+	default value according to the OpenGL specification? And is the implementation really
+	allow to draw a black texture when not explicitly setting those? (as claimed by cherno)
+
 GLShaderProgram:
 - also cache vertex attribute locations (similar to the uniform locations)
 	-> how to avoid making getAttribLocation(...) non-const?

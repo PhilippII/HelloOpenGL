@@ -34,12 +34,12 @@ GLTexture::GLTexture() : m_rendererId(0),
     glGenerateMipmap(GL_TEXTURE_2D);
 
     // set texture parameters:
-    // glTexParameter*(..)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    // TODO:
-    // 1) actually upload data to the allocated storage
-    // 2) init sampling parameters
-    // 3) implement move/copy-constructor/assignment
+    // TODO: implement move/copy-constructor/assignment
 }
 
 GLTexture::~GLTexture()
