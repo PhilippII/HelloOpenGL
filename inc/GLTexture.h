@@ -11,7 +11,7 @@ class GLTexture
 {
 public:
     GLTexture() = delete;
-    GLTexture(std::filesystem::path filename);
+    GLTexture(std::filesystem::path filepath);
     // do not allow copying:
     GLTexture(const GLTexture& other) = delete;
     GLTexture& operator=(const GLTexture& other) = delete;

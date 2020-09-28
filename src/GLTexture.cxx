@@ -1,19 +1,34 @@
 #include "GLTexture.h"
 #include <algorithm> // for std::min(..), std::max(...), std::copy(...), ...
-
-#include "debug_utils.h"
-
 #include <iostream>
 
-GLTexture::GLTexture(std::filesystem::path filename)
+#include "debug_utils.h"
+#include "stb_image.h"
+
+
+
+GLTexture::GLTexture(std::filesystem::path filepath)
     : m_rendererId(0),
-      m_width(512), m_height(512),
-      m_mipLevels(computeMipLevelCount(m_width, m_height)) // no mipmapping so far
+      m_width(0), m_height(0),
+      m_mipLevels(0)
 {
+    // create texture:
     GLCall(glGenTextures(1, &m_rendererId));
 
     // first time bind also determines type of texture:
     GLCall(glBindTexture(GL_TEXTURE_2D, m_rendererId));
+
+    // load data from file:
+    // m_width = m_height = 512;
+    // std::vector<GLubyte> pix_data = makeCheckerPattern(m_width, m_height);
+    stbi_set_flip_vertically_on_load(1);
+    int width, height, channels_in_file;
+    unsigned char* pix_data = stbi_load(filepath.c_str(), &width, &height, &channels_in_file, 3);
+    myAssert(pix_data);
+    m_width = width;
+    m_height = height;
+    m_mipLevels = computeMipLevelCount(m_width, m_height);
+    debugDo(std::cout << "available channels in file " << filepath << ": " << channels_in_file << '\n');
 
     // allocate immutable storage:
     //  (immutable = immutable-format but contents may still be modified)
@@ -24,14 +39,19 @@ GLTexture::GLTexture(std::filesystem::path filename)
                           m_width,
                           m_height));
 
-    // upload actual contents of the texture:
-    std::vector<GLubyte> pix_data = makeCheckerPattern(m_width, m_height);
+    // upload actual data to the allocated storage:
     GLCall(glTexSubImage2D(GL_TEXTURE_2D,
                            0, // lod-level
                            0, 0, // x, y-offset
                            m_width, m_height,
                            GL_RGB, GL_UNSIGNED_BYTE,
-                           pix_data.data()));
+                           pix_data));
+                           // pix_data.data())); // use this for the checker pattern version
+
+    // deallocate cpu side copy of data:
+    if (pix_data) {
+        stbi_image_free(pix_data);
+    }
 
     // generate content of other mipmap levels:
     GLCall(glGenerateMipmap(GL_TEXTURE_2D));
