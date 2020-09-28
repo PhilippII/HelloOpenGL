@@ -65,6 +65,9 @@ GLTexture::GLTexture(std::filesystem::path filepath)
     GLCall(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxMaxAnisotropy));
     debugDo(std::cout << "GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT is " << maxMaxAnisotropy << '\n');
     GLCall(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, std::min(maxMaxAnisotropy, 32.f)));
+
+    // unbind texture again:
+    GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 GLTexture::GLTexture(GLTexture &&other)
