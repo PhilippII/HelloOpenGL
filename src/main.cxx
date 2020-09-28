@@ -226,7 +226,7 @@ int main(void)
                                        std::move(ib)});
     }
 
-    GLTexture texture(fs::path("TODO", fs::path::format::generic_format));
+    GLTexture texture(fs::path("res/textures/uv_grid.png", fs::path::format::generic_format));
     int texUnit = 0;
     texture.bind(texUnit);
     suzanneSP.setUniform1i("tex", texUnit);
