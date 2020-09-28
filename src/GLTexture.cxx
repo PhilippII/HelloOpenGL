@@ -1,7 +1,9 @@
 #include "GLTexture.h"
-#include <algorithm> // for std::min(..)
+#include <algorithm> // for std::min(..), std::max(...), std::copy(...), ...
 
 #include "debug_utils.h"
+
+#include <iostream>
 
 GLTexture::GLTexture() : m_rendererId(0),
                          m_width(256), m_height(256),
@@ -38,6 +40,10 @@ GLTexture::GLTexture() : m_rendererId(0),
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+    float maxMaxAnisotropy = 1.f;
+    GLCall(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxMaxAnisotropy));
+    debugDo(std::cout << "GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT is " << maxMaxAnisotropy << '\n');
+    GLCall(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, std::min(maxMaxAnisotropy, 32.f)));
 
     // TODO: implement move/copy-constructor/assignment
 }
