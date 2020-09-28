@@ -36,7 +36,7 @@ GLTexture::GLTexture(std::filesystem::path filename)
     // generate content of other mipmap levels:
     GLCall(glGenerateMipmap(GL_TEXTURE_2D));
 
-    // set texture parameters:
+    // set sampling parameters:
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
@@ -45,8 +45,6 @@ GLTexture::GLTexture(std::filesystem::path filename)
     GLCall(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxMaxAnisotropy));
     debugDo(std::cout << "GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT is " << maxMaxAnisotropy << '\n');
     GLCall(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, std::min(maxMaxAnisotropy, 32.f)));
-
-    // TODO: implement move/copy-constructor/assignment
 }
 
 GLTexture::GLTexture(GLTexture &&other)
