@@ -87,9 +87,8 @@ std::vector<GLubyte> GLTexture::makeCheckerPattern(GLsizei &width, GLsizei &heig
     std::vector<GLubyte> res;
     for (GLsizei y = 0; y < height; ++y) {
         for (GLsizei x = 0; x < width; ++x) {
-            constexpr GLsizei mask = (1 << 4);
-            int col_index = !!((x & mask) ^ (y & mask)); // !! converts to bool after that
-                                                         // implicitly convert to int again
+            int col_index = !!((x ^ y) & (1 << 4)); // !! converts to bool, after that
+                                                    // implicitly convert to int again
             std::copy(colors[col_index].begin(), colors[col_index].end(),
                       std::back_inserter(res));
         }
