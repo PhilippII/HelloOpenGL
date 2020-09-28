@@ -10,27 +10,17 @@ endif
 INTDIR = $(CONFIGDIR)/intermediates
 OBJDIR = $(INTDIR)/obj
 DEPDIR = $(INTDIR)/.deps
-OUTDIR = $(CONFIGDIR)/run
-
-GSLDIR = 3rd_party/GSL-master
-STBDIR = 3rd_party/stb_image
-STBOBJ.release = $(STBDIR)/build/release/intermediates/obj/stb_image.o
-STBOBJ.debug = $(STBDIR)/build/debug/intermediates/obj/stb_image.o
-ifeq ($(CONFIG), release)
-STBOBJ = $(STBOBJ.release)
-else
-STBOBJ = $(STBOBJ.debug)
-endif
+#OUTDIR = $(CONFIGDIR)/run
 
 CXXSFX = cxx
 CXXFILES = $(wildcard $(SRCDIR)/*.$(CXXSFX))
 OBJFILES = $(CXXFILES:$(SRCDIR)/%.$(CXXSFX)=$(OBJDIR)/%.o)
 DEPFILES = $(CXXFILES:$(SRCDIR)/%.$(CXXSFX)=$(DEPDIR)/%.d)
-OUT = main
+#OUT = main
 
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Wconversion -Wshadow -Wcast-qual -Wwrite-strings -Wold-style-cast
-CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR) -I$(STBDIR)/inc
+CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR)
 ifeq ($(CONFIG), release)
 CXXFLAGS += -O2 -DNDEBUG
 else
@@ -41,31 +31,17 @@ endif
 LDFLAGS =
 LDLIBS =
 
-#include Guidlines Support Library:
-CXXFLAGS += -I$(GSLDIR)/include
-# LDLIBS += nothing because it is basically a header only library
+#all: $(OUTDIR)/$(OUT)
+all: $(OBJFILES)
 
-# glfw3:
-CXXFLAGS += $(shell pkg-config --cflags glfw3)
-LDLIBS += $(shell pkg-config --libs glfw3)
+#run: $(OUTDIR)/$(OUT)
+#	./$<
 
-# glew:
-CXXFLAGS += $(shell pkg-config --cflags glew)
-LDLIBS += $(shell pkg-config --libs glew)
+#.PHONY: all run clean
+.PHONY: all clean
 
-# gl (not needed anymore in combination with glew):
-# CXXFLAGS += $(shell pkg-config --cflags gl)
-# LDLIBS += $(shell pkg-config --libs gl)
-
-all: $(OUTDIR)/$(OUT)
-
-run: $(OUTDIR)/$(OUT)
-	./$<
-
-.PHONY: all run clean
-
-$(OUTDIR)/$(OUT): $(OBJFILES) $(STBOBJ) | $(OUTDIR)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+#$(OUTDIR)/$(OUT): $(OBJFILES) | $(OUTDIR)
+#	$(CXX) $(LDFLAGS) -o $@ $(OBJFILES) $(LDLIBS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.$(CXXSFX) | $(OBJDIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
@@ -73,11 +49,6 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.$(CXXSFX) | $(OBJDIR)
 clean:
 	rm -f -r $(CONFIGDIR.debug) $(CONFIGDIR.release)
 #	rm -f $(DEPDIR)/*.d $(OBJDIR)/*.o $(OUTDIR)/$(OUT)
-
-$(STBOBJ): FORCE
-	$(MAKE) -C $(STBDIR)
-
-FORCE:
 
 $(OBJDIR):
 	mkdir -p $@
