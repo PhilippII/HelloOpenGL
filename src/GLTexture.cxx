@@ -5,9 +5,10 @@
 
 #include <iostream>
 
-GLTexture::GLTexture() : m_rendererId(0),
-                         m_width(512), m_height(512),
-                         m_mipLevels(computeMipLevelCount(m_width, m_height)) // no mipmapping so far
+GLTexture::GLTexture(std::filesystem::path filename)
+    : m_rendererId(0),
+      m_width(512), m_height(512),
+      m_mipLevels(computeMipLevelCount(m_width, m_height)) // no mipmapping so far
 {
     GLCall(glGenTextures(1, &m_rendererId));
 
@@ -46,6 +47,27 @@ GLTexture::GLTexture() : m_rendererId(0),
     GLCall(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, std::min(maxMaxAnisotropy, 32.f)));
 
     // TODO: implement move/copy-constructor/assignment
+}
+
+GLTexture::GLTexture(GLTexture &&other)
+    : m_rendererId(other.m_rendererId),
+      m_width(other.m_width), m_height(other.m_height),
+      m_mipLevels(other.m_mipLevels)
+{
+    other.m_rendererId = 0;
+}
+
+GLTexture& GLTexture::operator=(GLTexture &&other)
+{
+    if (this == &other) {
+        return *this;
+    }
+    m_rendererId = other.m_rendererId;
+    other.m_rendererId = 0;
+    m_width = other.m_width;
+    m_height = other.m_height;
+    m_mipLevels = other.m_mipLevels;
+    return *this;
 }
 
 GLTexture::~GLTexture()

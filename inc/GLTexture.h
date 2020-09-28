@@ -5,12 +5,22 @@
 #include <GLFW/glfw3.h>
 
 #include <vector>
+#include <filesystem>
 
 class GLTexture
 {
 public:
-    GLTexture();
+    GLTexture() = delete;
+    GLTexture(std::filesystem::path filename);
+    // do not allow copying:
+    GLTexture(const GLTexture& other) = delete;
+    GLTexture& operator=(const GLTexture& other) = delete;
+    // do allow moving:
+    GLTexture(GLTexture&& other);
+    GLTexture& operator=(GLTexture&& other);
+
     ~GLTexture();
+
     void bind(int texUnit = 0);
     void unbind();
 private:
