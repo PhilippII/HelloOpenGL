@@ -122,13 +122,20 @@ int main(void)
                           static_cast<GLIndexBuffer::count_type>(houseCPUMesh.ib.indices.size()),
                           houseCPUMesh.ib.indices.data());
 
+    // initialize shader for textured stuff:
+    GLShaderProgram texturedSP(fs::path("res/shaders/Texture.shader", fs::path::format::generic_format));
 
     // initialize rectangle:
-    Vertex rectVertices[4] = {
-        {{-.5f, -.5f}, {0.f, 0.f, 0.f, 0.f}}, // 0
-        {{ .5f, -.5f}, {0.f, 0.f, 0.f, 0.f}}, // 1
-        {{ .5f,  .5f}, {0.f, 0.f, 0.f, 0.f}}, // 2
-        {{-.5f,  .5f}, {0.f, 0.f, 0.f, 0.f}}  // 3
+    GLTexture alphaTexture(fs::path("res/textures/alpha_texture_test.png"), 4);
+    struct TexVertex {
+        std::array<float, 2> pos;
+        std::array<float, 2> texCoord;
+    };
+    TexVertex rectVertices[4] = {
+        {{-.5f, -.5f}, {0.f, 0.f}}, // 0
+        {{ .5f, -.5f}, {1.f, 0.f}}, // 1
+        {{ .5f,  .5f}, {1.f, 1.f}}, // 2
+        {{-.5f,  .5f}, {0.f, 1.f}}  // 3
     };
 
     unsigned int indices[] = {
@@ -136,24 +143,29 @@ int main(void)
         2, 3, 0
     };
 
-    GLVertexBuffer rectVB(4 * sizeof(Vertex), rectVertices);
-    VertexBufferLayout layout;
-    layout.append(2, GL_FLOAT, VariableType::FLOAT, posAttrIndex);
-    layout.append(4, GL_FLOAT, VariableType::FLOAT, colAttrIndex);
-    GLVertexArray rectVA;
-    rectVA.addBuffer(rectVB, layout);
-    GLIndexBuffer rectIB(GL_UNSIGNED_INT, 6, indices);
+    VertexBufferLayout rectLayout;
+    rectLayout.append<decltype(TexVertex::pos)>(1, "position_oc");
+    rectLayout.append<decltype(TexVertex::texCoord)>(1, "texCoord");
+    rectLayout.setLocations(texturedSP);
 
-    float r = .0f;
-    float increment = .05f;
+    GLVertexBuffer rectVB(4 * rectLayout.getStride(), rectVertices);
+    GLVertexArray rectVA;
+    rectVA.addBuffer(rectVB, rectLayout);
+    GLIndexBuffer rectIB(GL_UNSIGNED_INT, 6, indices);
 
 
     // initialize star:
+    float r = .0f;
+    float increment = .05f;
+
+    VertexBufferLayout starLayout;
+    starLayout.append(2, GL_FLOAT, VariableType::FLOAT, posAttrIndex);
+    starLayout.append(4, GL_FLOAT, VariableType::FLOAT, colAttrIndex);
     int n_spikes = 5;
     constexpr float pi_f = static_cast<float>(M_PI);
     float dPhi = pi_f / n_spikes; // 2*M_PI / (2*n_spikes)
     float phi_0 = .5f * pi_f - dPhi;
-    std::vector<float> radii {.1, .25};
+    std::vector<float> radii {.5f, 1.f};
     std::array<std::array<float, 4>, 2> colors {std::array<float, 4>{0.f, 0.f, 0.f, 0.f},
                                                 std::array<float, 4>{1.f, 1.f, 0.f, 1.f}};
     std::vector<Vertex> starVertices;
@@ -185,13 +197,12 @@ int main(void)
     GLVertexBuffer starVB(starVertices.size() * sizeof(Vertex), starVertices.data());
     // reuse layout from rectangle:
     GLVertexArray starVA;
-    starVA.addBuffer(starVB, layout);
+    starVA.addBuffer(starVB, starLayout);
     GLIndexBuffer starIB(GL_UNSIGNED_INT,
                          static_cast<GLIndexBuffer::count_type>(starIndices.size()),
                          starIndices.data());
 
     // import from OBJ-file:
-    GLShaderProgram suzanneSP(fs::path("res/shaders/Texture.shader", fs::path::format::generic_format));
     auto time_start = std::chrono::high_resolution_clock::now();
     //std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj", true);
     std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = loadOBJfile(fs::path("res/meshes/suzanne_with_sphere_and_plane.obj", fs::path::format::generic_format),
@@ -213,7 +224,7 @@ int main(void)
     for (auto& cpuMesh : suzanneCPUMeshes) {
         GLVertexBuffer vb(cpuMesh.va.data.size(),
                           cpuMesh.va.data.data());
-        cpuMesh.va.layout.setLocations(suzanneSP);
+        cpuMesh.va.layout.setLocations(texturedSP);
         GLVertexArray va;
         va.addBuffer(vb, cpuMesh.va.layout);
         GLIndexBuffer ib(GL_UNSIGNED_INT,
@@ -226,14 +237,15 @@ int main(void)
                                        std::move(ib)});
     }
 
-    GLTexture texture(fs::path("res/textures/uv_grid.png", fs::path::format::generic_format));
+    GLTexture gridTexture(fs::path("res/textures/uv_grid.png", fs::path::format::generic_format));
     int texUnit = 0;
-    texture.bind(texUnit);
-    suzanneSP.setUniform1i("tex", texUnit);
+    texturedSP.setUniform1i("tex", texUnit);
 
     GLRenderer renderer;
     renderer.setClearColor(.2f, .8f, .2f, 0.f);
     renderer.enableFaceCulling();
+
+    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -241,15 +253,13 @@ int main(void)
         /* Render here */
         renderer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        renderer.disableDepthTest();
-
         // 0 draw house:
         shaderProgram.bind();
         shaderProgram.setUniform4f("u_Color", .5f, .5f, .5f, 1.0f);
 
         renderer.draw(houseVA, houseIB, shaderProgram);
 
-        // 1 draw rectangle:
+        // 2 draw star:
         r += increment;
         if (r > 1.0) {
             r = 1.0;
@@ -261,22 +271,22 @@ int main(void)
         }
         shaderProgram.bind();
         shaderProgram.setUniform4f("u_Color", r, .3f, .8f, 1.0f);
-
-        renderer.draw(rectVA, rectIB, shaderProgram);
-
-
-        // 2 draw star:
-        shaderProgram.bind();
-        shaderProgram.setUniform4f("u_Color", .8f, .8f, .8f, 1.0f);
-
         renderer.draw(starVA, starIB, shaderProgram);
 
+
         // 3 draw suzanne:
+        gridTexture.bind(texUnit);
         renderer.enableDepthTest();
         for (auto& mesh : suzanneMeshes) {
-            renderer.draw(mesh.va, mesh.ib, suzanneSP);
+            renderer.draw(mesh.va, mesh.ib, texturedSP);
         }
+        renderer.disableDepthTest();
 
+        // 1 draw rectangle:
+        GLCall(glEnable(GL_BLEND));
+        alphaTexture.bind(texUnit);
+        renderer.draw(rectVA, rectIB, texturedSP);
+        GLCall(glDisable(GL_BLEND));
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
