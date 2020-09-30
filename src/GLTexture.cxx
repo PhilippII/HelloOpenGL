@@ -1,13 +1,14 @@
 #include "GLTexture.h"
 #include <algorithm> // for std::min(..), std::max(...), std::copy(...), ...
 #include <iostream>
+#include <array>
 
 #include "debug_utils.h"
 #include "stb_image.h"
 
 
 
-GLTexture::GLTexture(std::filesystem::path filepath)
+GLTexture::GLTexture(std::filesystem::path filepath, int channels)
     : m_rendererId(0),
       m_width(0), m_height(0),
       m_mipLevels(0)
@@ -23,28 +24,34 @@ GLTexture::GLTexture(std::filesystem::path filepath)
     // std::vector<GLubyte> pix_data = makeCheckerPattern(m_width, m_height);
     stbi_set_flip_vertically_on_load(1);
     int width, height, channels_in_file;
-    unsigned char* pix_data = stbi_load(filepath.c_str(), &width, &height, &channels_in_file, 3);
+    myAssert(1 <= channels && channels <= 4);
+    unsigned char* pix_data = stbi_load(filepath.c_str(), &width, &height, &channels_in_file, channels);
     myAssert(pix_data);
     m_width = width;
     m_height = height;
     m_mipLevels = computeMipLevelCount(m_width, m_height);
     debugDo(std::cout << "available channels in file " << filepath << ": " << channels_in_file << '\n');
+    myAssert(channels_in_file >= channels);
 
     // allocate immutable storage:
     //  (immutable = immutable-format but contents may still be modified)
+    constexpr std::array<GLenum, 4> internalformats = {GL_R8, GL_RG8, GL_RGB8, GL_RGBA8};
+    // GL_RGB8 is guaranteed to be supported (=socalled required format) for textures but
+    //  not guaranteed to be supported for framebuffers.
+    // the others are guaranteed to be supported (required formats) for both textures and framebuffers.
     GLCall(glTexStorage2D(GL_TEXTURE_2D,
                           m_mipLevels,
-                          GL_RGB8, // guaranteed to be supported (socalled required format)
-                                   // for textures but not guaranteed for renderbuffers
+                          internalformats[channels - 1],
                           m_width,
                           m_height));
 
     // upload actual data to the allocated storage:
+    constexpr std::array<GLenum, 4> formats = {GL_RED, GL_RG, GL_RGB, GL_RGBA};
     GLCall(glTexSubImage2D(GL_TEXTURE_2D,
                            0, // lod-level
                            0, 0, // x, y-offset
                            m_width, m_height,
-                           GL_RGB, GL_UNSIGNED_BYTE,
+                           formats[channels - 1], GL_UNSIGNED_BYTE,
                            pix_data));
                            // pix_data.data())); // use this for the checker pattern version
 
