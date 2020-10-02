@@ -6,7 +6,6 @@
 #include <array>
 #include <vector>
 
-#include <cmath> // M_PI and cos(...) sin(...)
 #include <chrono>
 
 // #include <cassert>
@@ -30,6 +29,7 @@
 
 #include "cpu_mesh_import.h"
 #include "cpu_mesh_utils.h" // to test addIndexBuffer(...)
+#include "cpu_mesh_generate.h"
 
 namespace fs = std::filesystem;
 
@@ -85,9 +85,9 @@ int main(void)
     //int location = shaderProgram.getUniformLocation("u_Color");
     //myAssert(location != -1);
 
-    GLint posAttrIndex = shaderProgram.getAttribLocation("position");
+    GLint posAttrIndex = shaderProgram.getAttribLocation("position_oc");
     myAssert(posAttrIndex != -1);
-    GLint colAttrIndex = shaderProgram.getAttribLocation("vs_in_color");
+    GLint colAttrIndex = shaderProgram.getAttribLocation("color");
     myAssert(colAttrIndex != -1);
 
 
@@ -158,49 +158,15 @@ int main(void)
     float r = .0f;
     float increment = .05f;
 
-    VertexBufferLayout starLayout;
-    starLayout.append(2, GL_FLOAT, VariableType::FLOAT, posAttrIndex);
-    starLayout.append(4, GL_FLOAT, VariableType::FLOAT, colAttrIndex);
-    int n_spikes = 5;
-    constexpr float pi_f = static_cast<float>(M_PI);
-    float dPhi = pi_f / n_spikes; // 2*M_PI / (2*n_spikes)
-    float phi_0 = .5f * pi_f - dPhi;
-    std::vector<float> radii {.5f, 1.f};
-    std::array<std::array<float, 4>, 2> colors {std::array<float, 4>{0.f, 0.f, 0.f, 0.f},
-                                                std::array<float, 4>{1.f, 1.f, 0.f, 1.f}};
-    std::vector<Vertex> starVertices;
-    for (int i = 0; i < 2 * n_spikes; ++i) {
-        float phi_i = phi_0 + i * dPhi;
-        float radius = radii[i % 2];
-        starVertices.push_back(Vertex{
-                                    std::array<float, 2>{radius * cosf(phi_i), radius * sinf(phi_i)},
-                                    colors[i % 2]
-                            });
-    }
-    starVertices.push_back(Vertex{
-                                std::array<float, 2>{0.f, 0.f},
-                                colors[0]
-                            });
-
-    std::vector<unsigned int> starIndices;
-    for (int s = 0; s < n_spikes; ++s) {
-        // inner triangle:
-        starIndices.push_back(2 * s);
-        starIndices.push_back((2 * s + 2) % (n_spikes * 2));
-        starIndices.push_back(n_spikes * 2); // center point
-        // outer triangle:
-        starIndices.push_back(2 * s);
-        starIndices.push_back(2 * s + 1);
-        starIndices.push_back((2 * s + 2) % (n_spikes * 2));
-    }
-
-    GLVertexBuffer starVB(starVertices.size() * sizeof(Vertex), starVertices.data());
-    // reuse layout from rectangle:
+    CPUMesh<GLuint> starCPUmesh = generateStar(5, .5f, 1.f,
+                                               {0.f, 0.f, 0.f, 0.f}, {1.f, 1.f, 0.f, 1.f});
+    GLVertexBuffer starVB(starCPUmesh.va.data.size(), starCPUmesh.va.data.data());
     GLVertexArray starVA;
-    starVA.addBuffer(starVB, starLayout);
+    starCPUmesh.va.layout.setLocations(shaderProgram);
+    starVA.addBuffer(starVB, starCPUmesh.va.layout);
     GLIndexBuffer starIB(GL_UNSIGNED_INT,
-                         static_cast<GLIndexBuffer::count_type>(starIndices.size()),
-                         starIndices.data());
+                         static_cast<GLIndexBuffer::count_type>(starCPUmesh.ib.indices.size()),
+                         starCPUmesh.ib.indices.data());
 
     // import from OBJ-file:
     auto time_start = std::chrono::high_resolution_clock::now();
