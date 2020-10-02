@@ -41,8 +41,8 @@ CPUMesh<GLuint> generateStar(int n_spikes, float r_in, float r_out, const std::a
     }
 
     VertexBufferLayout starLayout;
-    starLayout.append(2, GL_FLOAT, VariableType::FLOAT, "position_oc");
-    starLayout.append(4, GL_FLOAT, VariableType::FLOAT, "color");
+    starLayout.append<decltype(ColoredVertex::pos)>(1, "position_oc");
+    starLayout.append<decltype(ColoredVertex::color)>(1, "color");
     CPUVertexArray va {starLayout, std::vector<GLbyte>(reinterpret_cast<GLbyte*>(starVertices.data()),
                                                        reinterpret_cast<GLbyte*>(starVertices.data()) + starVertices.size() * sizeof(ColoredVertex))};
     CPUIndexBuffer<GLuint> ib {starIndices};
