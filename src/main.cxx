@@ -17,6 +17,8 @@
 
 #include "Texture.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 int main(void)
 {
@@ -77,9 +79,12 @@ int main(void)
 
         IndexBuffer ib(indices, 6);
 
+        glm::mat4 proj = glm::ortho(-2.f, 2.f, -1.5f, 1.5f, -1.f, 1.f);
+
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         shader.SetUniform4f("u_Color", .8f, .3f, .8f, 1.0f);
+        shader.SetUniformMat4f("u_MVP", proj);
 
         Texture texture("res/textures/face_transparent_test.png");
         unsigned int texSlot = 0;
