@@ -23,7 +23,7 @@ OUT = main
 
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Wconversion -Wshadow -Wcast-qual -Wwrite-strings -Wold-style-cast
-CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR) -I$(STB_IMAGE_DIR)
+CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR) -I$(STB_IMAGE_DIR) -I3rd_party/glm
 CXXFLAGS_STB = -g -std=c++17 -pedantic-errors
 ifeq ($(CONFIG), release)
 CXXFLAGS += -O2 -DNDEBUG
