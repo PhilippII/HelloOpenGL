@@ -12,8 +12,10 @@ OBJDIR = $(INTDIR)/obj
 DEPDIR = $(INTDIR)/.deps
 OUTDIR = $(CONFIGDIR)/run
 
-GSLDIR = 3rd_party/GSL-master
-STBDIR = 3rd_party/stb_image
+VENDORDIR = 3rd_party
+
+GSLDIR = $(VENDORDIR)/GSL-master
+STBDIR = $(VENDORDIR)/stb_image
 STBOBJ.release = $(STBDIR)/build/release/intermediates/obj/stb_image.o
 STBOBJ.debug = $(STBDIR)/build/debug/intermediates/obj/stb_image.o
 ifeq ($(CONFIG), release)
@@ -30,7 +32,7 @@ OUT = main
 
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Wconversion -Wshadow -Wcast-qual -Wwrite-strings -Wold-style-cast
-CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR) -I$(STBDIR)/inc
+CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR) -I$(STBDIR)/inc -I$(VENDORDIR)/glm
 ifeq ($(CONFIG), release)
 CXXFLAGS += -O2 -DNDEBUG
 else
