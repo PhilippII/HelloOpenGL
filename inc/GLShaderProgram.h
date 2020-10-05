@@ -12,6 +12,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "glm/glm.hpp"
+
 struct ShaderSource {
     GLenum type;
     std::string sourceCode;
@@ -80,6 +82,10 @@ public:
     void setUniform4f(GLint location, float v0, float v1, float v2, float v3);
 
     void setUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
+
+    void setUniformMat4f(GLint location, const glm::mat4& matrix);
+
+    void setUniformMat4f(const std::string& name, const glm::mat4& matrix);
 
     bool isBound() const;
 

@@ -228,6 +228,17 @@ void GLShaderProgram::setUniform4f(const std::string &name, float v0, float v1, 
     setUniform4f(getUniformLocation(name), v0, v1, v2, v3);
 }
 
+void GLShaderProgram::setUniformMat4f(GLint location, const glm::mat4 &matrix)
+{
+    myAssert(isBound());
+    GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]));
+}
+
+void GLShaderProgram::setUniformMat4f(const std::string &name, const glm::mat4 &matrix)
+{
+    setUniformMat4f(getUniformLocation(name), matrix);
+}
+
 bool GLShaderProgram::isBound() const
 {
     GLint currID;
