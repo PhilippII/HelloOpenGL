@@ -4,6 +4,13 @@ GLFW:
 	-> compile GLFW from source instead?
 - static vs. dynamic linking against glfw and glew. which is better?
 	-> and why does pkg-config --libs --static not include -Wl,-Bstatic -Wl,-Bdynamic ?
+- #define GLFW_INCLUDE_NONE ?
+- set an error callback
+- glfwDestroyWindow(...) in the end (but before glfwTerminate() )
+- add key callbacks to move camera when pressing e.g. an arrow key or one of WASD
+- retrieve framebuffer-size and call glViewport(...)
+	-> also set a callback to be notified if the size of the window changes
+- glfw-timer vs. c++-stdlib timer?
 
 
 c++:
