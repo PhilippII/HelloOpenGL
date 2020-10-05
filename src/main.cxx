@@ -31,6 +31,9 @@
 #include "cpu_mesh_utils.h" // to test addIndexBuffer(...)
 #include "cpu_mesh_generate.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 namespace fs = std::filesystem;
 
 struct Vertex {
@@ -78,12 +81,22 @@ int main(void)
     
     std::cout << glGetString(GL_VERSION) << '\n';
 
+    // initialize transformation:
+    glm::mat4 wc_from_oc(1.0f); // world coordinates from object coordinates
+    glm::mat4 cc_from_wc(1.0f); // camera coordinates from world coordinates
+    glm::mat4 ndc_from_cc = glm::ortho(-2.0f, 2.0f,
+                                       -1.5f, 1.5f,
+                                       -1.0f, 1.0f);
+    glm::mat4 ndc_from_oc = ndc_from_cc * cc_from_wc * wc_from_oc;
+
     // initialize shader:
     GLShaderProgram shaderProgram(fs::path("res/shaders/Basic.shader", fs::path::format::generic_format));
     // shaderProgram.bind() is called automatically in constructor
 
     //int location = shaderProgram.getUniformLocation("u_Color");
     //myAssert(location != -1);
+
+    shaderProgram.setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
 
     GLint posAttrIndex = shaderProgram.getAttribLocation("position_oc");
     myAssert(posAttrIndex != -1);
@@ -124,6 +137,7 @@ int main(void)
 
     // initialize shader for textured stuff:
     GLShaderProgram texturedSP(fs::path("res/shaders/Texture.shader", fs::path::format::generic_format));
+    texturedSP.setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
 
     // initialize rectangle:
     GLTexture alphaTexture(fs::path("res/textures/alpha_texture_test.png"), 4);

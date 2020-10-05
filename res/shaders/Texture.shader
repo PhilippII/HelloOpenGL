@@ -4,9 +4,11 @@ in vec4 position_oc;
 in vec2 texCoord;
 out vec2 texCoord_v;
 
+uniform mat4 u_ndc_from_oc;
+
 void main()
 {
-    gl_Position = position_oc;
+    gl_Position = u_ndc_from_oc * position_oc;
     texCoord_v = texCoord;
 }
 
