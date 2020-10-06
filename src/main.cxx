@@ -43,6 +43,7 @@ struct Vertex {
 };
 
 float aspect = 1.f;
+glm::vec3 cameraPos(0.f, 0.f, 0.f);
 
 void error_callback(int error, const char* description) {
     std::cout << "GLFW-error [" << error << "]: " << description << '\n';
@@ -51,6 +52,22 @@ void error_callback(int error, const char* description) {
 void update_window_size(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
     aspect = width / static_cast<float>(height);
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    } else if (key == GLFW_KEY_W && action == GLFW_PRESS) {
+        cameraPos += glm::vec3( 0.f,  1.f, 0.f);
+    } else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
+        cameraPos += glm::vec3( 0.f, -1.f, 0.f);
+    } else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+        cameraPos += glm::vec3(-1.f,  0.f, 0.f);
+    } else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+        cameraPos += glm::vec3( 1.f,  0.f, 0.f);
+    } else if (key == GLFW_KEY_KP_DECIMAL && action == GLFW_PRESS) {
+        cameraPos = glm::vec3(0.f);
+    }
 }
 
 int main(void)
@@ -88,6 +105,9 @@ int main(void)
     // take care of viewport transform and aspect ratio:
     update_window_size(window.get(), 640, 480);
     glfwSetFramebufferSizeCallback(window.get(), update_window_size);
+
+    // take care of keyboard handling:
+    glfwSetKeyCallback(window.get(), key_callback);
 
     glfwSwapInterval(1);
 
@@ -239,7 +259,7 @@ int main(void)
     {
         // initialize transformation:
         glm::mat4 wc_from_oc(1.0f); // world coordinates from object coordinates
-        glm::mat4 cc_from_wc(1.0f); // camera coordinates from world coordinates
+        glm::mat4 cc_from_wc = glm::translate(glm::mat4(1.f), -cameraPos); // camera coordinates from world coordinates
         constexpr float height = 2.f;
         constexpr float halfHeight = .5f * height;
         float halfWidth = halfHeight * aspect;
