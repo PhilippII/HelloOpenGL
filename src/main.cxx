@@ -42,8 +42,15 @@ struct Vertex {
     std::array<float, 4> color;
 };
 
+float aspect = 1.f;
+
 void error_callback(int error, const char* description) {
     std::cout << "GLFW-error [" << error << "]: " << description << '\n';
+}
+
+void update_window_size(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+    aspect = width / static_cast<float>(height);
 }
 
 int main(void)
@@ -78,6 +85,10 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window.get());
 
+    // take care of viewport transform and aspect ratio:
+    update_window_size(window.get(), 640, 480);
+    glfwSetFramebufferSizeCallback(window.get(), update_window_size);
+
     glfwSwapInterval(1);
 
     // initialize GLEW:
@@ -87,14 +98,6 @@ int main(void)
     
     std::cout << glGetString(GL_VERSION) << '\n';
 
-    // initialize transformation:
-    glm::mat4 wc_from_oc(1.0f); // world coordinates from object coordinates
-    glm::mat4 cc_from_wc(1.0f); // camera coordinates from world coordinates
-    glm::mat4 ndc_from_cc = glm::ortho(-2.0f, 2.0f,
-                                       -1.5f, 1.5f,
-                                       -1.0f, 1.0f);
-    glm::mat4 ndc_from_oc = ndc_from_cc * cc_from_wc * wc_from_oc;
-
     // initialize shader:
     GLShaderProgram shaderProgram(fs::path("res/shaders/Basic.shader", fs::path::format::generic_format));
     // shaderProgram.bind() is called automatically in constructor
@@ -102,7 +105,6 @@ int main(void)
     //int location = shaderProgram.getUniformLocation("u_Color");
     //myAssert(location != -1);
 
-    shaderProgram.setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
 
     GLint posAttrIndex = shaderProgram.getAttribLocation("position_oc");
     myAssert(posAttrIndex != -1);
@@ -143,7 +145,6 @@ int main(void)
 
     // initialize shader for textured stuff:
     GLShaderProgram texturedSP(fs::path("res/shaders/Texture.shader", fs::path::format::generic_format));
-    texturedSP.setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
 
     // initialize rectangle:
     GLTexture alphaTexture(fs::path("res/textures/alpha_texture_test.png"), 4);
@@ -236,6 +237,21 @@ int main(void)
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window.get()))
     {
+        // initialize transformation:
+        glm::mat4 wc_from_oc(1.0f); // world coordinates from object coordinates
+        glm::mat4 cc_from_wc(1.0f); // camera coordinates from world coordinates
+        constexpr float height = 2.f;
+        constexpr float halfHeight = .5f * height;
+        float halfWidth = halfHeight * aspect;
+        glm::mat4 ndc_from_cc = glm::ortho(-halfWidth, halfWidth,
+                                           -halfHeight, halfHeight,
+                                           -1.0f, 1.0f);
+        glm::mat4 ndc_from_oc = ndc_from_cc * cc_from_wc * wc_from_oc;
+        shaderProgram.bind(); // must be bound first to set a uniform
+        shaderProgram.setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
+        texturedSP.bind();
+        texturedSP.setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
+
         /* Render here */
         renderer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

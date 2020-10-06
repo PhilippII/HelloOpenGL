@@ -6,8 +6,6 @@ GLFW:
 	-> and why does pkg-config --libs --static not include -Wl,-Bstatic -Wl,-Bdynamic ?
 - #define GLFW_INCLUDE_NONE ?
 - add key callbacks to move camera when pressing e.g. an arrow key or one of WASD
-- retrieve framebuffer-size and call glViewport(...)
-	-> also set a callback to be notified if the size of the window changes
 - glfw-timer vs. c++-stdlib timer?
 
 
@@ -110,6 +108,8 @@ removed differences me vs. cherno:
 DONE GLFW:
 - set an error callback
 - glfwDestroyWindow(...) in the end (but before glfwTerminate() )
+- retrieve framebuffer-size and call glViewport(...)
+	-> also set a callback to be notified if the size of the window changes
 
 DONE:
 - which of those functions do I need to call again for every frame when rendering multiple
