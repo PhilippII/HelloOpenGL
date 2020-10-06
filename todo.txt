@@ -1,3 +1,10 @@
+Camera:
+- signedness of yaw pitch roll?
+- for better performance do not use generic inverse() in mat_cc_from_wc()
+	(but maybe still use inverse() in debug mode as a comparison?)
+- remove unnecessary inversion of z-coordinate in obj-import code?
+
+
 GLFW:
 - also install glfw3-wayland?
 - glfw version 3.2.1 too old? (website recommends >= 3.3.2)

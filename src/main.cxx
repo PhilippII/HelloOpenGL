@@ -35,6 +35,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "Camera.h"
+
 namespace fs = std::filesystem;
 
 struct Vertex {
@@ -42,8 +44,7 @@ struct Vertex {
     std::array<float, 4> color;
 };
 
-float aspect = 1.f;
-glm::vec3 cameraPos(0.f, 0.f, 0.f);
+Camera camera(glm::radians(45.f), 1.f, .1f, 10.f);
 
 void error_callback(int error, const char* description) {
     std::cout << "GLFW-error [" << error << "]: " << description << '\n';
@@ -51,22 +52,34 @@ void error_callback(int error, const char* description) {
 
 void update_window_size(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
-    aspect = width / static_cast<float>(height);
+    camera.setAspect(width / static_cast<float>(height));
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     } else if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-        cameraPos += glm::vec3( 0.f,  1.f, 0.f);
+        camera.translate_local(glm::vec3( 0.f,  0.f, -1.f));
     } else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-        cameraPos += glm::vec3( 0.f, -1.f, 0.f);
+        camera.translate_local(glm::vec3( 0.f,  0.f, +1.f));
     } else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-        cameraPos += glm::vec3(-1.f,  0.f, 0.f);
+        camera.translate_local(glm::vec3(-1.f,  0.f,  0.f));
     } else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-        cameraPos += glm::vec3( 1.f,  0.f, 0.f);
+        camera.translate_local(glm::vec3(+1.f,  0.f,  0.f));
+    } else if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
+        camera.translate_global(glm::vec3( 0.f, -1.f,  0.f));
+    } else if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+        camera.translate_global(glm::vec3( 0.f, +1.f,  0.f));
+    } else if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+        camera.rotateYaw(glm::radians(-5.f));
+    } else if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+        camera.rotateYaw(glm::radians(+5.f));
+    } else if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+        camera.rotatePitch(glm::radians(+5.f));
+    } else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+        camera.rotatePitch(glm::radians(-5.f));
     } else if (key == GLFW_KEY_KP_DECIMAL && action == GLFW_PRESS) {
-        cameraPos = glm::vec3(0.f);
+        camera.reset();
     }
 }
 
@@ -213,7 +226,7 @@ int main(void)
     auto time_start = std::chrono::high_resolution_clock::now();
     //std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj", true);
     std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = loadOBJfile(fs::path("res/meshes/suzanne_with_sphere_and_plane.obj", fs::path::format::generic_format),
-                                                                true);
+                                                                false);
     auto time_end = std::chrono::high_resolution_clock::now();
     std::chrono::milliseconds time_delta = std::chrono::duration_cast<std::chrono::milliseconds>(time_end - time_start);
     std::cout << "loading suzanne took " << time_delta.count() << " milliseconds\n";
@@ -259,13 +272,8 @@ int main(void)
     {
         // initialize transformation:
         glm::mat4 wc_from_oc(1.0f); // world coordinates from object coordinates
-        glm::mat4 cc_from_wc = glm::translate(glm::mat4(1.f), -cameraPos); // camera coordinates from world coordinates
-        constexpr float height = 2.f;
-        constexpr float halfHeight = .5f * height;
-        float halfWidth = halfHeight * aspect;
-        glm::mat4 ndc_from_cc = glm::ortho(-halfWidth, halfWidth,
-                                           -halfHeight, halfHeight,
-                                           -1.0f, 1.0f);
+        glm::mat4 cc_from_wc = camera.mat_cc_from_wc(); // camera coordinates from world coordinates
+        glm::mat4 ndc_from_cc = camera.mat_ndc_from_cc();
         glm::mat4 ndc_from_oc = ndc_from_cc * cc_from_wc * wc_from_oc;
         shaderProgram.bind(); // must be bound first to set a uniform
         shaderProgram.setUniformMat4f("u_ndc_from_oc", ndc_from_oc);

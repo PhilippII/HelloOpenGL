@@ -422,6 +422,7 @@
 3rd_party/stb_image/inc/stb_image.h
 3rd_party/stb_image/src/stb_image.cxx
 Makefile
+inc/Camera.h
 inc/GLBuffer.h
 inc/GLBufferObject.h
 inc/GLIndexBuffer.h
@@ -443,6 +444,7 @@ inc/gl_type_id.h
 res/shaders/Basic.shader
 res/shaders/Suzanne.shader
 res/shaders/Texture.shader
+src/Camera.cxx
 src/GLBufferObject.cxx
 src/GLIndexBuffer.cxx
 src/GLRenderer.cxx
