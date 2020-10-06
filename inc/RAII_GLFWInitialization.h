@@ -1,5 +1,5 @@
-#ifndef GLFWIINITIALIZATION_H
-#define GLFWIINITIALIZATION_H
+#ifndef RAII_GLFWINITIALIZATION_H
+#define RAII_GLFWINITIALIZATION_H
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -10,19 +10,19 @@
 // before any other stack-allocated classes of the main function
 // then glfwTerminate() will be called after the destructors
 // of all of the other classes. (and not before)
-class GLFWInitialization
+class RAII_GLFWInitialization
 {
 public:
-    GLFWInitialization() {
+    RAII_GLFWInitialization() {
         m_success = (glfwInit() == GLFW_TRUE);
     }
 
-    GLFWInitialization(const GLFWInitialization& other) = delete;
-    GLFWInitialization& operator=(const GLFWInitialization& other) = delete;
-    GLFWInitialization(GLFWInitialization&& other) = delete;
-    GLFWInitialization& operator=(GLFWInitialization&& other) = delete;
+    RAII_GLFWInitialization(const RAII_GLFWInitialization& other) = delete;
+    RAII_GLFWInitialization& operator=(const RAII_GLFWInitialization& other) = delete;
+    RAII_GLFWInitialization(RAII_GLFWInitialization&& other) = delete;
+    RAII_GLFWInitialization& operator=(RAII_GLFWInitialization&& other) = delete;
 
-    ~GLFWInitialization() {
+    ~RAII_GLFWInitialization() {
         if (m_success) {
             glfwTerminate();
         }
@@ -35,4 +35,4 @@ private:
     bool m_success;
 };
 
-#endif // GLFWIINITIALIZATION_H
+#endif // RAII_GLFWINITIALIZATION_H

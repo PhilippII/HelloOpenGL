@@ -424,7 +424,6 @@
 Makefile
 inc/GLBuffer.h
 inc/GLBufferObject.h
-inc/GLFWInitialization.h
 inc/GLIndexBuffer.h
 inc/GLRenderer.h
 inc/GLShader.h
@@ -432,6 +431,8 @@ inc/GLShaderProgram.h
 inc/GLTexture.h
 inc/GLVertexArray.h
 inc/GLVertexBuffer.h
+inc/RAII_GLFWInitialization.h
+inc/RAII_GLFWwindow.h
 inc/VertexBufferLayout.h
 inc/cpu_mesh_generate.h
 inc/cpu_mesh_import.h
@@ -443,7 +444,6 @@ res/shaders/Basic.shader
 res/shaders/Suzanne.shader
 res/shaders/Texture.shader
 src/GLBufferObject.cxx
-src/GLFWInitialization.cpp
 src/GLIndexBuffer.cxx
 src/GLRenderer.cxx
 src/GLShader.cxx
@@ -451,6 +451,8 @@ src/GLShaderProgram.cxx
 src/GLTexture.cxx
 src/GLVertexArray.cxx
 src/GLVertexBuffer.cxx
+src/RAII_GLFWInitialization.cpp
+src/RAII_GLFWwindow.cxx
 src/VertexBufferLayout.cxx
 src/cpu_mesh_generate.cxx
 src/cpu_mesh_import.cxx

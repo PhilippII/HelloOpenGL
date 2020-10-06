@@ -12,7 +12,8 @@
 
 
 #include "debug_utils.h"
-#include "GLFWInitialization.h"
+#include "RAII_GLFWInitialization.h"
+#include "RAII_GLFWwindow.h"
 
 #include "GLVertexBuffer.h"
 #include "GLIndexBuffer.h"
@@ -52,31 +53,30 @@ int main(void)
     #else
     std::cout << "DEBUG VERSION\n";
     #endif
-    GLFWwindow* window;
 
     /* Initialize GLFW */
     glfwSetErrorCallback(error_callback);
-    GLFWInitialization init; // constructor calls GLFWInit()
+    RAII_GLFWInitialization init; // constructor calls GLFWInit()
     if (!init.getSuccess()) {
         return -1;
     }
 
+
+    /* Create a windowed mode window and its OpenGL context */
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // for anisotropic filtering without extension
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
+    RAII_GLFWwindow window(640, 480, "Hello World");
+    if (!window.get())
     {
         //glfwTerminate(); called in destructor of GLFWInitialization
         return -1;
     }
 
     /* Make the window's context current */
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window.get());
 
     glfwSwapInterval(1);
 
@@ -234,7 +234,7 @@ int main(void)
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
     /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(window.get()))
     {
         /* Render here */
         renderer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -275,13 +275,15 @@ int main(void)
         GLCall(glDisable(GL_BLEND));
 
         /* Swap front and back buffers */
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window.get());
 
         /* Poll for and process events */
         glfwPollEvents();
     }
 
-    // glfwTerminate(); in destructor of GLFWInitialization
+    // The following are called after(!) the destructors of the vertex buffers, textures, shaders, ...:
+    // glfwDestroyWindow(window.get()); in destructor of RAII_GLFWwindow
+    // glfwTerminate(); in destructor of RAII_GLFWInitialization
     return 0;
 }
 
