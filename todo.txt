@@ -5,7 +5,6 @@ GLFW:
 - static vs. dynamic linking against glfw and glew. which is better?
 	-> and why does pkg-config --libs --static not include -Wl,-Bstatic -Wl,-Bdynamic ?
 - #define GLFW_INCLUDE_NONE ?
-- set an error callback
 - glfwDestroyWindow(...) in the end (but before glfwTerminate() )
 - add key callbacks to move camera when pressing e.g. an arrow key or one of WASD
 - retrieve framebuffer-size and call glViewport(...)
@@ -108,6 +107,9 @@ removed differences me vs. cherno:
 - Renderer
 	-> me: separate renderer class does not exist: glDrawElements(...) is called from main(..) function directly
 
+
+DONE GLFW:
+- set an error callback
 
 DONE:
 - which of those functions do I need to call again for every frame when rendering multiple

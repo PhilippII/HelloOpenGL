@@ -41,6 +41,10 @@ struct Vertex {
     std::array<float, 4> color;
 };
 
+void error_callback(int error, const char* description) {
+    std::cout << "GLFW-error [" << error << "]: " << description << '\n';
+}
+
 int main(void)
 {
     #ifdef NDEBUG
@@ -50,7 +54,8 @@ int main(void)
     #endif
     GLFWwindow* window;
 
-    /* Initialize the library */
+    /* Initialize GLFW */
+    glfwSetErrorCallback(error_callback);
     GLFWInitialization init; // constructor calls GLFWInit()
     if (!init.getSuccess()) {
         return -1;
@@ -75,6 +80,7 @@ int main(void)
 
     glfwSwapInterval(1);
 
+    // initialize GLEW:
     if (glewInit() != GLEW_OK) {
         std::cout << "error: glewInit() failed!\n";
     }
