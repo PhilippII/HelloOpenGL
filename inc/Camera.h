@@ -12,11 +12,16 @@ public:
         : m_pos_wc(0.f), m_yaw_rad(0.f), m_pitch_rad(0.f), m_roll_rad(0.f),
           m_fov_rad(fov_rad), m_aspect(aspect), m_nearClip(nearClip), m_farClip(farClip)
     {}
-    void reset();
     void setAspect(float aspect) { m_aspect = aspect; }
+
+    void resetLocRot();
+    // positive angles for yaw, pitch or roll correspond to
+    // the directions shown in:
+    // https://de.wikipedia.org/wiki/Datei:Roll_pitch_yaw_gravitation_center_de.png
     void rotateYaw(float delta_rad) { m_yaw_rad += delta_rad; }
     void rotatePitch(float delta_rad) { m_pitch_rad += delta_rad; }
     void rotateRoll(float delta_rad) { m_roll_rad += delta_rad; }
+
     void translate_global(const glm::vec3& offset);
     void translate_local(const glm::vec3& offset);
 
@@ -31,7 +36,6 @@ private:
 
     float m_fov_rad;
     float m_aspect;
-
     float m_nearClip;
     float m_farClip;
 };

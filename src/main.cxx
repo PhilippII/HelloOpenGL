@@ -79,7 +79,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     } else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
         camera.rotatePitch(glm::radians(-5.f));
     } else if (key == GLFW_KEY_KP_DECIMAL && action == GLFW_PRESS) {
-        camera.reset();
+        camera.resetLocRot();
     }
 }
 

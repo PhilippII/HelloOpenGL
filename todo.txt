@@ -1,5 +1,4 @@
 Camera:
-- signedness of yaw pitch roll?
 - for better performance do not use generic inverse() in mat_cc_from_wc()
 	(but maybe still use inverse() in debug mode as a comparison?)
 - remove unnecessary inversion of z-coordinate in obj-import code?
@@ -117,6 +116,9 @@ DONE GLFW:
 - glfwDestroyWindow(...) in the end (but before glfwTerminate() )
 - retrieve framebuffer-size and call glViewport(...)
 	-> also set a callback to be notified if the size of the window changes
+
+DONE CAMERA:
+- signedness of yaw pitch roll?
 
 DONE:
 - which of those functions do I need to call again for every frame when rendering multiple

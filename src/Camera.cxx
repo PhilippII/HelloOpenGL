@@ -8,7 +8,7 @@ glm::mat4 Camera::mat_ndc_from_cc() const
     return glm::perspective(m_fov_rad, m_aspect, m_nearClip, m_farClip);
 }
 
-void Camera::reset()
+void Camera::resetLocRot()
 {
     m_pos_wc = glm::vec3(0.f);
     m_yaw_rad = 0.f;
@@ -30,11 +30,20 @@ void Camera::translate_local(const glm::vec3 &offset)
 glm::mat4 Camera::mat_wc_from_cc() const
 {
     glm::mat4 res = glm::translate(glm::mat4(1.f), m_pos_wc);
-    // documentation incorrect?? glm::rotate() seems to take radians while
-    //  glm-documentation says it takes degrees??
-    res = glm::rotate(res, m_yaw_rad, glm::vec3(0.f, -1.f, 0.f));
-    res = glm::rotate(res, m_pitch_rad, glm::vec3(1.f, 0.f, 0.f));
-    return glm::rotate(res, m_roll_rad, glm::vec3(0.f, 0.f, 1.f));
+    // 1) documentation incorrect?? glm::rotate() seems to take radians while
+    //      glm-documentation says it takes degrees??
+    // 2) axis-vectors for glm::rotate(..) are based on
+    //      https://de.wikipedia.org/wiki/Datei:Roll_pitch_yaw_gravitation_center_de.png
+    //      (yaw = Gieren, pitch=Nicken, roll=Rollen),
+    //      where the coordinate system is as the eye coordinates in
+    //      http://www.songho.ca/opengl/gl_projectionmatrix.html
+    //      So e.g. for roll this vector points forward from the planes/pilots/cameras
+    //      point of view. And forward is equivalent to the negative z-axis.
+    //      Note that the direction of rotation for positive angles
+    //      aligns with https://en.wikipedia.org/wiki/File:Right-hand_grip_rule.svg
+    res = glm::rotate(res, m_yaw_rad,   glm::vec3(0.f, -1.f,  0.f));
+    res = glm::rotate(res, m_pitch_rad, glm::vec3(1.f,  0.f,  0.f));
+    return glm::rotate(res, m_roll_rad, glm::vec3(0.f,  0.f, -1.f));
 }
 
 glm::mat4 Camera::mat_cc_from_wc() const
