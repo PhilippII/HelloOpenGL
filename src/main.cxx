@@ -56,28 +56,30 @@ void update_window_size(GLFWwindow* window, int width, int height) {
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    constexpr float stepSize = .2f;
+    constexpr float rotDelta = glm::radians(5.f);
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     } else if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-        camera.translate_local(glm::vec3( 0.f,  0.f, -1.f));
+        camera.translate_local(glm::vec3( 0.f,  0.f, -stepSize));
     } else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-        camera.translate_local(glm::vec3( 0.f,  0.f, +1.f));
+        camera.translate_local(glm::vec3( 0.f,  0.f, +stepSize));
     } else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-        camera.translate_local(glm::vec3(-1.f,  0.f,  0.f));
+        camera.translate_local(glm::vec3(-stepSize,  0.f,  0.f));
     } else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-        camera.translate_local(glm::vec3(+1.f,  0.f,  0.f));
+        camera.translate_local(glm::vec3(+stepSize,  0.f,  0.f));
     } else if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-        camera.translate_global(glm::vec3( 0.f, -1.f,  0.f));
+        camera.translate_global(glm::vec3( 0.f, -stepSize,  0.f));
     } else if (key == GLFW_KEY_E && action == GLFW_PRESS) {
-        camera.translate_global(glm::vec3( 0.f, +1.f,  0.f));
+        camera.translate_global(glm::vec3( 0.f, +stepSize,  0.f));
     } else if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
-        camera.rotateYaw(glm::radians(-5.f));
+        camera.rotateYaw(-rotDelta);
     } else if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
-        camera.rotateYaw(glm::radians(+5.f));
+        camera.rotateYaw(+rotDelta);
     } else if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
-        camera.rotatePitch(glm::radians(+5.f));
+        camera.rotatePitch(+rotDelta);
     } else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
-        camera.rotatePitch(glm::radians(-5.f));
+        camera.rotatePitch(-rotDelta);
     } else if (key == GLFW_KEY_KP_DECIMAL && action == GLFW_PRESS) {
         camera.resetLocRot();
     }
