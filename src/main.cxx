@@ -225,7 +225,7 @@ int main(void)
     // import from OBJ-file:
     auto time_start = std::chrono::high_resolution_clock::now();
     //std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj", true);
-    std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = loadOBJfile(fs::path("res/meshes/suzanne_with_sphere_and_plane.obj", fs::path::format::generic_format),
+    std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = loadOBJfile(fs::path("res/meshes/suzanne_horn_smooth_subdiv_1.obj", fs::path::format::generic_format),
                                                                 false);
     auto time_end = std::chrono::high_resolution_clock::now();
     std::chrono::milliseconds time_delta = std::chrono::duration_cast<std::chrono::milliseconds>(time_end - time_start);
