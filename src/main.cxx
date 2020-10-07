@@ -266,6 +266,7 @@ int main(void)
     GLRenderer renderer;
     renderer.setClearColor(.2f, .8f, .2f, 0.f);
     renderer.enableFaceCulling();
+    renderer.enableDepthTest();
 
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
@@ -273,20 +274,17 @@ int main(void)
     while (!glfwWindowShouldClose(window.get()))
     {
         // initialize transformation:
-        glm::mat4 wc_from_oc(1.0f); // world coordinates from object coordinates
         glm::mat4 cc_from_wc = camera.mat_cc_from_wc(); // camera coordinates from world coordinates
         glm::mat4 ndc_from_cc = camera.mat_ndc_from_cc();
-        glm::mat4 ndc_from_oc = ndc_from_cc * cc_from_wc * wc_from_oc;
-        shaderProgram.bind(); // must be bound first to set a uniform
-        shaderProgram.setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
-        texturedSP.bind();
-        texturedSP.setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
+        glm::mat4 ndc_from_wc = ndc_from_cc * cc_from_wc;
 
         /* Render here */
         renderer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // 0 draw house:
-        shaderProgram.bind();
+        shaderProgram.bind(); // must be bound first to set a uniform
+        glm::mat4 wc_from_houseoc(1.f);
+        shaderProgram.setUniformMat4f("u_ndc_from_oc", ndc_from_wc * wc_from_houseoc);
         shaderProgram.setUniform4f("u_Color", .5f, .5f, .5f, 1.0f);
 
         renderer.draw(houseVA, houseIB, shaderProgram);
@@ -301,21 +299,27 @@ int main(void)
             r = 0.0;
             increment = +.05f;
         }
-        shaderProgram.bind();
+        shaderProgram.bind(); // must be bound first to set a uniform
+        glm::mat4 wc_from_staroc = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, .5f));
+        shaderProgram.setUniformMat4f("u_ndc_from_oc", ndc_from_wc * wc_from_staroc);
         shaderProgram.setUniform4f("u_Color", r, .3f, .8f, 1.0f);
         renderer.draw(starVA, starIB, shaderProgram);
 
 
         // 3 draw suzanne:
+        texturedSP.bind(); // must be bound first to set a uniform
+        glm::mat4 wc_from_suzanneoc = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 1.f));
+        texturedSP.setUniformMat4f("u_ndc_from_oc", ndc_from_wc * wc_from_suzanneoc);
         gridTexture.bind(texUnit);
-        renderer.enableDepthTest();
         for (auto& mesh : suzanneMeshes) {
             renderer.draw(mesh.va, mesh.ib, texturedSP);
         }
-        renderer.disableDepthTest();
 
         // 1 draw rectangle:
         GLCall(glEnable(GL_BLEND));
+        texturedSP.bind(); // must be bound first to set a uniform
+        glm::mat4 wc_from_rectoc = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 2.f));
+        texturedSP.setUniformMat4f("u_ndc_from_oc", ndc_from_wc * wc_from_rectoc);
         alphaTexture.bind(texUnit);
         renderer.draw(rectVA, rectIB, texturedSP);
         GLCall(glDisable(GL_BLEND));
