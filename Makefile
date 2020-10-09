@@ -1,5 +1,3 @@
-# TODO: header-dependencies for imgui source files also?
-
 INCDIR = inc
 SRCDIR = src
 CONFIGDIR.release = build/release
@@ -30,11 +28,14 @@ endif
 IMGUIDIR = $(VENDORDIR)/dear_imgui/imgui
 IMGUIBINDDIR = $(IMGUIDIR)/bindings
 IMGUIOBJDIR = $(OBJDIR)/imgui
+IMGUIDEPDIR = $(IMGUIOBJDIR)/.deps
 
 IMGUICXXFILES = $(wildcard $(IMGUIDIR)/*.cpp)
 IMGUIBINDCXXFILES = $(wildcard $(IMGUIBINDDIR)/*.cpp)
 IMGUIOBJFILES = $(IMGUICXXFILES:$(IMGUIDIR)/%.cpp=$(IMGUIOBJDIR)/%.o)
 IMGUIOBJFILES += $(IMGUIBINDCXXFILES:$(IMGUIBINDDIR)/%.cpp=$(IMGUIOBJDIR)/%.o)
+IMGUIDEPFILES = $(IMGUICXXFILES:$(IMGUIDIR)/%.cpp=$(IMGUIDEPDIR)/%.d)
+IMGUIDEPFILES += $(IMGUIBINDCXXFILES:$(IMGUIBINDDIR)/%.cpp=$(IMGUIDEPDIR)/%.d)
 
 
 CXXSFX = cxx
@@ -107,6 +108,9 @@ $(OBJDIR):
 $(IMGUIOBJDIR):
 	mkdir -p $@
 
+$(IMGUIDEPDIR):
+	mkdir -p $@
+
 $(OUTDIR):
 	mkdir -p $@
 
@@ -126,4 +130,13 @@ $(DEPDIR)/%.d: $(SRCDIR)/%.$(CXXSFX) | $(DEPDIR)
 #	-MF $@ output result to dependency file instead of standard output stream
 
 include $(DEPFILES)
+
+# header dependencies for imgui also:
+$(IMGUIDEPDIR)/%.d: $(IMGUIDIR)/%.cpp | $(IMGUIDEPDIR)
+	$(CXX) -MM -MP -MT "$(IMGUIOBJDIR)/$*.o $@" -MF $@ $(CXXFLAGS) $<
+
+$(IMGUIDEPDIR)/%.d: $(IMGUIBINDDIR)/%.cpp | $(IMGUIDEPDIR)
+	$(CXX) -MM -MP -MT "$(IMGUIOBJDIR)/$*.o $@" -MF $@ $(CXXFLAGS) $<
+
+include $(IMGUIDEPFILES)
 
