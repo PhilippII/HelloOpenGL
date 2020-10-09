@@ -1,3 +1,5 @@
+# TODO: header-dependencies for imgui source files also?
+
 INCDIR = inc
 SRCDIR = src
 CONFIGDIR.release = build/release
@@ -24,6 +26,18 @@ else
 STBOBJ = $(STBOBJ.debug)
 endif
 
+
+IMGUIDIR = $(VENDORDIR)/dear_imgui/imgui
+IMGUIBINDDIR = $(IMGUIDIR)/bindings
+IMGUIOBJDIR = $(OBJDIR)/imgui
+IMGUIBINDOBJDIR = $(IMGUIOBJDIR)/bindings
+
+IMGUICXXFILES = $(wildcard $(IMGUIDIR)/*.cpp)
+IMGUIBINDCXXFILES = $(wildcard $(IMGUIBINDDIR)/*.cpp)
+IMGUIOBJFILES = $(IMGUICXXFILES:$(IMGUIDIR)/%.cpp=$(IMGUIOBJDIR)/%.o)
+IMGUIBINDOBJFILES = $(IMGUIBINDCXXFILES:$(IMGUIBINDDIR)/%.cpp=$(IMGUIBINDOBJDIR)/%.o)
+
+
 CXXSFX = cxx
 CXXFILES = $(wildcard $(SRCDIR)/*.$(CXXSFX))
 OBJFILES = $(CXXFILES:$(SRCDIR)/%.$(CXXSFX)=$(OBJDIR)/%.o)
@@ -32,7 +46,8 @@ OUT = main
 
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Wconversion -Wshadow -Wcast-qual -Wwrite-strings -Wold-style-cast
-CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR) -I$(STBDIR)/inc -I$(VENDORDIR)/glm
+CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR) 
+CXXFLAGS += -I$(STBDIR)/inc -I$(VENDORDIR)/glm -I$(IMGUIDIR) -I$(IMGUIBINDDIR)
 ifeq ($(CONFIG), release)
 CXXFLAGS += -O2 -DNDEBUG
 else
@@ -66,10 +81,16 @@ run: $(OUTDIR)/$(OUT)
 
 .PHONY: all run clean
 
-$(OUTDIR)/$(OUT): $(OBJFILES) $(STBOBJ) | $(OUTDIR)
+$(OUTDIR)/$(OUT): $(OBJFILES) $(STBOBJ) $(IMGUIOBJFILES) $(IMGUIBINDOBJFILES) | $(OUTDIR)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.$(CXXSFX) | $(OBJDIR)
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
+$(IMGUIOBJDIR)/%.o: $(IMGUIDIR)/%.cpp | $(IMGUIOBJDIR)
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
+$(IMGUIBINDOBJDIR)/%.o: $(IMGUIBINDDIR)/%.cpp | $(IMGUIBINDOBJDIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
 clean:
@@ -82,6 +103,12 @@ $(STBOBJ): FORCE
 FORCE:
 
 $(OBJDIR):
+	mkdir -p $@
+
+$(IMGUIOBJDIR):
+	mkdir -p $@
+
+$(IMGUIBINDOBJDIR):
 	mkdir -p $@
 
 $(OUTDIR):

@@ -5,3 +5,5 @@ src
 3rd_party/stb_image/src
 3rd_party/stb_image
 3rd_party/glm
+3rd_party/dear_imgui/imgui/bindings
+3rd_party/dear_imgui/imgui

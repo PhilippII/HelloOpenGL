@@ -1,6 +1,9 @@
 Camera:
 - remove unnecessary inversion of z-coordinate in obj-import code?
 
+imgui:
+- Makefile header dependencies
+
 
 GLFW:
 - also install glfw3-wayland?
