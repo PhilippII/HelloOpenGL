@@ -1,3 +1,7 @@
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -132,6 +136,20 @@ int main(void)
     }
     
     std::cout << glGetString(GL_VERSION) << '\n';
+
+    // Setup Dear ImGui context:
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+
+    ImGui::StyleColorsDark();
+
+
+    ImGui_ImplGlfw_InitForOpenGL(window.get(), true);
+    // -> install_callbacks = true -> callbacks will be installed
+    //                              they will call the users previously installed callbacks (if any)
+    ImGui_ImplOpenGL3_Init();
+
 
     // initialize shader:
     GLShaderProgram shaderProgram(fs::path("res/shaders/Basic.shader", fs::path::format::generic_format));
@@ -270,9 +288,12 @@ int main(void)
 
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
+    bool show_demo_window = true;
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window.get()))
     {
+
         // initialize transformation:
         glm::mat4 cc_from_wc = camera.mat_cc_from_wc(); // camera coordinates from world coordinates
         glm::mat4 ndc_from_cc = camera.mat_ndc_from_cc();
@@ -324,6 +345,17 @@ int main(void)
         renderer.draw(rectVA, rectIB, texturedSP);
         GLCall(glDisable(GL_BLEND));
 
+        // TODO: glfwPollEvents() sooner already?
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        if (show_demo_window) {
+            ImGui::ShowDemoWindow(&show_demo_window);
+        }
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         /* Swap front and back buffers */
         glfwSwapBuffers(window.get());
 
@@ -331,6 +363,9 @@ int main(void)
         glfwPollEvents();
     }
 
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
     // The following are called after(!) the destructors of the vertex buffers, textures, shaders, ...:
     // glfwDestroyWindow(window.get()); in destructor of RAII_GLFWwindow
     // glfwTerminate(); in destructor of RAII_GLFWInitialization

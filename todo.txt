@@ -2,6 +2,7 @@ Camera:
 - remove unnecessary inversion of z-coordinate in obj-import code?
 
 imgui:
+- glfwPollEvents() in the beginning of the main loop already?
 
 
 GLFW:
