@@ -2,7 +2,14 @@ Camera:
 - remove unnecessary inversion of z-coordinate in obj-import code?
 
 imgui:
-- glfwPollEvents() in the beginning of the main loop already?
+- correctly handle keyboard events between my code and imgui:
+	-> glfwPollEvents() in the beginning of the main loop already as in the imgui example?
+	"Note: Those flags are updated by ImGui::NewFrame(). 
+	However it is generally more correct and easier that you poll flags from the previous frame, then submit your inputs, then call NewFrame(). 
+	If you attempt to do the opposite (which is generally harder) you are likely going to submit your inputs after NewFrame(), and therefore too late."
+		https://github.com/ocornut/imgui/blob/master/docs/FAQ.md#q-how-can-i-tell-whether-to-dispatch-mousekeyboard-to-dear-imgui-or-to-my-application
+	-> check io.WantCaptureMouse, io.WantCaptureKeyboard and io.WantTextInput ?
+
 
 
 GLFW:
