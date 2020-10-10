@@ -38,4 +38,7 @@ build/
 HelloOpenGL.creator.user
 *.autosave
 
+#imgui
+imgui.ini
+
 
