@@ -60,6 +60,9 @@ void update_window_size(GLFWwindow* window, int width, int height) {
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (ImGui::GetIO().WantCaptureKeyboard) {
+        return;
+    }
     constexpr float stepSize = .2f;
     constexpr float rotDelta = glm::radians(5.f);
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
@@ -293,6 +296,13 @@ int main(void)
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window.get()))
     {
+        // Poll for and process events:
+        // (glfw-example does this at the end of the loop
+        //  but imgui-example does it at the beginning.)
+        // "... it is generally more correct and easier that you poll flags
+        //  from the previous frame, then submit your inputs, then call NewFrame()."
+        // https://github.com/ocornut/imgui/blob/master/docs/FAQ.md#q-how-can-i-tell-whether-to-dispatch-mousekeyboard-to-dear-imgui-or-to-my-application
+        glfwPollEvents();
 
         // initialize transformation:
         glm::mat4 cc_from_wc = camera.mat_cc_from_wc(); // camera coordinates from world coordinates
@@ -358,9 +368,6 @@ int main(void)
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window.get());
-
-        /* Poll for and process events */
-        glfwPollEvents();
     }
 
     ImGui_ImplOpenGL3_Shutdown();
