@@ -62,10 +62,10 @@ int main(void)
 
     {
         float positions[4 * (2+2)] = {
-            100.f, 100.f, 0.0f, 0.0f, // 0
-            200.f, 100.f, 1.0f, 0.0f, // 1
-            200.f, 200.f, 1.0f, 1.0f, // 2
-            100.f, 200.f, 0.0f, 1.0f  // 3
+            -50.f, -50.f, 0.0f, 0.0f, // 0
+             50.f, -50.f, 1.0f, 0.0f, // 1
+             50.f,  50.f, 1.0f, 1.0f, // 2
+            -50.f,  50.f, 0.0f, 1.0f  // 3
         };
 
         unsigned int indices[] = {
@@ -84,7 +84,7 @@ int main(void)
         IndexBuffer ib(indices, 6);
 
         glm::mat4 proj = glm::ortho(0.f, 960.f, 0.f, 540.f, -1.f, 1.f);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
 
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
