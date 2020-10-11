@@ -34,3 +34,6 @@
 # build directory
 build/
 
+# imgui
+imgui.ini
+
