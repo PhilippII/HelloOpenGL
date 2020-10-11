@@ -131,7 +131,6 @@ int main(void)
             glm::mat4 mvp = proj * view * model;
 
             shader.Bind();
-            shader.SetUniform4f("u_Color", r, .3f, .8f, 1.0f);
             shader.SetUniformMat4f("u_MVP", mvp);
 
             renderer.Draw(va, ib, shader);
