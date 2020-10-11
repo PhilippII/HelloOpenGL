@@ -12,8 +12,11 @@ OBJDIR = $(INTDIR)/obj
 DEPDIR = $(INTDIR)/.deps
 OUTDIR = $(CONFIGDIR)/run
 
-STB_IMAGE_DIR = 3rd_party/stb_image
+VENDORDIR = 3rd_party
+
+STB_IMAGE_DIR = $(VENDORDIR)/stb_image
 STB_IMAGE_OBJ_DIR = $(OBJDIR)/3rd_party/stb_image
+
 
 CXXSFX = cxx
 CXXFILES = $(wildcard $(SRCDIR)/*.$(CXXSFX))
@@ -21,9 +24,22 @@ OBJFILES = $(CXXFILES:$(SRCDIR)/%.$(CXXSFX)=$(OBJDIR)/%.o)
 DEPFILES = $(CXXFILES:$(SRCDIR)/%.$(CXXSFX)=$(DEPDIR)/%.d)
 OUT = main
 
+IMGUIDIR = $(VENDORDIR)/dear_imgui/imgui
+IMGUIBINDDIR = $(IMGUIDIR)/bindings
+IMGUICXXFILES = $(wildcard $(IMGUIDIR)/*.cpp)
+IMGUIBINDCXXFILES = $(wildcard $(IMGUIBINDDIR)/*.cpp)
+IMGUIOBJDIR = $(OBJDIR)/imgui
+IMGUIDEPDIR = $(DEPDIR)/imgui
+
+IMGUIOBJFILES = $(IMGUICXXFILES:$(IMGUIDIR)/%.cpp=$(IMGUIOBJDIR)/%.o)
+IMGUIOBJFILES += $(IMGUIBINDCXXFILES:$(IMGUIBINDDIR)/%.cpp=$(IMGUIOBJDIR)/%.o)
+IMGUIDEPFILES = $(IMGUICXXFILES:$(IMGUIDIR)/%.cpp=$(IMGUIDEPDIR)/%.d)
+IMGUIDEPFILES += $(IMGUIBINDCXXFILES:$(IMGUIBINDDIR)/%.cpp=$(IMGUIDEPDIR)/%.d)
+
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Wconversion -Wshadow -Wcast-qual -Wwrite-strings -Wold-style-cast
-CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR) -I$(STB_IMAGE_DIR) -I3rd_party/glm
+CXXFLAGS += -g -std=c++17 -pedantic-errors -I$(INCDIR) 
+CXXFLAGS += -I$(STB_IMAGE_DIR) -I3rd_party/glm -I$(IMGUIDIR) -I$(IMGUIBINDDIR)
 CXXFLAGS_STB = -g -std=c++17 -pedantic-errors
 ifeq ($(CONFIG), release)
 CXXFLAGS += -O2 -DNDEBUG
@@ -54,10 +70,16 @@ run: $(OUTDIR)/$(OUT)
 
 .PHONY: all run clean
 
-$(OUTDIR)/$(OUT): $(OBJFILES) $(STB_IMAGE_OBJ_DIR)/stb_image.o | $(OUTDIR)
+$(OUTDIR)/$(OUT): $(OBJFILES) $(STB_IMAGE_OBJ_DIR)/stb_image.o $(IMGUIOBJFILES) | $(OUTDIR)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.$(CXXSFX) | $(OBJDIR)
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
+$(IMGUIOBJDIR)/%.o: $(IMGUIDIR)/%.cpp | $(IMGUIOBJDIR)
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
+$(IMGUIOBJDIR)/%.o: $(IMGUIBINDDIR)/%.cpp | $(IMGUIOBJDIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
 $(STB_IMAGE_OBJ_DIR)/stb_image.o: $(STB_IMAGE_DIR)/stb_image.$(CXXSFX) | $(STB_IMAGE_OBJ_DIR)
@@ -68,6 +90,12 @@ clean:
 #	rm -f $(DEPDIR)/*.d $(OBJDIR)/*.o $(OUTDIR)/$(OUT)
 
 $(OBJDIR):
+	mkdir -p $@
+
+$(IMGUIOBJDIR):
+	mkdir -p $@
+
+$(IMGUIDEPDIR):
 	mkdir -p $@
 
 $(OUTDIR):
@@ -92,4 +120,12 @@ $(DEPDIR)/%.d: $(SRCDIR)/%.$(CXXSFX) | $(DEPDIR)
 #	-MF $@ output result to dependency file instead of standard output stream
 
 include $(DEPFILES)
+
+$(IMGUIDEPDIR)/%.d: $(IMGUIDIR)/%.cpp | $(IMGUIDEPDIR)
+	$(CXX) -MM -MP -MT "$(IMGUIOBJDIR)/$*.o $@" -MF $@ $(CXXFLAGS) $<
+
+$(IMGUIDEPDIR)/%.d: $(IMGUIBINDDIR)/%.cpp | $(IMGUIDEPDIR)
+	$(CXX) -MM -MP -MT "$(IMGUIOBJDIR)/$*.o $@" -MF $@ $(CXXFLAGS) $<
+
+include $(IMGUIDEPFILES)
 
