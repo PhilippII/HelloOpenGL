@@ -67,8 +67,8 @@ int main(void)
 
     {
         Renderer renderer;
-        GLCall(glEnable(GL_BLEND));
-        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+        //GLCall(glEnable(GL_BLEND));
+        //GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
