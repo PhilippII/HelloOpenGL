@@ -1,3 +1,5 @@
+src/tests/TestTwoInstances.cxx
+inc/tests/TestTwoInstances.h
 src/tests/TestClearColor.cxx
 src/tests/Test.cxx
 3rd_party/dear_imgui/imgui/bindings/imgui_impl_glfw.cpp

@@ -24,7 +24,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-#include "tests/TestClearColor.h"
+//#include "tests/TestClearColor.h"
+#include "tests/TestTwoInstances.h"
 
 int main(void)
 {
@@ -74,7 +75,7 @@ int main(void)
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init(); // pass glsl-version ?
 
-        test::TestClearColor myTest;
+        test::TestTwoInstances myTest;
 
         while (!glfwWindowShouldClose(window))
         {
