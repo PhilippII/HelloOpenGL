@@ -24,6 +24,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "tests/TestClearColor.h"
+
 int main(void)
 {
     #ifdef NDEBUG
@@ -72,16 +74,20 @@ int main(void)
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init(); // pass glsl-version ?
 
-
+        test::TestClearColor myTest;
 
         while (!glfwWindowShouldClose(window))
         {
             renderer.Clear();
 
+            myTest.OnUpdate(0.0f);
+            myTest.OnRender();
+
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
+            myTest.OnImGuiRender();
 
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
