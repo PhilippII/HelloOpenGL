@@ -1,7 +1,7 @@
 #ifndef TESTCLEARCOLOR_H
 #define TESTCLEARCOLOR_H
 
-#include "Test.h"
+#include "tests/Test.h"
 
 namespace test {
 
