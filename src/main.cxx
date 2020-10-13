@@ -81,7 +81,7 @@ int main(void)
             renderer.Clear();
 
             myTest.OnUpdate(0.0f);
-            myTest.OnRender();
+            myTest.OnRender(renderer);
 
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
