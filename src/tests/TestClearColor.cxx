@@ -12,7 +12,7 @@ TestClearColor::TestClearColor()
 
 TestClearColor::~TestClearColor()
 {
-
+    GLCall(glClearColor(0.f, 0.f, 0.f, 0.f));
 }
 
 void TestClearColor::OnUpdate(float deltaTime)

@@ -40,7 +40,9 @@ test::TestTwoInstances::TestTwoInstances()
 
 test::TestTwoInstances::~TestTwoInstances()
 {
-
+    GLCall(glClearColor(0.f, 0.f, 0.f, 0.f));
+    GLCall(glDisable(GL_BLEND));
+    GLCall(glBlendFunc(GL_ONE, GL_ZERO));
 }
 
 void test::TestTwoInstances::OnUpdate(float deltaTime)
