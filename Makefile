@@ -1,5 +1,7 @@
 INCDIR = inc
 SRCDIR = src
+TESTINCDIR = $(INCDIR)/tests
+TESTSRCDIR = $(SRCDIR)/tests
 CONFIGDIR.release = build/release
 CONFIGDIR.debug = build/debug
 ifeq ($(CONFIG), release)
@@ -20,8 +22,11 @@ STB_IMAGE_OBJ_DIR = $(OBJDIR)/3rd_party/stb_image
 
 CXXSFX = cxx
 CXXFILES = $(wildcard $(SRCDIR)/*.$(CXXSFX))
+TESTCXXFILES = $(wildcard $(TESTSRCDIR)/*.$(CXXSFX))
 OBJFILES = $(CXXFILES:$(SRCDIR)/%.$(CXXSFX)=$(OBJDIR)/%.o)
 DEPFILES = $(CXXFILES:$(SRCDIR)/%.$(CXXSFX)=$(DEPDIR)/%.d)
+OBJFILES += $(TESTCXXFILES:$(TESTSRCDIR)/%.$(CXXSFX)=$(OBJDIR)/%.o)
+DEPFILES += $(TESTCXXFILES:$(TESTSRCDIR)/%.$(CXXSFX)=$(DEPDIR)/%.d)
 OUT = main
 
 IMGUIDIR = $(VENDORDIR)/dear_imgui/imgui
@@ -76,6 +81,9 @@ $(OUTDIR)/$(OUT): $(OBJFILES) $(STB_IMAGE_OBJ_DIR)/stb_image.o $(IMGUIOBJFILES) 
 $(OBJDIR)/%.o: $(SRCDIR)/%.$(CXXSFX) | $(OBJDIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
+$(OBJDIR)/%.o: $(TESTSRCDIR)/%.$(CXXSFX) | $(OBJDIR)
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
 $(IMGUIOBJDIR)/%.o: $(IMGUIDIR)/%.cpp | $(IMGUIOBJDIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
@@ -119,7 +127,11 @@ $(DEPDIR)/%.d: $(SRCDIR)/%.$(CXXSFX) | $(DEPDIR)
 #		new headers)
 #	-MF $@ output result to dependency file instead of standard output stream
 
+$(DEPDIR)/%.d: $(TESTSRCDIR)/%.$(CXXSFX) | $(DEPDIR)
+	$(CXX) -MM -MP -MT "$(OBJDIR)/$*.o $@" -MF $@ $(CXXFLAGS) $<
+
 include $(DEPFILES)
+
 
 $(IMGUIDEPDIR)/%.d: $(IMGUIDIR)/%.cpp | $(IMGUIDEPDIR)
 	$(CXX) -MM -MP -MT "$(IMGUIOBJDIR)/$*.o $@" -MF $@ $(CXXFLAGS) $<
