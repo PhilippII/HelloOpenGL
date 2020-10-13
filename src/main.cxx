@@ -6,6 +6,8 @@
 #include <string>
 #include <sstream>
 
+#include <memory> // for std::unique_ptr
+
 #include "Renderer.h"
 
 #include "VertexBuffer.h"
@@ -24,7 +26,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-//#include "tests/TestClearColor.h"
+#include "tests/TestClearColor.h"
 #include "tests/TestTwoInstances.h"
 
 int main(void)
@@ -75,20 +77,36 @@ int main(void)
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init(); // pass glsl-version ?
 
-        test::TestTwoInstances myTest;
+        std::unique_ptr<test::Test> myTest;
 
         while (!glfwWindowShouldClose(window))
         {
-            renderer.Clear();
-
-            myTest.OnUpdate(0.0f);
-            myTest.OnRender(renderer);
+            if (myTest) {
+                myTest->OnUpdate(0.0f);
+                myTest->OnRender(renderer);
+            } else {
+                renderer.Clear();
+            }
 
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            myTest.OnImGuiRender();
+            if (myTest) {
+                myTest->OnImGuiRender();
+                if (ImGui::Button("Quit")) {
+                    myTest.reset();
+                }
+            } else {
+                ImGui::Begin("Test Selection");
+                if (ImGui::Button("TestClearColor")) {
+                    myTest = std::make_unique<test::TestClearColor>();
+                } else if (ImGui::Button("TestTwoInstances")) {
+                    myTest = std::make_unique<test::TestTwoInstances>();
+                }
+                ImGui::End();
+                //ImGui::ShowDemoWindow();
+            }
 
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
