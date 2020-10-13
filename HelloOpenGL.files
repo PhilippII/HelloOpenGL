@@ -1,3 +1,5 @@
+src/tests/TestClearColor.cxx
+src/tests/Test.cxx
 3rd_party/dear_imgui/imgui/bindings/imgui_impl_glfw.cpp
 3rd_party/dear_imgui/imgui/bindings/imgui_impl_glfw.h
 3rd_party/dear_imgui/imgui/bindings/imgui_impl_opengl3.cpp
@@ -444,6 +446,8 @@ inc/Texture.h
 inc/VertexArray.h
 inc/VertexBuffer.h
 inc/VertexBufferLayout.h
+inc/tests/Test.h
+inc/tests/TestClearColor.h
 src/IndexBuffer.cxx
 src/Renderer.cxx
 src/Shader.cxx
