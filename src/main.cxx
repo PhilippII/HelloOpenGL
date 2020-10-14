@@ -82,6 +82,7 @@ int main(void)
 
         while (!glfwWindowShouldClose(window))
         {
+            GLCall(glClearColor(0.f, 0.f, 0.f, 1.f));
             renderer.Clear();
 
             ImGui_ImplOpenGL3_NewFrame();
