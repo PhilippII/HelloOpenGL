@@ -107,6 +107,10 @@ int main(void)
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
+        delete currentTest;
+        if (currentTest != testMenu) {
+            delete testMenu;
+        }
     }
 
     // imgui-Cleanup:
