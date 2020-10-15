@@ -32,12 +32,12 @@ TestTexture2D::TestTexture2D()
 
     m_VAO = std::make_unique<VertexArray>();
     VertexArray va;
-    VertexBuffer vb(positions, 4 * (2+2) * sizeof(float));
+    m_VertexBuffer = std::make_unique<VertexBuffer>(positions, 4 * (2+2) * sizeof(float));
 
     VertexBufferLayout layout;
     layout.Push<float>(2); // position
     layout.Push<float>(2); // texture coordinate
-    m_VAO->AddBuffer(vb, layout);
+    m_VAO->AddBuffer(*m_VertexBuffer, layout);
 
     m_IndexBuffer = std::make_unique<IndexBuffer>(indices, 6);
 
