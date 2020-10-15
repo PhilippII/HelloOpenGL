@@ -31,9 +31,8 @@ TestTexture2D::TestTexture2D()
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
     m_VAO = std::make_unique<VertexArray>();
-    VertexArray va;
-    m_VertexBuffer = std::make_unique<VertexBuffer>(positions, 4 * (2+2) * sizeof(float));
 
+    m_VertexBuffer = std::make_unique<VertexBuffer>(positions, 4 * (2+2) * sizeof(float));
     VertexBufferLayout layout;
     layout.Push<float>(2); // position
     layout.Push<float>(2); // texture coordinate
