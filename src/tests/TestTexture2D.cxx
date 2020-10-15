@@ -61,7 +61,7 @@ void TestTexture2D::OnUpdate(float deltaTime)
 
 void TestTexture2D::OnRender()
 {
-    GLCall(glClearColor(0.f, 0.f, 0.f, 1.f));
+    GLCall(glClearColor(0.5f, 0.5f, 0.5f, 1.f));
     GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
     Renderer renderer;
