@@ -185,9 +185,9 @@ GLint GLShaderProgram::getAttribLocation(const std::string& name) const {
     return location;
 }
 
-GLint GLShaderProgram::getUniformLocation(const std::string &name) {
-    auto search = uniformLocationCache.find(name);
-    if (search != uniformLocationCache.end()) {
+GLint GLShaderProgram::getUniformLocation(const std::string &name) const {
+    auto search = m_uniformLocationCache.find(name);
+    if (search != m_uniformLocationCache.end()) {
         // cache hit:
         return search->second;
     }
@@ -199,7 +199,7 @@ GLint GLShaderProgram::getUniformLocation(const std::string &name) {
         //    to an active uniform variable in program, [...]"
         std::cout << "warining: uniform " << name << " does not exist!\n";
     }
-    uniformLocationCache.insert({name, location});
+    m_uniformLocationCache.insert({name, location});
     return location;
 }
 

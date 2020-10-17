@@ -73,7 +73,7 @@ public:
 
     GLint getAttribLocation(const std::string& name) const;
 
-    GLint getUniformLocation(const std::string& name);
+    GLint getUniformLocation(const std::string& name) const;
 
     void setUniform1i(GLint location, int v);
 
@@ -96,7 +96,7 @@ private:
     void printShaderProgramInfoLog() const;
     GLuint m_rendererID;
     std::vector<GLShader> m_shaders;
-    std::unordered_map<std::string, GLint> uniformLocationCache;
+    mutable std::unordered_map<std::string, GLint> m_uniformLocationCache;
 };
 
 #endif // GLSHADERPROGRAM_H
