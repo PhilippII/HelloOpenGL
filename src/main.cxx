@@ -13,6 +13,7 @@
 
 #include "GLRenderer.h"
 
+#include "demos/DemoClearColor.h"
 
 void error_callback(int error, const char* description) {
     std::cout << "GLFW-error [" << error << "]: " << description << '\n';
@@ -95,7 +96,9 @@ int main(void)
 
     GLRenderer renderer;
 
-    bool show_demo_window = true;
+    demo::DemoClearColor myDemo(renderer);
+
+    // bool show_demo_window = true;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window.get()))
@@ -109,21 +112,25 @@ int main(void)
         glfwPollEvents();
 
         /* Render here */
-        renderer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        myDemo.OnUpdate(0.f);
+        myDemo.OnRender();
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        if (show_demo_window) {
-            ImGui::ShowDemoWindow(&show_demo_window);
-        }
+        myDemo.OnImGuiRender();
+        // if (show_demo_window) {
+        //     ImGui::ShowDemoWindow(&show_demo_window);
+        // }
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window.get());
     }
+
+    // TODO: cherno destroys myDemo before ImGui-shutdown ?
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
