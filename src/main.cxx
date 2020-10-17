@@ -189,7 +189,8 @@ int main(void)
 
     GLRenderer renderer;
 
-    demo::DemoClearColor myDemo(renderer);
+    demo::DemoSuite myDemo(renderer);
+    myDemo.RegisterDemo<demo::DemoClearColor>("Clear Color");
 
     // bool show_demo_window = true;
 
