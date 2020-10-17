@@ -37,11 +37,16 @@ IMGUIOBJFILES += $(IMGUIBINDCXXFILES:$(IMGUIBINDDIR)/%.cpp=$(IMGUIOBJDIR)/%.o)
 IMGUIDEPFILES = $(IMGUICXXFILES:$(IMGUIDIR)/%.cpp=$(IMGUIDEPDIR)/%.d)
 IMGUIDEPFILES += $(IMGUIBINDCXXFILES:$(IMGUIBINDDIR)/%.cpp=$(IMGUIDEPDIR)/%.d)
 
+#DEMOINCDIR = $(INCDIR)/demos
+DEMOSRCDIR = $(SRCDIR)/demos
 
 CXXSFX = cxx
 CXXFILES = $(wildcard $(SRCDIR)/*.$(CXXSFX))
+DEMOCXXFILES = $(wildcard $(DEMOSRCDIR)/*.$(CXXSFX))
 OBJFILES = $(CXXFILES:$(SRCDIR)/%.$(CXXSFX)=$(OBJDIR)/%.o)
+OBJFILES += $(DEMOCXXFILES:$(DEMOSRCDIR)/%.$(CXXSFX)=$(OBJDIR)/%.o)
 DEPFILES = $(CXXFILES:$(SRCDIR)/%.$(CXXSFX)=$(DEPDIR)/%.d)
+DEPFILES += $(DEMOCXXFILES:$(DEMOSRCDIR)/%.$(CXXSFX)=$(DEPDIR)/%.d)
 OUT = main
 
 CXX = g++
@@ -87,6 +92,9 @@ $(OUTDIR)/$(OUT): $(OBJFILES) $(STBOBJ) $(IMGUIOBJFILES) | $(OUTDIR)
 $(OBJDIR)/%.o: $(SRCDIR)/%.$(CXXSFX) | $(OBJDIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
+$(OBJDIR)/%.o: $(DEMOSRCDIR)/%.$(CXXSFX) | $(OBJDIR)
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
 $(IMGUIOBJDIR)/%.o: $(IMGUIDIR)/%.cpp | $(IMGUIOBJDIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
@@ -128,6 +136,8 @@ $(DEPDIR)/%.d: $(SRCDIR)/%.$(CXXSFX) | $(DEPDIR)
 #		out of date itself, since the changed header might itself recursively include
 #		new headers)
 #	-MF $@ output result to dependency file instead of standard output stream
+$(DEPDIR)/%.d: $(DEMOSRCDIR)/%.$(CXXSFX) | $(DEPDIR)
+	$(CXX) -MM -MP -MT "$(OBJDIR)/$*.o $@" -MF $@ $(CXXFLAGS) $<
 
 include $(DEPFILES)
 
