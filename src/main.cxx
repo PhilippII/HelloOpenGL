@@ -8,12 +8,106 @@
 #include <iostream>
 
 #include "debug_utils.h"
-#include "RAII_GLFWInitialization.h"
-#include "RAII_GLFWwindow.h"
 
 #include "GLRenderer.h"
 
 #include "demos/DemoClearColor.h"
+
+namespace raii_fy {
+    class GLFWInitialization
+    {
+    public:
+        GLFWInitialization() {
+            m_success = (glfwInit() == GLFW_TRUE);
+        }
+        GLFWInitialization(const GLFWInitialization& other) = delete;
+        GLFWInitialization& operator=(const GLFWInitialization& other) = delete;
+        GLFWInitialization(GLFWInitialization&& other) = delete;
+        GLFWInitialization& operator=(GLFWInitialization&& other) = delete;
+
+        ~GLFWInitialization() {
+            if (m_success) {
+                glfwTerminate();
+            }
+        }
+
+        bool getSuccess() const {
+            return m_success;
+        }
+    private:
+        bool m_success;
+    };
+
+    class GLFW_Window
+    {
+    public:
+        GLFW_Window() = delete;
+        GLFW_Window(int width, int height, const char* title)
+            : m_window(glfwCreateWindow(width, height, title, NULL, NULL))
+        {}
+        GLFW_Window(const GLFW_Window& other) = delete;
+        GLFW_Window& operator=(const GLFW_Window& other) = delete;
+        GLFW_Window(GLFW_Window&& other) = delete;
+        GLFW_Window& operator=(GLFW_Window&& other) = delete;
+
+        ~GLFW_Window() {
+            if (m_window)  {
+                glfwDestroyWindow(m_window);
+            }
+         }
+
+        const ::GLFWwindow* get() const { return m_window; }
+        ::GLFWwindow* get() { return m_window; }
+    private:
+        ::GLFWwindow* m_window;
+    };
+
+    class ImGuiContext {
+    public:
+        ImGuiContext() {
+            ImGui::CreateContext();
+        }
+        ImGuiContext(const ImGuiContext& other) = delete;
+        ImGuiContext(ImGuiContext&& other) = delete;
+        ImGuiContext& operator=(const ImGuiContext& other) = delete;
+        ImGuiContext& operator=(ImGuiContext&& other) = delete;
+
+        ~ImGuiContext() {
+            ImGui::DestroyContext();
+        }
+    };
+
+    class ImGui_GLFW {
+    public:
+        ImGui_GLFW(::GLFWwindow* window, bool install_callbacks) {
+            ImGui_ImplGlfw_InitForOpenGL(window, install_callbacks);
+        }
+        ImGui_GLFW(const ImGui_GLFW& other) = delete;
+        ImGui_GLFW(ImGui_GLFW&& other) = delete;
+        ImGui_GLFW& operator=(const ImGui_GLFW& other) = delete;
+        ImGui_GLFW& operator=(ImGui_GLFW&& other) = delete;
+
+        ~ImGui_GLFW() {
+            ImGui_ImplGlfw_Shutdown();
+        }
+    };
+
+    class ImGui_OpenGL3 {
+    public:
+        ImGui_OpenGL3(const char* glsl_version = NULL) {
+            ImGui_ImplOpenGL3_Init(glsl_version);
+        }
+        ImGui_OpenGL3(const ImGui_OpenGL3& other) = delete;
+        ImGui_OpenGL3(ImGui_OpenGL3&& other) = delete;
+        ImGui_OpenGL3& operator=(const ImGui_OpenGL3& other) = delete;
+        ImGui_OpenGL3& operator=(ImGui_OpenGL3&& other) = delete;
+
+        ~ImGui_OpenGL3() {
+            ImGui_ImplOpenGL3_Shutdown();
+        }
+    };
+}
+
 
 void error_callback(int error, const char* description) {
     std::cout << "GLFW-error [" << error << "]: " << description << '\n';
@@ -33,6 +127,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 }
 
+
 int main(void)
 {
     #ifdef NDEBUG
@@ -43,7 +138,7 @@ int main(void)
 
     /* Initialize GLFW */
     glfwSetErrorCallback(error_callback);
-    RAII_GLFWInitialization init; // constructor calls GLFWInit()
+    raii_fy::GLFWInitialization init; // constructor calls GLFWInit()
     if (!init.getSuccess()) {
         return -1;
     }
@@ -54,10 +149,10 @@ int main(void)
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // for anisotropic filtering without extension
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    RAII_GLFWwindow window(640, 480, "Hello World");
+    raii_fy::GLFW_Window window(640, 480, "Hello World");
     if (!window.get())
     {
-        //glfwTerminate(); called in destructor of GLFWInitialization
+        //glfwTerminate(); called in destructor of raii_fy::GLFWInitialization
         return -1;
     }
 
@@ -82,16 +177,15 @@ int main(void)
 
     // Setup Dear ImGui context:
     IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+    raii_fy::ImGuiContext imgui_context;
     ImGuiIO& io = ImGui::GetIO();
 
     ImGui::StyleColorsDark();
 
-
-    ImGui_ImplGlfw_InitForOpenGL(window.get(), true);
+    raii_fy::ImGui_GLFW imgui_glfw(window.get(), true);
     // -> install_callbacks = true -> callbacks will be installed
     //                              they will call the users previously installed callbacks (if any)
-    ImGui_ImplOpenGL3_Init();
+    raii_fy::ImGui_OpenGL3 imgui_opengl3;
 
     GLRenderer renderer;
 
@@ -126,14 +220,13 @@ int main(void)
         glfwSwapBuffers(window.get());
     }
 
-    // TODO: cherno destroys myDemo before ImGui-shutdown ?
+    // The following are called after(!) the destructor of myDemo:
+    // ImGui_ImplOpenGL3_Shutdown(); // in destructor of raii_fy::ImGui_OpenGL3
+    // ImGui_ImplGlfw_Shutdown(); // in destructor of raii_fy::ImGui_GLFW
+    // ImGui::DestroyContext(); // in destructor of raii_fy::ImGuiContext
 
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-    // The following are called after(!) the destructors of main()'s local variables:
-    // glfwDestroyWindow(window.get()); in destructor of RAII_GLFWwindow
-    // glfwTerminate(); in destructor of RAII_GLFWInitialization
+    // glfwDestroyWindow(window.get()); in destructor of raii_fy::GLFW_Window
+    // glfwTerminate(); in destructor of raii_fy::GLFWInitialization
     return 0;
 }
 

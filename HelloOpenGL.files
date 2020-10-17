@@ -447,8 +447,6 @@ inc/GLShaderProgram.h
 inc/GLTexture.h
 inc/GLVertexArray.h
 inc/GLVertexBuffer.h
-inc/RAII_GLFWInitialization.h
-inc/RAII_GLFWwindow.h
 inc/VertexBufferLayout.h
 inc/cpu_mesh_generate.h
 inc/cpu_mesh_import.h
@@ -470,8 +468,6 @@ src/GLShaderProgram.cxx
 src/GLTexture.cxx
 src/GLVertexArray.cxx
 src/GLVertexBuffer.cxx
-src/RAII_GLFWInitialization.cpp
-src/RAII_GLFWwindow.cxx
 src/VertexBufferLayout.cxx
 src/cpu_mesh_generate.cxx
 src/cpu_mesh_import.cxx
