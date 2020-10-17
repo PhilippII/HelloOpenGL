@@ -16,7 +16,6 @@ public:
     void OnImGuiRender() override;
 
 private:
-    GLRenderer& m_renderer;
     float m_clearColor[4];
 };
 
