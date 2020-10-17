@@ -48,7 +48,6 @@ int main(void)
         return -1;
     }
 
-
     /* Create a windowed mode window and its OpenGL context */
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -100,7 +99,6 @@ int main(void)
 
     // bool show_demo_window = true;
 
-    /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window.get()))
     {
         // Poll for and process events:
@@ -111,7 +109,6 @@ int main(void)
         // https://github.com/ocornut/imgui/blob/master/docs/FAQ.md#q-how-can-i-tell-whether-to-dispatch-mousekeyboard-to-dear-imgui-or-to-my-application
         glfwPollEvents();
 
-        /* Render here */
         myDemo.OnUpdate(0.f);
         myDemo.OnRender();
 
@@ -126,7 +123,6 @@ int main(void)
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        /* Swap front and back buffers */
         glfwSwapBuffers(window.get());
     }
 
