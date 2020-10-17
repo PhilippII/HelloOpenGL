@@ -27,7 +27,7 @@ void demo::DemoClearColor::OnRender()
 
 void demo::DemoClearColor::OnImGuiRender()
 {
-    ImGui::SliderFloat4("Clear Color", m_clearColor, 0.0f, 1.0f);
+    ImGui::ColorEdit4("Clear Color", m_clearColor);
 }
 
 
