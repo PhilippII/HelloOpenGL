@@ -7,48 +7,12 @@
 
 #include <iostream>
 
-#include <array>
-#include <vector>
-
-#include <chrono>
-
-// #include <cassert>
-
-
 #include "debug_utils.h"
 #include "RAII_GLFWInitialization.h"
 #include "RAII_GLFWwindow.h"
 
-#include "GLVertexBuffer.h"
-#include "GLIndexBuffer.h"
-
-#include "VertexBufferLayout.h"
-#include "GLVertexArray.h"
-
-#include "GLShader.h"
-#include "GLShaderProgram.h"
-
-#include "GLTexture.h"
-
 #include "GLRenderer.h"
 
-#include "cpu_mesh_import.h"
-#include "cpu_mesh_utils.h" // to test addIndexBuffer(...)
-#include "cpu_mesh_generate.h"
-
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-
-#include "Camera.h"
-
-namespace fs = std::filesystem;
-
-struct Vertex {
-    std::array<float, 2> pos;
-    std::array<float, 4> color;
-};
-
-Camera camera(glm::radians(45.f), 1.f, .1f, 10.f);
 
 void error_callback(int error, const char* description) {
     std::cout << "GLFW-error [" << error << "]: " << description << '\n';
@@ -56,39 +20,15 @@ void error_callback(int error, const char* description) {
 
 void update_window_size(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
-    camera.setAspect(width / static_cast<float>(height));
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (ImGui::GetIO().WantCaptureKeyboard) {
         return;
     }
-    constexpr float stepSize = .2f;
-    constexpr float rotDelta = glm::radians(5.f);
+    // handle keys that are not meant for imgui here:
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
-    } else if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-        camera.translate_local(glm::vec3( 0.f,  0.f, -stepSize));
-    } else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-        camera.translate_local(glm::vec3( 0.f,  0.f, +stepSize));
-    } else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-        camera.translate_local(glm::vec3(-stepSize,  0.f,  0.f));
-    } else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-        camera.translate_local(glm::vec3(+stepSize,  0.f,  0.f));
-    } else if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-        camera.translate_global(glm::vec3( 0.f, -stepSize,  0.f));
-    } else if (key == GLFW_KEY_E && action == GLFW_PRESS) {
-        camera.translate_global(glm::vec3( 0.f, +stepSize,  0.f));
-    } else if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
-        camera.rotateYaw(-rotDelta);
-    } else if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
-        camera.rotateYaw(+rotDelta);
-    } else if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
-        camera.rotatePitch(+rotDelta);
-    } else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
-        camera.rotatePitch(-rotDelta);
-    } else if (key == GLFW_KEY_KP_DECIMAL && action == GLFW_PRESS) {
-        camera.resetLocRot();
     }
 }
 
@@ -153,143 +93,7 @@ int main(void)
     //                              they will call the users previously installed callbacks (if any)
     ImGui_ImplOpenGL3_Init();
 
-
-    // initialize shader:
-    GLShaderProgram shaderProgram(fs::path("res/shaders/Basic.shader", fs::path::format::generic_format));
-    // shaderProgram.bind() is called automatically in constructor
-
-    //int location = shaderProgram.getUniformLocation("u_Color");
-    //myAssert(location != -1);
-
-
-    GLint posAttrIndex = shaderProgram.getAttribLocation("position_oc");
-    myAssert(posAttrIndex != -1);
-    GLint colAttrIndex = shaderProgram.getAttribLocation("color");
-    myAssert(colAttrIndex != -1);
-
-
-    // initialize house:
-    float hSz = 1.5f;
-    Vertex houseVertices[9] = {
-        {{-.5f * hSz, -.5f * hSz}, {.5f, .5f, .5f, .0f}},
-        {{ .5f * hSz, -.5f * hSz}, {.5f, .5f, .5f, .0f}},
-        {{ .5f * hSz,  .5f * hSz}, {.5f, .5f, .5f, .0f}},
-
-        {{-.5f * hSz, -.5f * hSz}, {.5f, .5f, .5f, .0f}},
-        {{ .5f * hSz,  .5f * hSz}, {.5f, .5f, .5f, .0f}},
-        {{-.5f * hSz,  .5f * hSz}, {.5f, .5f, .5f, .0f}},
-
-        {{-.5f * hSz,  .5f * hSz}, {.5f, .5f, .5f, .0f}},
-        {{ .5f * hSz,  .5f * hSz}, {.5f, .5f, .5f, .0f}},
-        {{ .0f * hSz,  .75f * hSz}, {.5f, .5f, .5f, .0f}}
-    };
-    VertexBufferLayout houseLayout;
-    houseLayout.append<decltype(Vertex::pos)>(1, VariableType::FLOAT, posAttrIndex);
-    houseLayout.append<decltype(Vertex::color)>(1, VariableType::FLOAT, colAttrIndex);
-    CPUMesh<GLuint> houseCPUMesh = addIndexBuffer<GLuint>(CPUVertexArray{houseLayout,
-                                                                 std::vector<GLbyte>(reinterpret_cast<const GLbyte*>(houseVertices),
-                                                                                     reinterpret_cast<const GLbyte*>(houseVertices)
-                                                                                                        + 9 * sizeof(Vertex))});
-    std::cout << "houseCPUMesh:\n";
-    std::cout << houseCPUMesh;
-    GLVertexBuffer houseVB(houseCPUMesh.va.data.size(), houseCPUMesh.va.data.data());
-    GLVertexArray houseVA;
-    houseVA.addBuffer(houseVB, houseLayout);
-    GLIndexBuffer houseIB(GL_UNSIGNED_INT,
-                          static_cast<GLIndexBuffer::count_type>(houseCPUMesh.ib.indices.size()),
-                          houseCPUMesh.ib.indices.data());
-
-    // initialize shader for textured stuff:
-    GLShaderProgram texturedSP(fs::path("res/shaders/Texture.shader", fs::path::format::generic_format));
-
-    // initialize rectangle:
-    GLTexture alphaTexture(fs::path("res/textures/alpha_texture_test.png"), 4);
-    struct TexVertex {
-        std::array<float, 2> pos;
-        std::array<float, 2> texCoord;
-    };
-    TexVertex rectVertices[4] = {
-        {{-.5f, -.5f}, {0.f, 0.f}}, // 0
-        {{ .5f, -.5f}, {1.f, 0.f}}, // 1
-        {{ .5f,  .5f}, {1.f, 1.f}}, // 2
-        {{-.5f,  .5f}, {0.f, 1.f}}  // 3
-    };
-
-    unsigned int indices[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
-
-    VertexBufferLayout rectLayout;
-    rectLayout.append<decltype(TexVertex::pos)>(1, "position_oc");
-    rectLayout.append<decltype(TexVertex::texCoord)>(1, "texCoord");
-    rectLayout.setLocations(texturedSP);
-
-    GLVertexBuffer rectVB(4 * rectLayout.getStride(), rectVertices);
-    GLVertexArray rectVA;
-    rectVA.addBuffer(rectVB, rectLayout);
-    GLIndexBuffer rectIB(GL_UNSIGNED_INT, 6, indices);
-
-
-    // initialize star:
-    float r = .0f;
-    float increment = .05f;
-
-    CPUMesh<GLuint> starCPUmesh = generateStar(5, .5f, 1.f,
-                                               {0.f, 0.f, 0.f, 0.f}, {1.f, 1.f, 0.f, 1.f});
-    GLVertexBuffer starVB(starCPUmesh.va.data.size(), starCPUmesh.va.data.data());
-    GLVertexArray starVA;
-    starCPUmesh.va.layout.setLocations(shaderProgram);
-    starVA.addBuffer(starVB, starCPUmesh.va.layout);
-    GLIndexBuffer starIB(GL_UNSIGNED_INT,
-                         static_cast<GLIndexBuffer::count_type>(starCPUmesh.ib.indices.size()),
-                         starCPUmesh.ib.indices.data());
-
-    // import from OBJ-file:
-    auto time_start = std::chrono::high_resolution_clock::now();
-    //std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = readOBJ("res/meshes/suzanne_scaled_smooth_subdiv_1_left_earring.obj", true);
-    std::vector<CPUMesh<GLuint>> suzanneCPUMeshes = loadOBJfile(fs::path("res/meshes/suzanne_horn_smooth_subdiv_1.obj", fs::path::format::generic_format),
-                                                                false);
-    auto time_end = std::chrono::high_resolution_clock::now();
-    std::chrono::milliseconds time_delta = std::chrono::duration_cast<std::chrono::milliseconds>(time_end - time_start);
-    std::cout << "loading suzanne took " << time_delta.count() << " milliseconds\n";
-    if (suzanneCPUMeshes.empty()) {
-        std::cerr << "error no object was found in obj file\n";
-        return 1;
-    }
-
-    struct GLMesh {
-        GLVertexBuffer vb;
-        GLVertexArray va; // contains vb but does not own it
-        GLIndexBuffer ib;
-    };
-    std::vector<GLMesh> suzanneMeshes;
-    for (auto& cpuMesh : suzanneCPUMeshes) {
-        GLVertexBuffer vb(cpuMesh.va.data.size(),
-                          cpuMesh.va.data.data());
-        cpuMesh.va.layout.setLocations(texturedSP);
-        GLVertexArray va;
-        va.addBuffer(vb, cpuMesh.va.layout);
-        GLIndexBuffer ib(GL_UNSIGNED_INT,
-                         static_cast<GLIndexBuffer::count_type>(cpuMesh.ib.indices.size()),
-                         cpuMesh.ib.indices.data());
-                         // suzanneCPUMesh.ib.primitiveType,
-                         // suzanneCPUMesh.ib.primitiveRestartIndex);
-        suzanneMeshes.push_back(GLMesh{std::move(vb),
-                                       std::move(va),
-                                       std::move(ib)});
-    }
-
-    GLTexture gridTexture(fs::path("res/textures/uv_grid.png", fs::path::format::generic_format));
-    int texUnit = 0;
-    texturedSP.setUniform1i("tex", texUnit);
-
     GLRenderer renderer;
-    renderer.setClearColor(.2f, .8f, .2f, 0.f);
-    renderer.enableFaceCulling();
-    renderer.enableDepthTest();
-
-    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
     bool show_demo_window = true;
 
@@ -304,58 +108,9 @@ int main(void)
         // https://github.com/ocornut/imgui/blob/master/docs/FAQ.md#q-how-can-i-tell-whether-to-dispatch-mousekeyboard-to-dear-imgui-or-to-my-application
         glfwPollEvents();
 
-        // initialize transformation:
-        glm::mat4 cc_from_wc = camera.mat_cc_from_wc(); // camera coordinates from world coordinates
-        glm::mat4 ndc_from_cc = camera.mat_ndc_from_cc();
-        glm::mat4 ndc_from_wc = ndc_from_cc * cc_from_wc;
-
         /* Render here */
         renderer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // 0 draw house:
-        shaderProgram.bind(); // must be bound first to set a uniform
-        glm::mat4 wc_from_houseoc(1.f);
-        shaderProgram.setUniformMat4f("u_ndc_from_oc", ndc_from_wc * wc_from_houseoc);
-        shaderProgram.setUniform4f("u_Color", .5f, .5f, .5f, 1.0f);
-
-        renderer.draw(houseVA, houseIB, shaderProgram);
-
-        // 2 draw star:
-        r += increment;
-        if (r > 1.0) {
-            r = 1.0;
-            increment = -.05f;
-        }
-        if (r < 0.0) {
-            r = 0.0;
-            increment = +.05f;
-        }
-        shaderProgram.bind(); // must be bound first to set a uniform
-        glm::mat4 wc_from_staroc = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, .5f));
-        shaderProgram.setUniformMat4f("u_ndc_from_oc", ndc_from_wc * wc_from_staroc);
-        shaderProgram.setUniform4f("u_Color", r, .3f, .8f, 1.0f);
-        renderer.draw(starVA, starIB, shaderProgram);
-
-
-        // 3 draw suzanne:
-        texturedSP.bind(); // must be bound first to set a uniform
-        glm::mat4 wc_from_suzanneoc = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 1.f));
-        texturedSP.setUniformMat4f("u_ndc_from_oc", ndc_from_wc * wc_from_suzanneoc);
-        gridTexture.bind(texUnit);
-        for (auto& mesh : suzanneMeshes) {
-            renderer.draw(mesh.va, mesh.ib, texturedSP);
-        }
-
-        // 1 draw rectangle:
-        GLCall(glEnable(GL_BLEND));
-        texturedSP.bind(); // must be bound first to set a uniform
-        glm::mat4 wc_from_rectoc = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 2.f));
-        texturedSP.setUniformMat4f("u_ndc_from_oc", ndc_from_wc * wc_from_rectoc);
-        alphaTexture.bind(texUnit);
-        renderer.draw(rectVA, rectIB, texturedSP);
-        GLCall(glDisable(GL_BLEND));
-
-        // TODO: glfwPollEvents() sooner already?
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -373,7 +128,7 @@ int main(void)
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    // The following are called after(!) the destructors of the vertex buffers, textures, shaders, ...:
+    // The following are called after(!) the destructors of main()'s local variables:
     // glfwDestroyWindow(window.get()); in destructor of RAII_GLFWwindow
     // glfwTerminate(); in destructor of RAII_GLFWInitialization
     return 0;
