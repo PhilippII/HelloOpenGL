@@ -455,6 +455,7 @@ inc/cpu_mesh_utils.h
 inc/debug_utils.h
 inc/demos/Demo.h
 inc/demos/DemoClearColor.h
+inc/demos/DemoMultipleObjects3D.h
 inc/gl_type_id.h
 res/shaders/Basic.shader
 res/shaders/Suzanne.shader
@@ -476,4 +477,5 @@ src/cpu_mesh_utils.cxx
 src/debug_utils.cxx
 src/demos/Demo.cxx
 src/demos/DemoClearColor.cxx
+src/demos/DemoMultipleObjects3D.cxx
 src/main.cxx
