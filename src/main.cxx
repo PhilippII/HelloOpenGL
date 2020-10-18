@@ -12,6 +12,8 @@
 #include "GLRenderer.h"
 
 #include "demos/DemoClearColor.h"
+#include "demos/DemoMultipleObjects3D.h"
+
 
 namespace raii_fy {
     class GLFWInitialization
@@ -191,6 +193,7 @@ int main(void)
 
     demo::DemoSuite myDemo(renderer);
     myDemo.RegisterDemo<demo::DemoClearColor>("Clear Color");
+    myDemo.RegisterDemo<demo::DemoMultipleObjects3D>("Multiple 3D Objects");
 
     // bool show_demo_window = true;
 
