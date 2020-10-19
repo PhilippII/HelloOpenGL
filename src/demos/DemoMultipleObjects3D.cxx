@@ -27,14 +27,6 @@ demo::DemoMultipleObjects3D::DemoMultipleObjects3D(GLRenderer &renderer)
 
     m_camera.translate_local(glm::vec3( 0.f,  0.f, +5.f));
 
-    // TODO: figure out actual width and height
-    const GLsizei width = 640;
-    const GLsizei height = 480;
-    // TODO: put following two lines into separate method like update_window_size(..):
-    glViewport(0, 0, width, height);
-    m_camera.setAspect(width / static_cast<float>(height));
-
-
     // initialize shader:
     m_shaderProgram = std::make_unique<GLShaderProgram>(fs::path("res/shaders/Basic.shader",
                                                                  fs::path::format::generic_format));
@@ -178,6 +170,12 @@ demo::DemoMultipleObjects3D::~DemoMultipleObjects3D()
     getRenderer().disableDepthTest();
 
     GLCall(glBlendFunc(GL_ONE, GL_ZERO));
+}
+
+void demo::DemoMultipleObjects3D::OnWindowSizeChanged(int width, int height)
+{
+    GLCall(glViewport(0, 0, width, height));
+    m_camera.setAspect(width / static_cast<float>(height));
 }
 
 void demo::DemoMultipleObjects3D::OnKeyPressed(int key, int scancode, int action, int mods)
