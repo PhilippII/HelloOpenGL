@@ -14,6 +14,13 @@ DemoSuite::~DemoSuite()
 
 }
 
+void DemoSuite::OnKeyPressed(int key, int scancode, int action, int mods)
+{
+    if (m_currentDemo) {
+        m_currentDemo->OnKeyPressed(key, scancode, action, mods);
+    }
+}
+
 void DemoSuite::OnUpdate(float deltaTime)
 {
     if (m_currentDemo) {

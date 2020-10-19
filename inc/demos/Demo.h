@@ -19,6 +19,7 @@ public:
     {}
     virtual ~Demo() {}
 
+    virtual void OnKeyPressed(int key, int scancode, int action, int mods) {}
     virtual void OnUpdate(float deltaTime) {}
     virtual void OnRender() {}
     virtual void OnImGuiRender() {}
@@ -33,6 +34,7 @@ public:
     DemoSuite(GLRenderer& renderer);
     ~DemoSuite();
 
+    void OnKeyPressed(int key, int scancode, int action, int mods) override;
     void OnUpdate(float deltaTime) override;
     void OnRender() override;
     void OnImGuiRender() override;

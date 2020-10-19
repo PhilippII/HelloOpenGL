@@ -23,6 +23,7 @@ public:
     DemoMultipleObjects3D(GLRenderer& renderer);
     ~DemoMultipleObjects3D();
 
+    void OnKeyPressed(int key, int scancode, int action, int mods) override;
     void OnUpdate(float deltaTime) override;
     void OnRender() override;
     void OnImGuiRender() override;

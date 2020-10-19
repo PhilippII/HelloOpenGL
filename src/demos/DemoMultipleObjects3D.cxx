@@ -16,36 +16,6 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-// TODO:
-//void demo::DemoMultipleObjects3D::OnKeyPressed(...) {
-//    constexpr float stepSize = .2f;
-//    constexpr float rotDelta = glm::radians(5.f);
-
-//    if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-//        m_camera.translate_local(glm::vec3( 0.f,  0.f, -stepSize));
-//    } else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-//        m_camera.translate_local(glm::vec3( 0.f,  0.f, +stepSize));
-//    } else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-//        m_camera.translate_local(glm::vec3(-stepSize,  0.f,  0.f));
-//    } else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-//        m_camera.translate_local(glm::vec3(+stepSize,  0.f,  0.f));
-//    } else if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-//        m_camera.translate_global(glm::vec3( 0.f, -stepSize,  0.f));
-//    } else if (key == GLFW_KEY_E && action == GLFW_PRESS) {
-//        m_camera.translate_global(glm::vec3( 0.f, +stepSize,  0.f));
-//    } else if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
-//        m_camera.rotateYaw(-rotDelta);
-//    } else if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
-//        m_camera.rotateYaw(+rotDelta);
-//    } else if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
-//        m_camera.rotatePitch(+rotDelta);
-//    } else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
-//        m_camera.rotatePitch(-rotDelta);
-//    } else if (key == GLFW_KEY_KP_DECIMAL && action == GLFW_PRESS) {
-//        m_camera.resetLocRot();
-//    }
-//}
-
 const GLuint demo::DemoMultipleObjects3D::texUnit = 0;
 
 demo::DemoMultipleObjects3D::DemoMultipleObjects3D(GLRenderer &renderer)
@@ -208,6 +178,36 @@ demo::DemoMultipleObjects3D::~DemoMultipleObjects3D()
     getRenderer().disableDepthTest();
 
     GLCall(glBlendFunc(GL_ONE, GL_ZERO));
+}
+
+void demo::DemoMultipleObjects3D::OnKeyPressed(int key, int scancode, int action, int mods)
+{
+    constexpr float stepSize = .2f;
+    constexpr float rotDelta = glm::radians(5.f);
+
+    if (key == GLFW_KEY_W && action == GLFW_PRESS) {
+        m_camera.translate_local(glm::vec3( 0.f,  0.f, -stepSize));
+    } else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
+        m_camera.translate_local(glm::vec3( 0.f,  0.f, +stepSize));
+    } else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+        m_camera.translate_local(glm::vec3(-stepSize,  0.f,  0.f));
+    } else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+        m_camera.translate_local(glm::vec3(+stepSize,  0.f,  0.f));
+    } else if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
+        m_camera.translate_global(glm::vec3( 0.f, -stepSize,  0.f));
+    } else if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+        m_camera.translate_global(glm::vec3( 0.f, +stepSize,  0.f));
+    } else if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+        m_camera.rotateYaw(-rotDelta);
+    } else if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+        m_camera.rotateYaw(+rotDelta);
+    } else if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+        m_camera.rotatePitch(+rotDelta);
+    } else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+        m_camera.rotatePitch(-rotDelta);
+    } else if (key == GLFW_KEY_KP_DECIMAL && action == GLFW_PRESS) {
+        m_camera.resetLocRot();
+    }
 }
 
 void demo::DemoMultipleObjects3D::OnUpdate(float deltaTime)
