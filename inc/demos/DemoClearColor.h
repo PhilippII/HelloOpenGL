@@ -11,7 +11,6 @@ public:
     DemoClearColor(GLRenderer& renderer);
     ~DemoClearColor();
 
-    void OnUpdate(float deltaTime) override;
     void OnRender() override;
     void OnImGuiRender() override;
 

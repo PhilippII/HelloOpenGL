@@ -21,7 +21,7 @@ public:
 
     virtual void OnWindowSizeChanged(int width, int height);
     virtual void OnKeyPressed(int key, int scancode, int action, int mods) {}
-    virtual void OnUpdate(float deltaTime) {}
+    virtual void OnUpdate(float deltaSeconds) {}
     virtual void OnRender() {}
     virtual void OnImGuiRender() {}
 
@@ -37,7 +37,7 @@ public:
 
     void OnWindowSizeChanged(int width, int height) override;
     void OnKeyPressed(int key, int scancode, int action, int mods) override;
-    void OnUpdate(float deltaTime) override;
+    void OnUpdate(float deltaSeconds) override;
     void OnRender() override;
     void OnImGuiRender() override;
 

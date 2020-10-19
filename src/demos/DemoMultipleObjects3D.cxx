@@ -21,7 +21,7 @@ const GLuint demo::DemoMultipleObjects3D::texUnit = 0;
 demo::DemoMultipleObjects3D::DemoMultipleObjects3D(GLRenderer &renderer)
     : demo::Demo(renderer),
       m_camera(glm::radians(45.f), 1.f, .1f, 10.f),
-      m_red(0.f), m_red_increment(.05f)
+      m_red(0.f), m_red_inc_per_sec(3.f)
 {
     namespace fs = std::filesystem;
 
@@ -208,9 +208,17 @@ void demo::DemoMultipleObjects3D::OnKeyPressed(int key, int scancode, int action
     }
 }
 
-void demo::DemoMultipleObjects3D::OnUpdate(float deltaTime)
+void demo::DemoMultipleObjects3D::OnUpdate(float deltaSeconds)
 {
-
+    m_red += m_red_inc_per_sec * deltaSeconds;
+    if (m_red > 1.0) {
+        m_red = 1.0;
+        m_red_inc_per_sec = -3.f;
+    }
+    if (m_red < 0.0) {
+        m_red = 0.0;
+        m_red_inc_per_sec = +3.f;
+    }
 }
 
 void demo::DemoMultipleObjects3D::OnRender()
@@ -232,21 +240,11 @@ void demo::DemoMultipleObjects3D::OnRender()
     getRenderer().draw(*m_houseVAO, *m_houseIBO, *m_shaderProgram);
 
     // 2 draw star:
-    m_red += m_red_increment;
-    if (m_red > 1.0) {
-        m_red = 1.0;
-        m_red_increment = -.05f;
-    }
-    if (m_red < 0.0) {
-        m_red = 0.0;
-        m_red_increment = +.05f;
-    }
     m_shaderProgram->bind(); // must be bound first to set a uniform
     glm::mat4 wc_from_staroc = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, .5f));
     m_shaderProgram->setUniformMat4f("u_ndc_from_oc", ndc_from_wc * wc_from_staroc);
     m_shaderProgram->setUniform4f("u_Color", m_red, .3f, .8f, 1.0f);
     getRenderer().draw(*m_starVAO, *m_starIBO, *m_shaderProgram);
-
 
     // 3 draw suzanne:
     m_texturedSP->bind(); // must be bound first to set a uniform

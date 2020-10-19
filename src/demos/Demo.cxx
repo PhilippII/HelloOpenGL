@@ -41,10 +41,10 @@ void DemoSuite::OnKeyPressed(int key, int scancode, int action, int mods)
     }
 }
 
-void DemoSuite::OnUpdate(float deltaTime)
+void DemoSuite::OnUpdate(float deltaSeconds)
 {
     if (m_currentDemo) {
-        m_currentDemo->OnUpdate(deltaTime);
+        m_currentDemo->OnUpdate(deltaSeconds);
     }
 }
 

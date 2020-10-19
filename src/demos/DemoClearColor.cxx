@@ -14,11 +14,6 @@ demo::DemoClearColor::~DemoClearColor()
     getRenderer().setClearColor(); // reset to default value
 }
 
-void demo::DemoClearColor::OnUpdate(float deltaTime)
-{
-
-}
-
 void demo::DemoClearColor::OnRender()
 {
     getRenderer().setClearColor(m_clearColor[0], m_clearColor[1], m_clearColor[2], m_clearColor[3]);
