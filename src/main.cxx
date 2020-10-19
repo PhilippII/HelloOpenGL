@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <memory>
+#include <chrono>
 
 #include "debug_utils.h"
 
@@ -208,6 +209,8 @@ int main(void)
     int width, height;
     glfwGetFramebufferSize(window.get(), &width, &height);
     myDemoP->OnWindowSizeChanged(width, height);
+
+    auto t_old = std::chrono::steady_clock::now();
     while (!glfwWindowShouldClose(window.get()))
     {
         // Poll for and process events:
@@ -218,7 +221,16 @@ int main(void)
         // https://github.com/ocornut/imgui/blob/master/docs/FAQ.md#q-how-can-i-tell-whether-to-dispatch-mousekeyboard-to-dear-imgui-or-to-my-application
         glfwPollEvents();
 
-        myDemoP->OnUpdate(0.f);
+        // compute delta time:
+        namespace chr = std::chrono;
+        auto t_new = chr::steady_clock::now();
+        auto deltaTime = t_new - t_old;
+        t_old = t_new;
+        // convert to seconds:
+        using secondsPerTick = std::ratio<1>;
+        float deltaSeconds = chr::duration_cast<chr::duration<float, secondsPerTick>>(deltaTime).count();
+
+        myDemoP->OnUpdate(deltaSeconds);
         myDemoP->OnRender();
 
         ImGui_ImplOpenGL3_NewFrame();
