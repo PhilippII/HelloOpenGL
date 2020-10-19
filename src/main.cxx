@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <memory>
 
 #include "debug_utils.h"
 
@@ -111,6 +112,8 @@ namespace raii_fy {
 }
 
 
+std::weak_ptr<demo::Demo> demo_global_ptr;
+
 void error_callback(int error, const char* description) {
     std::cout << "GLFW-error [" << error << "]: " << description << '\n';
 }
@@ -124,6 +127,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         return;
     }
     // handle keys that are not meant for imgui here:
+    if (auto demo_sp = demo_global_ptr.lock()) {
+        demo_sp->OnKeyPressed(key, scancode, action, mods);
+    }
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
@@ -191,9 +197,12 @@ int main(void)
 
     GLRenderer renderer;
 
-    demo::DemoSuite myDemo(renderer);
-    myDemo.RegisterDemo<demo::DemoClearColor>("Clear Color");
-    myDemo.RegisterDemo<demo::DemoMultipleObjects3D>("Multiple 3D Objects");
+    std::shared_ptr<demo::DemoSuite> myDemoP = std::make_shared<demo::DemoSuite>(renderer);
+    // we use a shared pointer to share it with the glfw-callbacks, which can only access the global namespace
+    myDemoP->RegisterDemo<demo::DemoClearColor>("Clear Color");
+    myDemoP->RegisterDemo<demo::DemoMultipleObjects3D>("Multiple 3D Objects");
+
+    demo_global_ptr = myDemoP;
 
     // bool show_demo_window = true;
 
@@ -207,14 +216,14 @@ int main(void)
         // https://github.com/ocornut/imgui/blob/master/docs/FAQ.md#q-how-can-i-tell-whether-to-dispatch-mousekeyboard-to-dear-imgui-or-to-my-application
         glfwPollEvents();
 
-        myDemo.OnUpdate(0.f);
-        myDemo.OnRender();
+        myDemoP->OnUpdate(0.f);
+        myDemoP->OnRender();
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        myDemo.OnImGuiRender();
+        myDemoP->OnImGuiRender();
         // if (show_demo_window) {
         //     ImGui::ShowDemoWindow(&show_demo_window);
         // }
