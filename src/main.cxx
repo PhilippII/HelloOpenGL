@@ -119,7 +119,9 @@ void error_callback(int error, const char* description) {
 }
 
 void update_window_size(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
+    if (auto demo_sp = demo_global_ptr.lock()) {
+        demo_sp->OnWindowSizeChanged(width, height);
+    }
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -167,11 +169,8 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window.get());
 
-    // take care of viewport transform and aspect ratio:
-    update_window_size(window.get(), 640, 480);
+    // set up glfw callbacks:
     glfwSetFramebufferSizeCallback(window.get(), update_window_size);
-
-    // take care of keyboard handling:
     glfwSetKeyCallback(window.get(), key_callback);
 
     glfwSwapInterval(1);
@@ -206,6 +205,9 @@ int main(void)
 
     // bool show_demo_window = true;
 
+    int width, height;
+    glfwGetFramebufferSize(window.get(), &width, &height);
+    myDemoP->OnWindowSizeChanged(width, height);
     while (!glfwWindowShouldClose(window.get()))
     {
         // Poll for and process events:
