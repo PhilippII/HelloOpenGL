@@ -19,6 +19,7 @@ public:
     {}
     virtual ~Demo() {}
 
+    virtual void OnWindowSizeChanged(int width, int height);
     virtual void OnKeyPressed(int key, int scancode, int action, int mods) {}
     virtual void OnUpdate(float deltaTime) {}
     virtual void OnRender() {}
@@ -34,6 +35,7 @@ public:
     DemoSuite(GLRenderer& renderer);
     ~DemoSuite();
 
+    void OnWindowSizeChanged(int width, int height) override;
     void OnKeyPressed(int key, int scancode, int action, int mods) override;
     void OnUpdate(float deltaTime) override;
     void OnRender() override;
@@ -48,6 +50,9 @@ public:
 private:
     std::unique_ptr<Demo> m_currentDemo;
     std::vector<std::pair<std::string, std::function<std::unique_ptr<Demo>(GLRenderer&)>>> m_demos;
+
+    int m_width;
+    int m_height;
 };
 
 }
