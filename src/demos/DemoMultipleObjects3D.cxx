@@ -160,7 +160,7 @@ demo::DemoMultipleObjects3D::DemoMultipleObjects3D(GLRenderer &renderer)
     getRenderer().enableFaceCulling();
     getRenderer().enableDepthTest();
 
-    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    getRenderer().setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 demo::DemoMultipleObjects3D::~DemoMultipleObjects3D()
@@ -169,7 +169,7 @@ demo::DemoMultipleObjects3D::~DemoMultipleObjects3D()
     getRenderer().disableFaceCulling();
     getRenderer().disableDepthTest();
 
-    GLCall(glBlendFunc(GL_ONE, GL_ZERO));
+    getRenderer().setBlendFunc();
 }
 
 void demo::DemoMultipleObjects3D::OnWindowSizeChanged(int width, int height)
@@ -258,13 +258,13 @@ void demo::DemoMultipleObjects3D::OnRender()
     }
 
     // 1 draw rectangle:
-    GLCall(glEnable(GL_BLEND));
+    getRenderer().enableBlending();
     m_texturedSP->bind(); // must be bound first to set a uniform
     glm::mat4 wc_from_rectoc = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 2.f));
     m_texturedSP->setUniformMat4f("u_ndc_from_oc", ndc_from_wc * wc_from_rectoc);
     m_alphaTexture->bind(texUnit);
     getRenderer().draw(*m_rectVAO, *m_rectIBO, *m_texturedSP);
-    GLCall(glDisable(GL_BLEND));
+    getRenderer().disableBlending();
 }
 
 void demo::DemoMultipleObjects3D::OnImGuiRender()

@@ -65,6 +65,36 @@ void GLRenderer::setDepthFunc(GLenum func)
     GLCall(glDepthFunc(func));
 }
 
+void GLRenderer::enableBlending()
+{
+    GLCall(glEnable(GL_BLEND));
+}
+
+void GLRenderer::disableBlending()
+{
+    GLCall(glDisable(GL_BLEND));
+}
+
+void GLRenderer::setBlendFunc(GLenum sourceFactor, GLenum destFactor)
+{
+    GLCall(glBlendFunc(sourceFactor, destFactor));
+}
+
+void GLRenderer::setBlendEquation(GLenum mode)
+{
+    GLCall(glBlendEquation(mode));
+}
+
+void GLRenderer::setBlendFuncSeparate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
+{
+    GLCall(glBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha));
+}
+
+void GLRenderer::setBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha)
+{
+    GLCall(glBlendEquationSeparate(modeRGB, modeAlpha));
+}
+
 void GLRenderer::draw(GLVertexArray &va, GLIndexBuffer &ib, GLShaderProgram &shaderP) const
 {
     va.bind();

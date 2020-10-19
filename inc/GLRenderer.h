@@ -41,6 +41,18 @@ public:
 
     void setDepthFunc(GLenum func = GL_LESS);
 
+    void enableBlending();
+
+    void disableBlending();
+
+    void setBlendFunc(GLenum sourceFactor = GL_ONE, GLenum destFactor = GL_ZERO);
+
+    void setBlendEquation(GLenum mode = GL_FUNC_ADD);
+
+    void setBlendFuncSeparate(GLenum srcRGB = GL_ONE, GLenum dstRGB = GL_ZERO, GLenum srcAlpha = GL_ONE, GLenum dstAlpha = GL_ZERO);
+
+    void setBlendEquationSeparate(GLenum modeRGB = GL_FUNC_ADD, GLenum modeAlpha = GL_FUNC_ADD);
+
     void draw(GLVertexArray& va, GLIndexBuffer& ib, GLShaderProgram& shaderP) const;
 };
 

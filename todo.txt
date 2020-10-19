@@ -10,9 +10,11 @@ imgui:
 		https://github.com/ocornut/imgui/blob/master/docs/FAQ.md#q-how-can-i-tell-whether-to-dispatch-mousekeyboard-to-dear-imgui-or-to-my-application
 	-> check io.WantCaptureMouse, io.WantCaptureKeyboard and io.WantTextInput ?
 
-Renderer:
-- glViewport()
-- glBlendFunc(), ...
+Blending:
+- add a Demo that tries the different example blending settings mentioned in the OpenGL-wiki
+	e.g.: traditional alpha blending:
+		glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
 
 GLFW:
 - also install glfw3-wayland?
