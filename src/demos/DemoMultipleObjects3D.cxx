@@ -174,7 +174,7 @@ demo::DemoMultipleObjects3D::~DemoMultipleObjects3D()
 
 void demo::DemoMultipleObjects3D::OnWindowSizeChanged(int width, int height)
 {
-    GLCall(glViewport(0, 0, width, height));
+    getRenderer().setViewport(0, 0, width, height);
     m_camera.setAspect(width / static_cast<float>(height));
 }
 

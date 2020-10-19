@@ -6,7 +6,7 @@ namespace demo {
 // Demo:
 void Demo::OnWindowSizeChanged(int width, int height)
 {
-    GLCall(glViewport(0, 0, width, height));
+    getRenderer().setViewport(0, 0, width, height);
 }
 
 // DemoSuite:
@@ -30,7 +30,7 @@ void DemoSuite::OnWindowSizeChanged(int width, int height)
     if (m_currentDemo) {
         m_currentDemo->OnWindowSizeChanged(width, height);
     } else {
-        GLCall(glViewport(0, 0, width, height));
+        getRenderer().setViewport(0, 0, width, height);
     }
 }
 

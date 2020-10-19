@@ -5,6 +5,11 @@ GLRenderer::GLRenderer()
 
 }
 
+void GLRenderer::setViewport(GLint x, GLint y, GLsizei width, GLsizei height)
+{
+    GLCall(glViewport(x, y, width, height));
+}
+
 void GLRenderer::clear(GLbitfield mask) const
 {
     GLCall(glClear(mask));

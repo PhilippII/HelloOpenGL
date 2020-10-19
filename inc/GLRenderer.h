@@ -11,6 +11,8 @@ class GLRenderer
 public:
     GLRenderer();
 
+    void setViewport(GLint x, GLint y, GLsizei width, GLsizei height);
+
     void clear(GLbitfield mask) const;
 
     void setClearColor(GLfloat red = 0.f, GLfloat green = 0.f, GLfloat blue = 0.f, GLfloat alpha = 0.f);
