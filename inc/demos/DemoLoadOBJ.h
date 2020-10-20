@@ -3,6 +3,20 @@
 
 #include "Demo.h"
 
+#include <vector>
+#include <tuple>
+#include <memory>
+
+#include "Camera.h"
+
+#include "GLVertexArray.h"
+#include "GLVertexBuffer.h"
+#include "GLIndexBuffer.h"
+
+#include "GLTexture.h"
+
+#include "GLShaderProgram.h"
+
 namespace demo {
 
 class DemoLoadOBJ : public Demo
@@ -15,7 +29,12 @@ public:
     void OnImGuiRender() override;
 
 private:
+    static const GLuint texUnit;
 
+    Camera m_camera;
+    std::vector<std::tuple<GLVertexBuffer, GLVertexArray, GLIndexBuffer>> m_glMeshes;
+    std::unique_ptr<GLTexture> m_texBaseColor;
+    std::unique_ptr<GLShaderProgram> m_shaderP;
 };
 
 }
