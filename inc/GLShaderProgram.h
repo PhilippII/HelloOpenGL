@@ -83,6 +83,10 @@ public:
 
     void setUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
 
+    void setUniform4fv(GLint location, const GLfloat *value);
+
+    void setUniform4fv(const std::string& name, const GLfloat* value);
+
     void setUniformMat4f(GLint location, const glm::mat4& matrix);
 
     void setUniformMat4f(const std::string& name, const glm::mat4& matrix);
