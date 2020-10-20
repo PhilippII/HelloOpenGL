@@ -20,16 +20,22 @@ const GLuint demo::DemoLoadOBJ::texUnit = 0;
 demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
     : demo::Demo(renderer), m_camera(glm::radians(45.f), 1.f, .1f, 10.f)
 {
+    namespace fs = std::filesystem;
+
     // move camera back a bit from the origin:
     m_camera.translate_global(glm::vec3(0.f, 0.f, 4.f));
 
+    // load shader:
+    m_shaderP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/Texture.shader",
+                                                           fs::path::format::generic_format));
+
     // load meshes from file:
-    namespace fs = std::filesystem;
     std::vector<CPUMesh<GLuint>> cpu_meshes = loadOBJfile(fs::path("res/meshes/suzanne_horn_smooth_subdiv_1.obj",
                                                                    fs::path::format::generic_format));
     for (auto& cpu_mesh : cpu_meshes) {
         GLVertexBuffer vbo(cpu_mesh.va.data.size(), cpu_mesh.va.data.data());
         GLVertexArray vao;
+        cpu_mesh.va.layout.setLocations(*m_shaderP);
         vao.addBuffer(vbo, cpu_mesh.va.layout);
         GLIndexBuffer ibo(GL_UNSIGNED_INT, cpu_mesh.ib.indices.size(),
                           reinterpret_cast<GLvoid*>(cpu_mesh.ib.indices.data()));
@@ -40,10 +46,7 @@ demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
     m_texBaseColor = std::make_unique<GLTexture>(fs::path("res/textures/uv_grid.png",
                                                           fs::path::format::generic_format), 3);
     m_texBaseColor->bind(texUnit);
-
-    // load shader:
-    m_shaderP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/Texture.shader",
-                                                           fs::path::format::generic_format));
+    m_shaderP->bind();
     m_shaderP->setUniform1i("tex", texUnit);
 
     // enable culling and depth test:
