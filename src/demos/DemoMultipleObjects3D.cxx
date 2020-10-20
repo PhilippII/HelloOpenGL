@@ -16,6 +16,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "imgui.h"
+
 const GLuint demo::DemoMultipleObjects3D::texUnit = 0;
 
 demo::DemoMultipleObjects3D::DemoMultipleObjects3D(GLRenderer &renderer)
@@ -267,7 +269,7 @@ void demo::DemoMultipleObjects3D::OnRender()
 
 void demo::DemoMultipleObjects3D::OnImGuiRender()
 {
-
+    ImGui::ShowDemoWindow();
 }
 
 
