@@ -1,6 +1,20 @@
 #ifndef DEMOMULTIPLEOBJECTS3D_H
 #define DEMOMULTIPLEOBJECTS3D_H
 
+// This demo demonstrates multiple different concepts, which should probably be
+// separated into multiple demos:
+// 1) the house in the background demonstrates the ability to remove redundancy from a vertex buffer
+//      by automatically computing an index buffer
+// 2) the star demonstrates the ability to animate stuff (its rotation) using the deltaSeconds
+//      passed to OnUpdate()
+// 3) the star also demonstrates the ability to change values (its color) interactively via dear-imgui
+// 4) suzanne (the monkeyhead) demonstrates the ability to load a mesh from an WavefrontOBJ-file
+// 5) suzanne and the plane (with the face) on the front demonstrate the ability to load and use
+//      textures from png-files (with and without the alpha channel)
+// 6) the plane (with the face) demonstrates some opengl-blending settings that actually
+//      make use of the texture's alpha channel
+
+
 #include "Demo.h"
 
 #include <memory> // for std::unique_ptr
