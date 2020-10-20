@@ -56,8 +56,9 @@ private:
 
     std::vector<GLMesh> m_suzanneMeshes;
     std::unique_ptr<GLTexture> m_gridTexture;
-    float m_red;
-    float m_red_inc_per_sec;
+    float m_starColor[4];
+    float m_starRot_deg;
+    float m_starRot_degPerSec;
 };
 
 }

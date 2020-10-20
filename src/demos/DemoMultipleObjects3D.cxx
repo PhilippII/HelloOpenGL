@@ -6,6 +6,8 @@
 
 #include <array>
 
+#include <cmath> // for std::fmod()
+
 #include "cpu_mesh_structs.h"
 #include "cpu_mesh_utils.h" // to test addIndexBuffer(...)
 #include "cpu_mesh_generate.h" // to test generateStar(...)
@@ -23,7 +25,8 @@ const GLuint demo::DemoMultipleObjects3D::texUnit = 0;
 demo::DemoMultipleObjects3D::DemoMultipleObjects3D(GLRenderer &renderer)
     : demo::Demo(renderer),
       m_camera(glm::radians(45.f), 1.f, .1f, 10.f),
-      m_red(0.f), m_red_inc_per_sec(3.f)
+      m_starColor{.5, .3f, .8f, 1.0f},
+      m_starRot_deg(0.f), m_starRot_degPerSec(20.f)
 {
     namespace fs = std::filesystem;
 
@@ -212,15 +215,8 @@ void demo::DemoMultipleObjects3D::OnKeyPressed(int key, int scancode, int action
 
 void demo::DemoMultipleObjects3D::OnUpdate(float deltaSeconds)
 {
-    m_red += m_red_inc_per_sec * deltaSeconds;
-    if (m_red > 1.0) {
-        m_red = 1.0;
-        m_red_inc_per_sec = -3.f;
-    }
-    if (m_red < 0.0) {
-        m_red = 0.0;
-        m_red_inc_per_sec = +3.f;
-    }
+    m_starRot_deg += m_starRot_degPerSec * deltaSeconds;
+    m_starRot_deg = std::fmod(m_starRot_deg, 360.f);
 }
 
 void demo::DemoMultipleObjects3D::OnRender()
@@ -243,9 +239,11 @@ void demo::DemoMultipleObjects3D::OnRender()
 
     // 2 draw star:
     m_shaderProgram->bind(); // must be bound first to set a uniform
-    glm::mat4 wc_from_staroc = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, .5f));
+    glm::mat4 wc_from_staroc(1.f);
+    wc_from_staroc = glm::rotate(wc_from_staroc, glm::radians(m_starRot_deg), glm::vec3(0.f, 0.f, 1.f));
+    wc_from_staroc = glm::translate(wc_from_staroc, glm::vec3(0.f, 0.f, .5f));
     m_shaderProgram->setUniformMat4f("u_ndc_from_oc", ndc_from_wc * wc_from_staroc);
-    m_shaderProgram->setUniform4f("u_Color", m_red, .3f, .8f, 1.0f);
+    m_shaderProgram->setUniform4fv("u_Color", m_starColor);
     getRenderer().draw(*m_starVAO, *m_starIBO, *m_shaderProgram);
 
     // 3 draw suzanne:
@@ -269,7 +267,7 @@ void demo::DemoMultipleObjects3D::OnRender()
 
 void demo::DemoMultipleObjects3D::OnImGuiRender()
 {
-    ImGui::ShowDemoWindow();
+    ImGui::ColorEdit4("Star Color", m_starColor);
 }
 
 
