@@ -1,4 +1,4 @@
-#include "demos/DemoMultipleObjects3D.h"
+#include "demos/DemoMultipleConcepts.h"
 
 #include <filesystem>
 #include <iostream>
@@ -20,9 +20,9 @@
 
 #include "imgui.h"
 
-const GLuint demo::DemoMultipleObjects3D::texUnit = 0;
+const GLuint demo::DemoMultipleConcepts::texUnit = 0;
 
-demo::DemoMultipleObjects3D::DemoMultipleObjects3D(GLRenderer &renderer)
+demo::DemoMultipleConcepts::DemoMultipleConcepts(GLRenderer &renderer)
     : demo::Demo(renderer),
       m_camera(glm::radians(45.f), 1.f, .1f, 10.f),
       m_starColor{.5, .3f, .8f, 1.0f},
@@ -168,7 +168,7 @@ demo::DemoMultipleObjects3D::DemoMultipleObjects3D(GLRenderer &renderer)
     getRenderer().setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-demo::DemoMultipleObjects3D::~DemoMultipleObjects3D()
+demo::DemoMultipleConcepts::~DemoMultipleConcepts()
 {
     getRenderer().setClearColor();
     getRenderer().disableFaceCulling();
@@ -177,13 +177,13 @@ demo::DemoMultipleObjects3D::~DemoMultipleObjects3D()
     getRenderer().setBlendFunc();
 }
 
-void demo::DemoMultipleObjects3D::OnWindowSizeChanged(int width, int height)
+void demo::DemoMultipleConcepts::OnWindowSizeChanged(int width, int height)
 {
     getRenderer().setViewport(0, 0, width, height);
     m_camera.setAspect(width / static_cast<float>(height));
 }
 
-void demo::DemoMultipleObjects3D::OnKeyPressed(int key, int scancode, int action, int mods)
+void demo::DemoMultipleConcepts::OnKeyPressed(int key, int scancode, int action, int mods)
 {
     constexpr float stepSize = .2f;
     constexpr float rotDelta = glm::radians(5.f);
@@ -213,13 +213,13 @@ void demo::DemoMultipleObjects3D::OnKeyPressed(int key, int scancode, int action
     }
 }
 
-void demo::DemoMultipleObjects3D::OnUpdate(float deltaSeconds)
+void demo::DemoMultipleConcepts::OnUpdate(float deltaSeconds)
 {
     m_starRot_deg += m_starRot_degPerSec * deltaSeconds;
     m_starRot_deg = std::fmod(m_starRot_deg, 360.f);
 }
 
-void demo::DemoMultipleObjects3D::OnRender()
+void demo::DemoMultipleConcepts::OnRender()
 {
     // initialize transformation:
     glm::mat4 cc_from_wc = m_camera.mat_cc_from_wc(); // camera coordinates from world coordinates
@@ -265,7 +265,7 @@ void demo::DemoMultipleObjects3D::OnRender()
     getRenderer().disableBlending();
 }
 
-void demo::DemoMultipleObjects3D::OnImGuiRender()
+void demo::DemoMultipleConcepts::OnImGuiRender()
 {
     ImGui::ColorEdit4("Star Color", m_starColor);
 }

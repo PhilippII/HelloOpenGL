@@ -14,7 +14,7 @@
 #include "GLRenderer.h"
 
 #include "demos/DemoClearColor.h"
-#include "demos/DemoMultipleObjects3D.h"
+#include "demos/DemoMultipleConcepts.h"
 
 
 namespace raii_fy {
@@ -200,7 +200,7 @@ int main(void)
     std::shared_ptr<demo::DemoSuite> myDemoP = std::make_shared<demo::DemoSuite>(renderer);
     // we use a shared pointer to share it with the glfw-callbacks, which can only access the global namespace
     myDemoP->RegisterDemo<demo::DemoClearColor>("Clear Color");
-    myDemoP->RegisterDemo<demo::DemoMultipleObjects3D>("Multiple 3D Objects");
+    myDemoP->RegisterDemo<demo::DemoMultipleConcepts>("a bunch of stuff");
 
     demo_global_ptr = myDemoP;
 

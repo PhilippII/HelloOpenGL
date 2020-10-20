@@ -1,5 +1,5 @@
-#ifndef DEMOMULTIPLEOBJECTS3D_H
-#define DEMOMULTIPLEOBJECTS3D_H
+#ifndef DEMOMULTIPLECONCEPTS_H
+#define DEMOMULTIPLECONCEPTS_H
 
 // This demo demonstrates multiple different concepts, which should probably be
 // separated into multiple demos:
@@ -31,11 +31,11 @@
 
 namespace demo {
 
-class DemoMultipleObjects3D : public Demo
+class DemoMultipleConcepts : public Demo
 {
 public:
-    DemoMultipleObjects3D(GLRenderer& renderer);
-    ~DemoMultipleObjects3D();
+    DemoMultipleConcepts(GLRenderer& renderer);
+    ~DemoMultipleConcepts();
 
     void OnWindowSizeChanged(int width, int height) override;
     void OnKeyPressed(int key, int scancode, int action, int mods) override;
@@ -77,4 +77,4 @@ private:
 
 }
 
-#endif // DEMOMULTIPLEOBJECTS3D_H
+#endif // DEMOMULTIPLECONCEPTS_H
