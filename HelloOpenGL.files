@@ -455,6 +455,7 @@ inc/cpu_mesh_utils.h
 inc/debug_utils.h
 inc/demos/Demo.h
 inc/demos/DemoClearColor.h
+inc/demos/DemoLoadOBJ.h
 inc/demos/DemoMultipleConcepts.h
 inc/gl_type_id.h
 res/shaders/Basic.shader
@@ -477,5 +478,6 @@ src/cpu_mesh_utils.cxx
 src/debug_utils.cxx
 src/demos/Demo.cxx
 src/demos/DemoClearColor.cxx
+src/demos/DemoLoadOBJ.cxx
 src/demos/DemoMultipleConcepts.cxx
 src/main.cxx

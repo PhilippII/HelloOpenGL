@@ -15,6 +15,7 @@
 
 #include "demos/DemoClearColor.h"
 #include "demos/DemoMultipleConcepts.h"
+#include "demos/DemoLoadOBJ.h"
 
 
 namespace raii_fy {
@@ -201,6 +202,7 @@ int main(void)
     // we use a shared pointer to share it with the glfw-callbacks, which can only access the global namespace
     myDemoP->RegisterDemo<demo::DemoClearColor>("Clear Color");
     myDemoP->RegisterDemo<demo::DemoMultipleConcepts>("a bunch of stuff");
+    myDemoP->RegisterDemo<demo::DemoLoadOBJ>("Load WavefrontOBJ-file");
 
     demo_global_ptr = myDemoP;
 
