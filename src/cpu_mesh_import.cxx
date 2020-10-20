@@ -379,6 +379,7 @@ std::vector<CPUMesh<GLuint>> loadOBJfile(const std::filesystem::path& filepath, 
 
     VertexCountSum count_sum = {0, 0, 0};
 
+    debugDo(int lineNum = 0);
     string nextName;
     while (ifs) {
         WavefrontObject obj;
@@ -400,9 +401,9 @@ std::vector<CPUMesh<GLuint>> loadOBJfile(const std::filesystem::path& filepath, 
         obj.mib_v_vt_vn.primitiveRestartMultiIndex = std::array<GLuint, 3>{std::numeric_limits<GLuint>::max(),
                                                                            std::numeric_limits<GLuint>::max(),
                                                                            std::numeric_limits<GLuint>::max()};
-
         string line;
         while (nextName.empty() && getline(ifs, line)) {
+            debugDo(++lineNum);
             // cout << line << '\n';
             istringstream iss {line};
             string opcodeStr;
@@ -415,18 +416,22 @@ std::vector<CPUMesh<GLuint>> loadOBJfile(const std::filesystem::path& filepath, 
                 cout << "OBJ-file comment: " << opcodeStr << " " << commentStr << '\n';
             } else if (opcodeStr == "v") {
                 if (!parsePosition(obj, iss, invert_z)) {
+                    debugDo(cerr << "abort loading .obj-file due to error in line number " << lineNum << ":\n" << line << '\n');
                     return vector<CPUMesh<GLuint>>();
                 }
             } else if (opcodeStr == "vt") {
                 if (!parseTexCoord(obj, iss)) {
+                    debugDo(cerr << "abort loading .obj-file due to error in line number " << lineNum << ":\n" << line << '\n');
                     return vector<CPUMesh<GLuint>>();
                 }
             } else if (opcodeStr == "vn") {
                 if (!parseNormal(obj, iss, invert_z)) {
+                    debugDo(cerr << "abort loading .obj-file due to error in line number " << lineNum << ":\n" << line << '\n');
                     return vector<CPUMesh<GLuint>>();
                 }
             } else if (opcodeStr == "f") {
                 if (!parseFace(obj, iss, count_sum, mi_pats)) {
+                    debugDo(cerr << "abort loading .obj-file due to error in line number " << lineNum << ":\n" << line << '\n');
                     return vector<CPUMesh<GLuint>>();
                 }
             } else if (opcodeStr == "o") {
