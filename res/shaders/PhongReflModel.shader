@@ -33,7 +33,7 @@ uniform vec3 u_i_a;
 uniform vec3 u_k_s;
 uniform vec3 u_k_d;
 uniform vec3 u_k_a;
-uniform vec3 u_shininess;
+uniform float u_shininess;
 
 // vectors/normal:
 uniform vec3 u_L_cc;
