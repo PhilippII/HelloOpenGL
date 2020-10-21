@@ -47,11 +47,13 @@ void main()
 {
     vec3 N_cc = normalize(normal_cc);
     float L_dot_N = dot(u_L_cc, N_cc);
-    vec3 R_cc = 2.f * L_dot_N * N_cc - u_L_cc;
-    vec3 V_cc = normalize(posToLight_cc);
-    vec3 color = u_k_a * u_i_a
-                 + L_dot_N * u_k_d * u_i_d
-                 + pow(dot(R_cc, V_cc), u_shininess) * u_k_s * u_i_s;
+    vec3 color = u_k_a * u_i_a;
+    if (L_dot_N > 0.0f) {
+        vec3 R_cc = 2.f * L_dot_N * N_cc - u_L_cc;
+        vec3 V_cc = normalize(posToLight_cc);
+        color += L_dot_N * u_k_d * u_i_d;
+              + pow(max(dot(R_cc, V_cc), 0.0f), u_shininess) * u_k_s * u_i_s;
+    }
     // TODO: precompute the products u_k_? * u_i_? for ? = a, d, s
     out_color = vec4(color, 1.f);
 }
