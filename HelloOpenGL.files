@@ -459,6 +459,7 @@ inc/demos/DemoLoadOBJ.h
 inc/demos/DemoMultipleConcepts.h
 inc/gl_type_id.h
 res/shaders/Basic.shader
+res/shaders/PhongReflModel.shader
 res/shaders/Suzanne.shader
 res/shaders/Texture.shader
 src/Camera.cxx
