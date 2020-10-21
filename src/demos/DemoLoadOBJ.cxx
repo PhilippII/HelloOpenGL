@@ -30,7 +30,7 @@ demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
                                                            fs::path::format::generic_format));
 
     // load meshes from file:
-    std::vector<CPUMesh<GLuint>> cpu_meshes = loadOBJfile(fs::path("res/meshes/suzanne_horn_smooth_subdiv_1.obj",
+    std::vector<CPUMesh<GLuint>> cpu_meshes = loadOBJfile(fs::path("res/meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01.obj",
                                                                    fs::path::format::generic_format));
     for (auto& cpu_mesh : cpu_meshes) {
         GLVertexBuffer vbo(cpu_mesh.va.data.size(), cpu_mesh.va.data.data());
@@ -43,7 +43,7 @@ demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
     }
 
     // load texture from file:
-    m_texBaseColor = std::make_unique<GLTexture>(fs::path("res/textures/uv_grid.png",
+    m_texBaseColor = std::make_unique<GLTexture>(fs::path("res/meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01_Textures/GothicBed_01_8-bit_Diffuse.png",
                                                           fs::path::format::generic_format), 3);
     m_texBaseColor->bind(texUnit);
     m_shaderP->bind();
