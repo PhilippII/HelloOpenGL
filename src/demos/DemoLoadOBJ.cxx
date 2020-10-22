@@ -28,7 +28,7 @@ demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
     m_camera.translate_global(glm::vec3(0.f, 0.f, 4.f));
 
     // load shader:
-    m_shaderP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/PBR.shader",
+    m_shaderP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/TexturedPhongRefl.shader",
                                                            fs::path::format::generic_format));
     // light properties:
     m_shaderP->setUniform3f("u_i_s", 1.f, 1.f, 1.f);
