@@ -25,15 +25,20 @@ void main()
 #shader fragment
 #version 330 core
 // light properties:
-uniform vec3 u_i_s;
-uniform vec3 u_i_d;
-uniform vec3 u_i_a;
+//uniform vec3 u_i_s;
+//uniform vec3 u_i_d;
+//uniform vec3 u_i_a;
 
 // material properties:
-uniform vec3 u_k_s;
-uniform vec3 u_k_d;
-uniform vec3 u_k_a;
+//uniform vec3 u_k_s;
+//uniform vec3 u_k_d;
+//uniform vec3 u_k_a;
 uniform float u_shininess;
+
+// premultiplied properties:
+uniform vec3 u_k_s_times_i_s;
+uniform vec3 u_k_d_times_i_d;
+uniform vec3 u_k_a_times_i_a;
 
 // vectors/normal:
 uniform vec3 u_L_cc;
@@ -50,9 +55,9 @@ void main()
     vec3 R_cc = 2.f * L_dot_N * N_cc - u_L_cc;
     vec3 V_cc = normalize(posToCamera_cc);
 
-    vec3 ambient = u_k_a * u_i_a;
-    vec3 diffuse = max(L_dot_N, 0.f) * u_k_d * u_i_d;
-    vec3 specular = (L_dot_N > 0.f) ? pow(max(dot(R_cc, V_cc), 0.0f), u_shininess) * u_k_s * u_i_s : vec3(0.f);
+    vec3 ambient = u_k_a_times_i_a;
+    vec3 diffuse = max(L_dot_N, 0.f) * u_k_d_times_i_d;
+    vec3 specular = (L_dot_N > 0.f) ? pow(max(dot(R_cc, V_cc), 0.0f), u_shininess) * u_k_s_times_i_s : vec3(0.f);
 
     // TODO: precompute the products u_k_? * u_i_? for ? = a, d, s
     out_color = vec4(ambient + diffuse + specular, 1.f);

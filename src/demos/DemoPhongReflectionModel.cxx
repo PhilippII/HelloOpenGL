@@ -111,19 +111,24 @@ void demo::DemoPhongReflectionModel::OnRender()
     m_shaderP->setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
 
     // set light properties uniforms:
-    m_shaderP->setUniform3f("u_i_s", m_i_s);
-    m_shaderP->setUniform3f("u_i_d", m_i_d);
-    m_shaderP->setUniform3f("u_i_a", m_i_a);
+    //m_shaderP->setUniform3f("u_i_s", m_i_s);
+    //m_shaderP->setUniform3f("u_i_d", m_i_d);
+    //m_shaderP->setUniform3f("u_i_a", m_i_a);
     glm::vec3 toLightNormalized_wc = (m_toLight_wc == glm::vec3(0.f)) ? glm::vec3(0.f, 1.f, 0.f)
                                                                       : glm::normalize(m_toLight_wc);
     glm::vec3 toLight_cc = glm::vec3(cc_from_wc * glm::vec4(toLightNormalized_wc, 0.f));
     m_shaderP->setUniform3f("u_L_cc", toLight_cc);
 
     // set material properties uniforms:
-    m_shaderP->setUniform3f("u_k_s", m_k_s);
-    m_shaderP->setUniform3f("u_k_d", m_k_d);
-    m_shaderP->setUniform3f("u_k_a", m_k_a);
+    //m_shaderP->setUniform3f("u_k_s", m_k_s);
+    //m_shaderP->setUniform3f("u_k_d", m_k_d);
+    //m_shaderP->setUniform3f("u_k_a", m_k_a);
     m_shaderP->setUniform1f("u_shininess", m_shininess);
+
+    // set premultiplied properties uniforms:
+    m_shaderP->setUniform3f("u_k_s_times_i_s", m_k_s * m_i_s);
+    m_shaderP->setUniform3f("u_k_d_times_i_d", m_k_d * m_i_d);
+    m_shaderP->setUniform3f("u_k_a_times_i_a", m_k_a * m_i_a);
 
 
     for (auto& glMesh : m_glMeshes) {
