@@ -16,7 +16,7 @@ out vec3 posToCamera_cc;
 
 void main()
 {
-    normal_cc = u_cc_from_oc * vec4(normal_oc, 0.f); // assuming the model and view transforms preserve angles (e.g. no shear)
+    normal_cc = (u_cc_from_oc * vec4(normal_oc, 0.f)).xyz; // assuming the model and view transforms preserve angles (e.g. no shear)
     vec4 pos_cc = u_cc_from_oc * position_oc;
     posToCamera_cc = vec3(0.f) - pos_cc.xyz;
     gl_Position = u_ndc_from_oc * position_oc;
