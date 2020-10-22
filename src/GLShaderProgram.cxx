@@ -207,6 +207,9 @@ void GLShaderProgram::setUniform1i(GLint location, int v)
 {
     myAssert(isBound());
     GLCall(glUniform1i(location, v));
+    // docs.gl:
+    // "If location is equal to -1, the data passed in will be silently ignored
+    //    and the specified uniform variable will not be changed."
 }
 
 void GLShaderProgram::setUniform1i(const std::string &name, int v)
@@ -214,13 +217,43 @@ void GLShaderProgram::setUniform1i(const std::string &name, int v)
     setUniform1i(getUniformLocation(name), v);
 }
 
+void GLShaderProgram::setUniform1f(GLint location, float value)
+{
+    myAssert(isBound());
+    GLCall(glUniform1f(location, value));
+}
+
+void GLShaderProgram::setUniform1f(const std::string &name, float value)
+{
+    setUniform1f(getUniformLocation(name), value);
+}
+
+void GLShaderProgram::setUniform3f(GLint location, float v0, float v1, float v2)
+{
+    myAssert(isBound());
+    GLCall(glUniform3f(location, v0, v1, v2));
+}
+
+void GLShaderProgram::setUniform3f(const std::string &name, float v0, float v1, float v2)
+{
+    setUniform3f(getUniformLocation(name), v0, v1, v2);
+}
+
+void GLShaderProgram::setUniform3f(GLint location, const glm::vec3& vector)
+{
+    myAssert(isBound());
+    GLCall(glUniform3f(location, vector.x, vector.y, vector.z));
+}
+
+void GLShaderProgram::setUniform3f(const std::string &name, const glm::vec3& vector)
+{
+    setUniform3f(getUniformLocation(name), vector);
+}
+
 void GLShaderProgram::setUniform4f(GLint location, float v0, float v1, float v2, float v3)
 {
     myAssert(isBound());
     GLCall(glUniform4f(location, v0, v1, v2, v3));
-    // docs.gl:
-    // "If location is equal to -1, the data passed in will be silently ignored
-    //    and the specified uniform variable will not be changed."
 }
 
 void GLShaderProgram::setUniform4f(const std::string &name, float v0, float v1, float v2, float v3)
