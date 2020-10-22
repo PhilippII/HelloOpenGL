@@ -8,11 +8,13 @@
 //   -> I make position a vec4 rather than vec3
 in vec4 position_oc;
 in vec3 normal_oc;
+in vec2 texCoord;
 uniform mat4 u_cc_from_oc;
 uniform mat4 u_ndc_from_oc;
 
 out vec3 normal_cc;
 out vec3 posToCamera_cc;
+out vec2 texCoord_v;
 
 void main()
 {
@@ -20,19 +22,20 @@ void main()
     vec4 pos_cc = u_cc_from_oc * position_oc;
     posToCamera_cc = vec3(0.f) - pos_cc.xyz;
     gl_Position = u_ndc_from_oc * position_oc;
+    texCoord_v = texCoord;
 }
 
 #shader fragment
 #version 330 core
 // light properties:
-uniform vec3 u_i_s;
+// uniform vec3 u_i_s;
 uniform vec3 u_i_d;
 uniform vec3 u_i_a;
 
 // material properties:
 uniform vec3 u_k_s;
-uniform vec3 u_k_d;
-uniform vec3 u_k_a;
+//uniform vec3 u_k_d;
+//uniform vec3 u_k_a;
 uniform float u_shininess;
 
 // vectors/normal:
@@ -41,10 +44,17 @@ in vec3 normal_cc; // -> N_cc (normal_cc not yet normalized due to interpolation
 // R_cc needs to be computed
 in vec3 posToCamera_cc; // -> V_cc
 
+// texture:
+uniform sampler2D tex;
+in vec2 texCoord_v;
+
 layout(location = 0) out vec4 out_color;
 
 void main()
 {
+    vec3 u_k_d = texture(tex, texCoord_v).rgb;
+    vec3 u_k_a = u_k_d;
+    vec3 u_i_s = u_i_d;
     vec3 N_cc = normalize(normal_cc);
     float L_dot_N = dot(u_L_cc, N_cc);
     vec3 R_cc = 2.f * L_dot_N * N_cc - u_L_cc;

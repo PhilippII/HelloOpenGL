@@ -14,7 +14,7 @@
 #include "glm/glm.hpp"
 
 
-//const GLuint demo::DemoLoadOBJ::texUnit = 0;
+const GLuint demo::DemoLoadOBJ::texUnit = 0;
 
 
 demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
@@ -31,14 +31,14 @@ demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
     m_shaderP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/TexturedPhongRefl.shader",
                                                            fs::path::format::generic_format));
     // light properties:
-    m_shaderP->setUniform3f("u_i_s", 1.f, 1.f, 1.f);
+    // m_shaderP->setUniform3f("u_i_s", 1.f, 1.f, 1.f); -> we just set u_i_s := u_i_d
     m_shaderP->setUniform3f("u_i_d", 1.f, 1.f, 1.f);
-    m_shaderP->setUniform3f("u_i_a", .3f, .3f, .3f);
+    m_shaderP->setUniform3f("u_i_a", .5f, .5f, .5f);
 
     // material properties:
-    m_shaderP->setUniform3f("u_k_s", 1.f, 1.f, 1.f);
-    m_shaderP->setUniform3f("u_k_d", .8f, .2f, .8f);
-    m_shaderP->setUniform3f("u_k_a", .8f, .2f, .8f);
+    m_shaderP->setUniform3f("u_k_s", .5f, .5f, .5f);
+    // m_shaderP->setUniform3f("u_k_d", .8f, .2f, .8f); // -> is read from texture
+    // m_shaderP->setUniform3f("u_k_a", .8f, .2f, .8f); // -> we just set u_k_a := u_k_d
     m_shaderP->setUniform1f("u_shininess", 20.f);
 
     // load meshes from file:
@@ -55,11 +55,11 @@ demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
     }
 
     // load texture from file:
-    // m_texBaseColor = std::make_unique<GLTexture>(fs::path("res/meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01_Textures/GothicBed_01_8-bit_Diffuse.png",
-    //                                                      fs::path::format::generic_format), 3);
-    // m_texBaseColor->bind(texUnit);
-    // m_shaderP->bind();
-    // m_shaderP->setUniform1i("tex", texUnit);
+     m_texBaseColor = std::make_unique<GLTexture>(fs::path("res/meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01_Textures/GothicBed_01_8-bit_Diffuse.png",
+                                                          fs::path::format::generic_format), 3);
+     m_texBaseColor->bind(texUnit);
+     m_shaderP->bind();
+     m_shaderP->setUniform1i("tex", texUnit);
 
     // enable culling and depth test:
     getRenderer().enableFaceCulling();
