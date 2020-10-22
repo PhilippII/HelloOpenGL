@@ -460,6 +460,7 @@ inc/demos/DemoMultipleConcepts.h
 inc/demos/DemoPhongReflectionModel.h
 inc/gl_type_id.h
 res/shaders/Basic.shader
+res/shaders/PBR.shader
 res/shaders/PhongReflModel.shader
 res/shaders/Suzanne.shader
 res/shaders/Texture.shader
