@@ -31,12 +31,13 @@ public:
     void OnImGuiRender() override;
 
 private:
-    static const GLuint texUnit;
+    //static const GLuint texUnit;
 
     Camera m_camera;
     std::unique_ptr<GLShaderProgram> m_shaderP;
+    glm::vec3 m_toLight_wc;
     std::vector<std::tuple<GLVertexBuffer, GLVertexArray, GLIndexBuffer>> m_glMeshes;
-    std::unique_ptr<GLTexture> m_texBaseColor;
+    //std::unique_ptr<GLTexture> m_texBaseColor;
 };
 
 }

@@ -14,11 +14,13 @@
 #include "glm/glm.hpp"
 
 
-const GLuint demo::DemoLoadOBJ::texUnit = 0;
+//const GLuint demo::DemoLoadOBJ::texUnit = 0;
 
 
 demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
-    : demo::Demo(renderer), m_camera(glm::radians(45.f), 1.f, .1f, 10.f)
+    : demo::Demo(renderer),
+      m_camera(glm::radians(45.f), 1.f, .1f, 10.f),
+      m_toLight_wc(0.f, 1.f, 0.f) // must be normalized!
 {
     namespace fs = std::filesystem;
 
@@ -26,8 +28,18 @@ demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
     m_camera.translate_global(glm::vec3(0.f, 0.f, 4.f));
 
     // load shader:
-    m_shaderP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/Texture.shader",
+    m_shaderP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/PhongReflModel.shader",
                                                            fs::path::format::generic_format));
+    // light properties:
+    m_shaderP->setUniform3f("u_i_s", 1.f, 1.f, 1.f);
+    m_shaderP->setUniform3f("u_i_d", 1.f, 1.f, 1.f);
+    m_shaderP->setUniform3f("u_i_a", .3f, .3f, .3f);
+
+    // material properties:
+    m_shaderP->setUniform3f("u_k_s", 1.f, 1.f, 1.f);
+    m_shaderP->setUniform3f("u_k_d", .8f, .2f, .8f);
+    m_shaderP->setUniform3f("u_k_a", .8f, .2f, .8f);
+    m_shaderP->setUniform1f("u_shininess", 20.f);
 
     // load meshes from file:
     std::vector<CPUMesh<GLuint>> cpu_meshes = loadOBJfile(fs::path("res/meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01.obj",
@@ -43,11 +55,11 @@ demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
     }
 
     // load texture from file:
-    m_texBaseColor = std::make_unique<GLTexture>(fs::path("res/meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01_Textures/GothicBed_01_8-bit_Diffuse.png",
-                                                          fs::path::format::generic_format), 3);
-    m_texBaseColor->bind(texUnit);
-    m_shaderP->bind();
-    m_shaderP->setUniform1i("tex", texUnit);
+    // m_texBaseColor = std::make_unique<GLTexture>(fs::path("res/meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01_Textures/GothicBed_01_8-bit_Diffuse.png",
+    //                                                      fs::path::format::generic_format), 3);
+    // m_texBaseColor->bind(texUnit);
+    // m_shaderP->bind();
+    // m_shaderP->setUniform1i("tex", texUnit);
 
     // enable culling and depth test:
     getRenderer().enableFaceCulling();
@@ -100,14 +112,19 @@ void demo::DemoLoadOBJ::OnRender()
 {
     getRenderer().clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    m_shaderP->bind(); // binding needed to set the uniforms
     glm::mat4 ndc_from_cc = m_camera.mat_ndc_from_cc();
     glm::mat4 cc_from_wc = m_camera.mat_cc_from_wc();
     glm::mat4 wc_from_oc(1.f);
 
-    glm::mat4 ndc_from_oc = ndc_from_cc * cc_from_wc * wc_from_oc;
-
-    m_shaderP->bind(); // binding needed to set the uniform
+    glm::mat4 cc_from_oc = cc_from_wc * wc_from_oc;
+    glm::mat4 ndc_from_oc = ndc_from_cc * cc_from_oc;
+    m_shaderP->setUniformMat4f("u_cc_from_oc", cc_from_oc);
     m_shaderP->setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
+
+    glm::vec3 toLight_cc = glm::vec3(cc_from_wc * glm::vec4(m_toLight_wc, 0.f));
+    m_shaderP->setUniform3f("u_L_cc", toLight_cc);
+
 
     for (auto& glMesh : m_glMeshes) {
         getRenderer().draw(std::get<GLVertexArray>(glMesh),
