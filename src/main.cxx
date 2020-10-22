@@ -17,6 +17,7 @@
 #include "demos/DemoMultipleConcepts.h"
 #include "demos/DemoLoadOBJ.h"
 #include "demos/DemoPhongReflectionModel.h"
+#include "demos/DemoPhongReflectionModelTextured.h"
 
 
 namespace raii_fy {
@@ -205,6 +206,7 @@ int main(void)
     myDemoP->RegisterDemo<demo::DemoMultipleConcepts>("a bunch of stuff");
     myDemoP->RegisterDemo<demo::DemoLoadOBJ>("Load WavefrontOBJ-file");
     myDemoP->RegisterDemo<demo::DemoPhongReflectionModel>("Phong Reflection Model");
+    myDemoP->RegisterDemo<demo::DemoPhongReflectionModelTextured>("Phong Reflection Model with Texture");
 
     demo_global_ptr = myDemoP;
 
