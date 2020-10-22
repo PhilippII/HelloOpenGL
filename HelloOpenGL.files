@@ -457,6 +457,7 @@ inc/demos/Demo.h
 inc/demos/DemoClearColor.h
 inc/demos/DemoLoadOBJ.h
 inc/demos/DemoMultipleConcepts.h
+inc/demos/DemoPhongReflectionModel.h
 inc/gl_type_id.h
 res/shaders/Basic.shader
 res/shaders/PhongReflModel.shader
@@ -481,4 +482,5 @@ src/demos/Demo.cxx
 src/demos/DemoClearColor.cxx
 src/demos/DemoLoadOBJ.cxx
 src/demos/DemoMultipleConcepts.cxx
+src/demos/DemoPhongReflectionModel.cxx
 src/main.cxx

@@ -16,6 +16,7 @@
 #include "demos/DemoClearColor.h"
 #include "demos/DemoMultipleConcepts.h"
 #include "demos/DemoLoadOBJ.h"
+#include "demos/DemoPhongReflectionModel.h"
 
 
 namespace raii_fy {
@@ -203,6 +204,7 @@ int main(void)
     myDemoP->RegisterDemo<demo::DemoClearColor>("Clear Color");
     myDemoP->RegisterDemo<demo::DemoMultipleConcepts>("a bunch of stuff");
     myDemoP->RegisterDemo<demo::DemoLoadOBJ>("Load WavefrontOBJ-file");
+    myDemoP->RegisterDemo<demo::DemoPhongReflectionModel>("Phong Reflection Model");
 
     demo_global_ptr = myDemoP;
 
