@@ -20,7 +20,14 @@ const GLuint demo::DemoPhongReflectionModelTextured::texUnit = 0;
 demo::DemoPhongReflectionModelTextured::DemoPhongReflectionModelTextured(GLRenderer &renderer)
     : demo::Demo(renderer),
       m_camera(glm::radians(45.f), 1.f, .1f, 10.f),
-      m_toLight_wc(0.f, 1.f, 0.f) // must be normalized!
+      // m_i_s(1.f, 1.f, 1.f), just set i_s := i_d;
+      m_i_d(1.f, 1.f, 1.f),
+      m_i_a(.5f, .5f, .5f),
+      m_toLight_wc(0.f, 1.f, 0.f),
+      m_k_s(.5f, .5f, .5f),
+      // m_k_d(.8f, .2f, .8f), from texture
+      // m_k_a(.8f, .2f, .8f), just set k_a := k_d (:= texture color)
+      m_shininess(20.f)
 {
     namespace fs = std::filesystem;
 
@@ -30,16 +37,6 @@ demo::DemoPhongReflectionModelTextured::DemoPhongReflectionModelTextured(GLRende
     // load shader:
     m_shaderP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/TexturedPhongRefl.shader",
                                                            fs::path::format::generic_format));
-    // light properties:
-    // m_shaderP->setUniform3f("u_i_s", 1.f, 1.f, 1.f); -> we just set u_i_s := u_i_d
-    m_shaderP->setUniform3f("u_i_d", 1.f, 1.f, 1.f);
-    m_shaderP->setUniform3f("u_i_a", .5f, .5f, .5f);
-
-    // material properties:
-    m_shaderP->setUniform3f("u_k_s", .5f, .5f, .5f);
-    // m_shaderP->setUniform3f("u_k_d", .8f, .2f, .8f); // -> is read from texture
-    // m_shaderP->setUniform3f("u_k_a", .8f, .2f, .8f); // -> we just set u_k_a := u_k_d
-    m_shaderP->setUniform1f("u_shininess", 20.f);
 
     // load meshes from file:
     std::vector<CPUMesh<GLuint>> cpu_meshes = loadOBJfile(fs::path("res/meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01.obj",
@@ -112,6 +109,7 @@ void demo::DemoPhongReflectionModelTextured::OnRender()
 {
     getRenderer().clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // set matrix uniforms:
     m_shaderP->bind(); // binding needed to set the uniforms
     glm::mat4 ndc_from_cc = m_camera.mat_ndc_from_cc();
     glm::mat4 cc_from_wc = m_camera.mat_cc_from_wc();
@@ -122,11 +120,20 @@ void demo::DemoPhongReflectionModelTextured::OnRender()
     m_shaderP->setUniformMat4f("u_cc_from_oc", cc_from_oc);
     m_shaderP->setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
 
+    // set light properties uniforms:
+    // m_shaderP->setUniform3f("u_i_s", m_i_s); -> we just set u_i_s := u_i_d
+    m_shaderP->setUniform3f("u_i_d", m_i_d);
+    m_shaderP->setUniform3f("u_i_a", m_i_a);
     glm::vec3 toLightNormalized_wc = (m_toLight_wc == glm::vec3(0.f)) ? glm::vec3(0.f, 1.f, 0.f)
                                                                       : glm::normalize(m_toLight_wc);
     glm::vec3 toLight_cc = glm::vec3(cc_from_wc * glm::vec4(toLightNormalized_wc, 0.f));
     m_shaderP->setUniform3f("u_L_cc", toLight_cc);
 
+    // set material properties uniforms:
+    m_shaderP->setUniform3f("u_k_s", m_k_s);
+    // m_shaderP->setUniform3f("u_k_d", m_k_d); // -> is read from texture
+    // m_shaderP->setUniform3f("u_k_a", m_k_a); // -> we just set u_k_a := u_k_d
+    m_shaderP->setUniform1f("u_shininess", m_shininess);
 
     for (auto& glMesh : m_glMeshes) {
         getRenderer().draw(std::get<GLVertexArray>(glMesh),
@@ -141,7 +148,19 @@ void demo::DemoPhongReflectionModelTextured::OnRender()
 
 void demo::DemoPhongReflectionModelTextured::OnImGuiRender()
 {
+    // light properties:
+    // ImGui::ColorEdit4("i_s", &m_i_s.x);
+    ImGui::Text("i_s := i_d");
+    ImGui::ColorEdit4("i_d", &m_i_d.x);
+    ImGui::ColorEdit4("i_a", &m_i_a.x);
     ImGui::SliderFloat3("light direction (world space coordinates)", &m_toLight_wc.x, -1.f, 1.f);
+
+    // material properties:
+    ImGui::ColorEdit4("k_s", &m_k_s.x);
+    // ImGui::ColorEdit4("k_d", &m_k_d.x);
+    // ImGui::ColorEdit4("k_a", &m_k_a.x);
+    ImGui::Text("k_d := k_a := texture color");
+    ImGui::SliderFloat("shininess", &m_shininess, 1.f, 500.f);
 }
 
 
