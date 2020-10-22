@@ -13,8 +13,6 @@
 #include "GLVertexBuffer.h"
 #include "GLIndexBuffer.h"
 
-#include "GLTexture.h"
-
 #include "GLShaderProgram.h"
 
 namespace demo {
@@ -31,13 +29,10 @@ public:
     void OnImGuiRender() override;
 
 private:
-    //static const GLuint texUnit;
-
     Camera m_camera;
     std::unique_ptr<GLShaderProgram> m_shaderP;
     glm::vec3 m_toLight_wc;
     std::vector<std::tuple<GLVertexBuffer, GLVertexArray, GLIndexBuffer>> m_glMeshes;
-    //std::unique_ptr<GLTexture> m_texBaseColor;
 };
 
 }

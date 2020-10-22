@@ -14,9 +14,6 @@
 #include "glm/glm.hpp"
 
 
-//const GLuint demo::DemoPhongReflectionModel::texUnit = 0;
-
-
 demo::DemoPhongReflectionModel::DemoPhongReflectionModel(GLRenderer &renderer)
     : demo::Demo(renderer),
       m_camera(glm::radians(45.f), 1.f, .1f, 10.f),
@@ -53,13 +50,6 @@ demo::DemoPhongReflectionModel::DemoPhongReflectionModel(GLRenderer &renderer)
                           reinterpret_cast<GLvoid*>(cpu_mesh.ib.indices.data()));
         m_glMeshes.push_back(std::tuple{std::move(vbo), std::move(vao), std::move(ibo)});
     }
-
-    // load texture from file:
-    // m_texBaseColor = std::make_unique<GLTexture>(fs::path("res/meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01_Textures/GothicBed_01_8-bit_Diffuse.png",
-    //                                                      fs::path::format::generic_format), 3);
-    // m_texBaseColor->bind(texUnit);
-    // m_shaderP->bind();
-    // m_shaderP->setUniform1i("tex", texUnit);
 
     // enable culling and depth test:
     getRenderer().enableFaceCulling();
