@@ -122,7 +122,9 @@ void demo::DemoLoadOBJ::OnRender()
     m_shaderP->setUniformMat4f("u_cc_from_oc", cc_from_oc);
     m_shaderP->setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
 
-    glm::vec3 toLight_cc = glm::vec3(cc_from_wc * glm::vec4(m_toLight_wc, 0.f));
+    glm::vec3 toLightNormalized_wc = (m_toLight_wc == glm::vec3(0.f)) ? glm::vec3(0.f, 1.f, 0.f)
+                                                                      : glm::normalize(m_toLight_wc);
+    glm::vec3 toLight_cc = glm::vec3(cc_from_wc * glm::vec4(toLightNormalized_wc, 0.f));
     m_shaderP->setUniform3f("u_L_cc", toLight_cc);
 
 
@@ -139,7 +141,7 @@ void demo::DemoLoadOBJ::OnRender()
 
 void demo::DemoLoadOBJ::OnImGuiRender()
 {
-
+    ImGui::SliderFloat3("light direction (world space coordinates)", &m_toLight_wc.x, -1.f, 1.f);
 }
 
 
