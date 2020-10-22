@@ -31,7 +31,19 @@ public:
 private:
     Camera m_camera;
     std::unique_ptr<GLShaderProgram> m_shaderP;
+
+    // light properties:
+    glm::vec3 m_i_s;
+    glm::vec3 m_i_d;
+    glm::vec3 m_i_a;
     glm::vec3 m_toLight_wc;
+
+    // material properties:
+    glm::vec3 m_k_s;
+    glm::vec3 m_k_d;
+    glm::vec3 m_k_a;
+    float m_shininess;
+
     std::vector<std::tuple<GLVertexBuffer, GLVertexArray, GLIndexBuffer>> m_glMeshes;
 };
 
