@@ -27,7 +27,7 @@ demo::DemoPhongReflectionModelTextured::DemoPhongReflectionModelTextured(GLRende
       m_k_s(.5f, .5f, .5f),
       // m_k_d(.8f, .2f, .8f), from texture
       // m_k_a(.8f, .2f, .8f), just set k_a := k_d (:= texture color)
-      m_shininess(20.f)
+      m_shininess(150.f)
 {
     namespace fs = std::filesystem;
 

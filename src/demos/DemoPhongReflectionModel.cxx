@@ -24,7 +24,7 @@ demo::DemoPhongReflectionModel::DemoPhongReflectionModel(GLRenderer &renderer)
       m_k_s(1.f, 1.f, 1.f),
       m_k_d(.8f, .2f, .8f),
       m_k_a(.8f, .2f, .8f),
-      m_shininess(20.f)
+      m_shininess(150.f)
 {
     namespace fs = std::filesystem;
 
