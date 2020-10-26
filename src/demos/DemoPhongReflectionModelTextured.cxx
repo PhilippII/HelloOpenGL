@@ -151,12 +151,12 @@ void demo::DemoPhongReflectionModelTextured::OnImGuiRender()
     // light properties:
     // ImGui::ColorEdit4("i_s", &m_i_s.x);
     ImGui::Text("i_s := i_d");
-    ImGui::ColorEdit4("i_d", &m_i_d.x);
-    ImGui::ColorEdit4("i_a", &m_i_a.x);
+    ImGui::ColorEdit3("i_d", &m_i_d.x);
+    ImGui::ColorEdit3("i_a", &m_i_a.x);
     ImGui::SliderFloat3("light direction (world space coordinates)", &m_toLight_wc.x, -1.f, 1.f);
 
     // material properties:
-    ImGui::ColorEdit4("k_s", &m_k_s.x);
+    ImGui::ColorEdit3("k_s", &m_k_s.x);
     // ImGui::ColorEdit4("k_d", &m_k_d.x);
     // ImGui::ColorEdit4("k_a", &m_k_a.x);
     ImGui::Text("k_d := k_a := texture color");
