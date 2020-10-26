@@ -1,3 +1,7 @@
+important:
+- how should VertexAttributeLayout::setLocations(..) prevent attributes of nonexistent shader 
+	variables to take the same location as attributes of actually existing shader variables
+
 Camera:
 - remove unnecessary inversion of z-coordinate in obj-import code?
 
