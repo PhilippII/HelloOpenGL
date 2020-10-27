@@ -53,7 +53,8 @@ demo::DemoLinearColorspace::DemoLinearColorspace(GLRenderer &renderer)
 
     // load texture from file:
      m_texBaseColor = std::make_unique<GLTexture>(fs::path("res/meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01_Textures/GothicBed_01_8-bit_Diffuse.png",
-                                                          fs::path::format::generic_format), 3);
+                                                          fs::path::format::generic_format),
+                                                  3, true);
      m_texBaseColor->bind(texUnit);
      m_shaderP->bind();
      m_shaderP->setUniform1i("tex", texUnit);
@@ -61,10 +62,14 @@ demo::DemoLinearColorspace::DemoLinearColorspace(GLRenderer &renderer)
     // enable culling and depth test:
     getRenderer().enableFaceCulling();
     getRenderer().enableDepthTest();
+
+    getRenderer().enable_framebuffer_sRGB();
 }
 
 demo::DemoLinearColorspace::~DemoLinearColorspace()
 {
+    getRenderer().disable_framebuffer_sRGB();
+
     getRenderer().disableDepthTest();
     getRenderer().disableFaceCulling();
 }
