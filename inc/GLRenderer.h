@@ -53,6 +53,10 @@ public:
 
     void setBlendEquationSeparate(GLenum modeRGB = GL_FUNC_ADD, GLenum modeAlpha = GL_FUNC_ADD);
 
+    void enable_framebuffer_sRGB();
+
+    void disable_framebuffer_sRGB();
+
     void draw(GLVertexArray& va, GLIndexBuffer& ib, GLShaderProgram& shaderP) const;
 };
 

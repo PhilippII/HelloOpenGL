@@ -95,6 +95,16 @@ void GLRenderer::setBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha)
     GLCall(glBlendEquationSeparate(modeRGB, modeAlpha));
 }
 
+void GLRenderer::enable_framebuffer_sRGB()
+{
+    GLCall(glEnable(GL_FRAMEBUFFER_SRGB));
+}
+
+void GLRenderer::disable_framebuffer_sRGB()
+{
+    GLCall(glDisable(GL_FRAMEBUFFER_SRGB));
+}
+
 void GLRenderer::draw(GLVertexArray &va, GLIndexBuffer &ib, GLShaderProgram &shaderP) const
 {
     va.bind();
