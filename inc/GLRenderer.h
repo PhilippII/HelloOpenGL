@@ -57,6 +57,8 @@ public:
 
     void disable_framebuffer_sRGB();
 
+    bool isEnabled_framebuffer_sRGB() const;
+
     void draw(GLVertexArray& va, GLIndexBuffer& ib, GLShaderProgram& shaderP) const;
 };
 

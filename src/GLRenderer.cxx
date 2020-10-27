@@ -105,6 +105,12 @@ void GLRenderer::disable_framebuffer_sRGB()
     GLCall(glDisable(GL_FRAMEBUFFER_SRGB));
 }
 
+bool GLRenderer::isEnabled_framebuffer_sRGB() const
+{
+    GLCall(GLboolean result = glIsEnabled(GL_FRAMEBUFFER_SRGB));
+    return result == GL_TRUE;
+}
+
 void GLRenderer::draw(GLVertexArray &va, GLIndexBuffer &ib, GLShaderProgram &shaderP) const
 {
     va.bind();
