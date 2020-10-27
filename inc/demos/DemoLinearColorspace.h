@@ -36,6 +36,9 @@ private:
     Camera m_camera;
     std::unique_ptr<GLShaderProgram> m_shaderP;
 
+    // clear color:
+    glm::vec3 m_clearColor_sRGB;
+
     // light properties:
     // glm::vec3 m_i_s; just set i_s := i_d;
     glm::vec3 m_i_d_sRGB;

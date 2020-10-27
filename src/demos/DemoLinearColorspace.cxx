@@ -22,6 +22,7 @@ const GLuint demo::DemoLinearColorspace::texUnit = 0;
 demo::DemoLinearColorspace::DemoLinearColorspace(GLRenderer &renderer)
     : demo::Demo(renderer),
       m_camera(glm::radians(45.f), 1.f, .1f, 10.f),
+      m_clearColor_sRGB(.5f, .5f, .5f),
       // m_i_s(1.f, 1.f, 1.f), just set i_s := i_d;
       m_i_d_sRGB(1.f, 1.f, 1.f),
       m_i_a_sRGB(.5f, .5f, .5f),
@@ -114,6 +115,7 @@ void demo::DemoLinearColorspace::OnKeyPressed(int key, int scancode, int action,
 
 void demo::DemoLinearColorspace::OnRender()
 {
+    getRenderer().setClearColor(glm::vec4(linRGB_from_sRGB(m_clearColor_sRGB), 1.f));
     getRenderer().clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // set matrix uniforms:
@@ -155,6 +157,9 @@ void demo::DemoLinearColorspace::OnRender()
 
 void demo::DemoLinearColorspace::OnImGuiRender()
 {
+    // clear color:
+    ImGui::ColorEdit3("clear color (sRGB)", &m_clearColor_sRGB.x);
+
     // light properties:
     // ImGui::ColorEdit4("i_s", &m_i_s.x);
     ImGui::Text("i_s := i_d");
