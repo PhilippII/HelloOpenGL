@@ -455,6 +455,7 @@ inc/cpu_mesh_utils.h
 inc/debug_utils.h
 inc/demos/Demo.h
 inc/demos/DemoClearColor.h
+inc/demos/DemoLinearColorspace.h
 inc/demos/DemoLoadOBJ.h
 inc/demos/DemoMultipleConcepts.h
 inc/demos/DemoPhongReflectionModel.h
@@ -482,6 +483,7 @@ src/cpu_mesh_utils.cxx
 src/debug_utils.cxx
 src/demos/Demo.cxx
 src/demos/DemoClearColor.cxx
+src/demos/DemoLinearColorspace.cxx
 src/demos/DemoLoadOBJ.cxx
 src/demos/DemoMultipleConcepts.cxx
 src/demos/DemoPhongReflectionModel.cxx

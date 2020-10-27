@@ -18,6 +18,7 @@
 #include "demos/DemoLoadOBJ.h"
 #include "demos/DemoPhongReflectionModel.h"
 #include "demos/DemoPhongReflectionModelTextured.h"
+#include "demos/DemoLinearColorspace.h"
 
 
 namespace raii_fy {
@@ -207,6 +208,7 @@ int main(void)
     myDemoP->RegisterDemo<demo::DemoLoadOBJ>("Load WavefrontOBJ-file");
     myDemoP->RegisterDemo<demo::DemoPhongReflectionModel>("Phong Reflection Model");
     myDemoP->RegisterDemo<demo::DemoPhongReflectionModelTextured>("Phong Reflection Model with Texture");
+    myDemoP->RegisterDemo<demo::DemoLinearColorspace>("Linear Colorspace");
 
     demo_global_ptr = myDemoP;
 
