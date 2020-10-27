@@ -20,6 +20,11 @@ void GLRenderer::setClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat
     GLCall(glClearColor(red, green, blue, alpha));
 }
 
+void GLRenderer::setClearColor(const glm::vec4 &color)
+{
+    GLCall(glClearColor(color.r, color.g, color.b, color.a));
+}
+
 void GLRenderer::setClearDepth(GLdouble depth)
 {
     GLCall(glClearDepth(depth));

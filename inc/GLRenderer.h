@@ -17,6 +17,8 @@ public:
 
     void setClearColor(GLfloat red = 0.f, GLfloat green = 0.f, GLfloat blue = 0.f, GLfloat alpha = 0.f);
 
+    void setClearColor(const glm::vec4& color);
+
     void setClearDepth(GLdouble depth = 1.);
 
     void setClearDepth(GLfloat depth = 1.f);
