@@ -20,7 +20,8 @@ public:
     virtual ~Demo() {}
 
     virtual void OnWindowSizeChanged(int width, int height);
-    virtual void OnKeyPressed(int key, int scancode, int action, int mods) {}
+    // return true if you handle the key, false if you want someone else to handle it:
+    virtual bool OnKeyPressed(int key, int scancode, int action, int mods) { return false; }
     virtual void OnUpdate(float deltaSeconds) {}
     virtual void OnRender() {}
     virtual void OnImGuiRender() {}
@@ -36,7 +37,7 @@ public:
     ~DemoSuite();
 
     void OnWindowSizeChanged(int width, int height) override;
-    void OnKeyPressed(int key, int scancode, int action, int mods) override;
+    bool OnKeyPressed(int key, int scancode, int action, int mods) override;
     void OnUpdate(float deltaSeconds) override;
     void OnRender() override;
     void OnImGuiRender() override;

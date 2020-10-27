@@ -34,10 +34,16 @@ void DemoSuite::OnWindowSizeChanged(int width, int height)
     }
 }
 
-void DemoSuite::OnKeyPressed(int key, int scancode, int action, int mods)
+bool DemoSuite::OnKeyPressed(int key, int scancode, int action, int mods)
 {
-    if (m_currentDemo) {
-        m_currentDemo->OnKeyPressed(key, scancode, action, mods);
+    if (m_currentDemo && m_currentDemo->OnKeyPressed(key, scancode, action, mods)) {
+        return true;
+    } else if (m_currentDemo && key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        m_currentDemo.reset();
+        getRenderer().setClearColor();
+        return true;
+    } else {
+        return false;
     }
 }
 
