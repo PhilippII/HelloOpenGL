@@ -47,6 +47,7 @@ void VertexBufferLayout::setLocations(const GLShaderProgram &program)
             auto loc = program.getAttribLocation(attr.name);
             if (loc == -1) {
                 std::cout << "warning: did not find attribute location " << attr.name << '\n';
+                attr.location = std::nullopt;
             } else {
                 attr.location = loc;
             }

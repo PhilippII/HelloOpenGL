@@ -1,6 +1,6 @@
 #include "GLVertexArray.h"
 
-
+#include <iostream>
 
 GLVertexArray::GLVertexArray(bool bindNow)
 {
@@ -41,22 +41,26 @@ void GLVertexArray::addBuffer(const GLVertexBuffer &vb, const VertexBufferLayout
     GLCall(glBindVertexBuffer(bindingIndex, vb.getRendererID(), 0, layout.getStride()));
     const std::vector<VertexAttributeLayout>& attributes = layout.getAttributes();
     for (auto& attr : attributes) {
-        GLCall(glEnableVertexAttribArray(attr.location));
+        if (!attr.location) {
+            std::cout << "warning attribute " << attr.name << " has no location. VAO will ignore this attribute.\n";
+            continue;
+        }
+        GLCall(glEnableVertexAttribArray(*attr.location));
         myAssert(VertexBufferLayout::isValidCast(attr.componentType, attr.castTo));
         switch (attr.castTo) {
           case VariableType::NORMALIZED_FLOAT:
           case VariableType::FLOAT:
-            GLCall(glVertexAttribFormat(attr.location, attr.dimCount,
+            GLCall(glVertexAttribFormat(*attr.location, attr.dimCount,
                                         attr.componentType, (attr.castTo == VariableType::NORMALIZED_FLOAT),
                                         attr.offset));
             break;
           case VariableType::INT:
-            GLCall(glVertexAttribIFormat(attr.location, attr.dimCount,
+            GLCall(glVertexAttribIFormat(*attr.location, attr.dimCount,
                                          attr.componentType,
                                          attr.offset));
             break;
           case VariableType::DOUBLE:
-            GLCall(glVertexAttribLFormat(attr.location, attr.dimCount,
+            GLCall(glVertexAttribLFormat(*attr.location, attr.dimCount,
                                          attr.componentType,
                                          attr.offset));
             break;
@@ -64,7 +68,7 @@ void GLVertexArray::addBuffer(const GLVertexBuffer &vb, const VertexBufferLayout
             myAssert(false);
             break;
         }
-        GLCall(glVertexAttribBinding(attr.location, bindingIndex));
+        GLCall(glVertexAttribBinding(*attr.location, bindingIndex));
     }
 }
 

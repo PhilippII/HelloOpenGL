@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <string>
+#include <optional>
 
 #include "debug_utils.h"
 #include "GLShaderProgram.h" // to query attribute locations
@@ -27,9 +28,10 @@ struct VertexAttributeLayout {
     GLenum componentType;
     VariableType castTo;
 
-    // glVertexAttribFormat (GLuint)
-    // glVertexAttribPointer(GLuint)
-    GLuint location;
+    // + glVertexAttribFormat (GLuint)
+    // + glVertexAttribPointer(GLuint)
+    // - GLint glGetAttribLocation()
+    std::optional<GLuint> location;
     std::string name;
 };
 
