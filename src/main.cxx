@@ -249,8 +249,12 @@ int main(void)
         // if (show_demo_window) {
         //     ImGui::ShowDemoWindow(&show_demo_window);
         // }
+
+        bool sRGB = renderer.isEnabled_framebuffer_sRGB();
+        if (sRGB) renderer.disable_framebuffer_sRGB();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        if (sRGB) renderer.enable_framebuffer_sRGB();
 
         glfwSwapBuffers(window.get());
     }
