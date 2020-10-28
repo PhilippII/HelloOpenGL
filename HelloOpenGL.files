@@ -439,6 +439,7 @@
 Makefile
 inc/Camera.h
 inc/ControllerCamera.h
+inc/ControllerCameraStepped.h
 inc/ControllerSun.h
 inc/GLBuffer.h
 inc/GLBufferObject.h
@@ -471,6 +472,7 @@ res/shaders/Texture.shader
 res/shaders/TexturedPhongRefl.shader
 src/Camera.cxx
 src/ControllerCamera.cxx
+src/ControllerCameraStepped.cxx
 src/ControllerSun.cxx
 src/GLBufferObject.cxx
 src/GLIndexBuffer.cxx
