@@ -17,6 +17,9 @@
 
 #include "GLShaderProgram.h"
 
+#include "ControllerSun.h"
+
+
 namespace demo {
 
 class DemoLinearColorspace : public Demo
@@ -43,7 +46,7 @@ private:
     // glm::vec3 m_i_s; just set i_s := i_d;
     glm::vec3 m_i_d_sRGB;
     glm::vec3 m_i_a_sRGB;
-    glm::vec3 m_toLight_wc;
+    ControllerSun m_sunController;
 
     // material properties:
     glm::vec3 m_k_s_sRGB;

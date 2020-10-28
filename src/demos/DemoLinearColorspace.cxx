@@ -26,7 +26,7 @@ demo::DemoLinearColorspace::DemoLinearColorspace(GLRenderer &renderer)
       // m_i_s(1.f, 1.f, 1.f), just set i_s := i_d;
       m_i_d_sRGB(1.f, 1.f, 1.f),
       m_i_a_sRGB(.5f, .5f, .5f),
-      m_toLight_wc(0.f, 1.f, 0.f),
+      m_sunController(glm::radians(45.f), glm::radians(135.f)),
       m_k_s_sRGB(.5f, .5f, .5f),
       // m_k_d(.8f, .2f, .8f), from texture
       // m_k_a(.8f, .2f, .8f), just set k_a := k_d (:= texture color)
@@ -133,9 +133,9 @@ void demo::DemoLinearColorspace::OnRender()
     // m_shaderP->setUniform3f("u_i_s", m_i_s); -> we just set u_i_s := u_i_d
     m_shaderP->setUniform3f("u_i_d", linRGB_from_sRGB(m_i_d_sRGB));
     m_shaderP->setUniform3f("u_i_a", linRGB_from_sRGB(m_i_a_sRGB));
-    glm::vec3 toLightNormalized_wc = (m_toLight_wc == glm::vec3(0.f)) ? glm::vec3(0.f, 1.f, 0.f)
-                                                                      : glm::normalize(m_toLight_wc);
-    glm::vec3 toLight_cc = glm::vec3(cc_from_wc * glm::vec4(toLightNormalized_wc, 0.f));
+
+    glm::vec3 toLight_wc = m_sunController.makeToSun_wc();
+    glm::vec3 toLight_cc = glm::vec3(cc_from_wc * glm::vec4(toLight_wc, 0.f));
     m_shaderP->setUniform3f("u_L_cc", toLight_cc);
 
     // set material properties uniforms:
@@ -165,7 +165,7 @@ void demo::DemoLinearColorspace::OnImGuiRender()
     ImGui::Text("i_s := i_d");
     ImGui::ColorEdit3("i_d (sRGB)", &m_i_d_sRGB.x);
     ImGui::ColorEdit3("i_a (sRGB)", &m_i_a_sRGB.x);
-    ImGui::SliderFloat3("light direction (world space coordinates)", &m_toLight_wc.x, -1.f, 1.f);
+    m_sunController.OnImGuiRender();
 
     // material properties:
     ImGui::ColorEdit3("k_s (sRGB)", &m_k_s_sRGB.x);
