@@ -23,8 +23,7 @@ demo::DemoPhongReflectionModelTextured::DemoPhongReflectionModelTextured(GLRende
       // m_i_s(1.f, 1.f, 1.f), just set i_s := i_d;
       m_i_d(1.f, 1.f, 1.f),
       m_i_a(.5f, .5f, .5f),
-      m_sunAltitute_rad(glm::radians(45.f)),
-      m_sunAzimuth_rad(glm::radians(135.f)),
+      m_sunController(glm::radians(45.f), glm::radians(135.f)),
       m_k_s(.5f, .5f, .5f),
       // m_k_d(.8f, .2f, .8f), from texture
       // m_k_a(.8f, .2f, .8f), just set k_a := k_d (:= texture color)
@@ -126,7 +125,7 @@ void demo::DemoPhongReflectionModelTextured::OnRender()
     m_shaderP->setUniform3f("u_i_d", m_i_d);
     m_shaderP->setUniform3f("u_i_a", m_i_a);
 
-    glm::vec3 toLight_wc = makeToSun_wc(m_sunAltitute_rad, m_sunAzimuth_rad);
+    glm::vec3 toLight_wc = m_sunController.makeToSun_wc();
     glm::vec3 toLight_cc = glm::vec3(cc_from_wc * glm::vec4(toLight_wc, 0.f));
     m_shaderP->setUniform3f("u_L_cc", toLight_cc);
 
@@ -154,8 +153,7 @@ void demo::DemoPhongReflectionModelTextured::OnImGuiRender()
     ImGui::Text("i_s := i_d");
     ImGui::ColorEdit3("i_d", &m_i_d.x);
     ImGui::ColorEdit3("i_a", &m_i_a.x);
-    ImGui::SliderAngle("sun altitute (degrees)", &m_sunAltitute_rad, -90.f, +90.f);
-    ImGui::SliderAngle("sun azimuth (degrees)", &m_sunAzimuth_rad, 0.f, 360.f);
+    m_sunController.OnImGuiRender();
 
     // material properties:
     ImGui::ColorEdit3("k_s", &m_k_s.x);
@@ -165,12 +163,5 @@ void demo::DemoPhongReflectionModelTextured::OnImGuiRender()
     ImGui::SliderFloat("shininess", &m_shininess, 1.f, 500.f);
 }
 
-glm::vec3 demo::DemoPhongReflectionModelTextured::makeToSun_wc(float altitute_rad, float azimuth_rad)
-{
-    float cosAlt = glm::cos(altitute_rad);
-    return glm::vec3(cosAlt * glm::sin(azimuth_rad),
-                     glm::sin(altitute_rad),
-                     -cosAlt * glm::cos(azimuth_rad));
-}
 
 

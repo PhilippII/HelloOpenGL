@@ -17,6 +17,8 @@
 
 #include "GLShaderProgram.h"
 
+#include "ControllerSun.h"
+
 namespace demo {
 
 class DemoPhongReflectionModelTextured : public Demo
@@ -31,8 +33,6 @@ public:
     void OnImGuiRender() override;
 
 private:
-    static glm::vec3 makeToSun_wc(float altitute_rad, float azimuth_rad);
-
     static const GLuint texUnit;
 
     Camera m_camera;
@@ -42,8 +42,7 @@ private:
     // glm::vec3 m_i_s; just set i_s := i_d;
     glm::vec3 m_i_d;
     glm::vec3 m_i_a;
-    float m_sunAzimuth_rad;
-    float m_sunAltitute_rad;
+    ControllerSun m_sunController;
 
     // material properties:
     glm::vec3 m_k_s;
