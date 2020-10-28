@@ -166,7 +166,7 @@ int main(int argc, char **argv)
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // for anisotropic filtering without extension
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    raii_fy::GLFW_Window window(640, 480, "Hello World");
+    raii_fy::GLFW_Window window(960, 640, "Hello World");
     if (!window.get())
     {
         //glfwTerminate(); called in destructor of raii_fy::GLFWInitialization
