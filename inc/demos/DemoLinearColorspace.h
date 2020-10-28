@@ -31,6 +31,7 @@ public:
 
     void OnWindowSizeChanged(int width, int height) override;
     bool OnKeyPressed(int key, int scancode, int action, int mods) override;
+    void OnUpdate(float deltaSeconds) override;
     void OnRender() override;
     void OnImGuiRender() override;
 

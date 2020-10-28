@@ -89,6 +89,11 @@ bool demo::DemoLinearColorspace::OnKeyPressed(int key, int scancode, int action,
     return m_camereController.OnKeyPressed(key, scancode, action, mods);
 }
 
+void demo::DemoLinearColorspace::OnUpdate(float deltaSeconds)
+{
+    m_camereController.OnUpdate(deltaSeconds);
+}
+
 void demo::DemoLinearColorspace::OnRender()
 {
     getRenderer().setClearColor(glm::vec4(linRGB_from_sRGB(m_clearColor_sRGB), 1.f));
