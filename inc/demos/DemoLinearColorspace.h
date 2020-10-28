@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "Camera.h"
+#include "ControllerCamera.h"
 
 #include "GLVertexArray.h"
 #include "GLVertexBuffer.h"
@@ -37,6 +38,8 @@ private:
     static const GLuint texUnit;
 
     Camera m_camera;
+    ControllerCamera m_camereController;
+
     std::unique_ptr<GLShaderProgram> m_shaderP;
 
     // clear color:

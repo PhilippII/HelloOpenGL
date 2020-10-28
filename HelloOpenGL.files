@@ -438,6 +438,7 @@
 3rd_party/stb_image/src/stb_image.cxx
 Makefile
 inc/Camera.h
+inc/ControllerCamera.h
 inc/ControllerSun.h
 inc/GLBuffer.h
 inc/GLBufferObject.h
@@ -469,6 +470,7 @@ res/shaders/Suzanne.shader
 res/shaders/Texture.shader
 res/shaders/TexturedPhongRefl.shader
 src/Camera.cxx
+src/ControllerCamera.cxx
 src/ControllerSun.cxx
 src/GLBufferObject.cxx
 src/GLIndexBuffer.cxx
