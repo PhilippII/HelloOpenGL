@@ -9,7 +9,7 @@ class ControllerCamera
 {
 public:
     ControllerCamera() = delete;
-    ControllerCamera(Camera& camera) : m_camera(camera) {}
+    ControllerCamera(Camera& camera);
 
     bool OnKeyPressed(int key, int scancode, int action, int mods);
     void OnUpdate(float deltaSeconds);

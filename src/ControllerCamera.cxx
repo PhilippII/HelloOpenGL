@@ -4,6 +4,20 @@
 
 #include "glm/glm.hpp"
 
+ControllerCamera::ControllerCamera(Camera &camera)
+    : m_camera(camera),
+      m_forward_vel(0),
+      m_backward_vel(0),
+      m_left_vel(0),
+      m_right_vel(0),
+      m_up_vel(0),
+      m_down_vel(0),
+      m_yaw_left_vel(0),
+      m_yaw_right_vel(0),
+      m_pitch_down_vel(0),
+      m_pitch_up_vel(0)
+{}
+
 bool ControllerCamera::OnKeyPressed(int key, int scancode, int action, int mods)
 {
     switch (key) {
