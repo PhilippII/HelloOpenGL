@@ -145,7 +145,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
-int main(void)
+int main(int argc, char **argv)
 {
     #ifdef NDEBUG
     std::cout << "RELEASE VERSION\n";
@@ -211,6 +211,9 @@ int main(void)
     myDemoP->RegisterDemo<demo::DemoPhongReflectionModel>("Phong Reflection Model");
     myDemoP->RegisterDemo<demo::DemoPhongReflectionModelTextured>("Phong Reflection Model with Texture");
     myDemoP->RegisterDemo<demo::DemoLinearColorspace>("Linear Colorspace");
+    if (argc >= 2) {
+        myDemoP->SelectDemo(argv[1]);
+    }
 
     demo_global_ptr = myDemoP;
 

@@ -5,6 +5,7 @@
 #include <string>
 #include <functional>
 #include <memory> // for std::unique_ptr<..>
+#include <string_view>
 
 #include "GLRenderer.h"
 
@@ -48,6 +49,8 @@ public:
                                     [](GLRenderer& renderer){ return std::make_unique<T>(renderer); }
                                    ));
     }
+
+    void SelectDemo(std::string_view name);
 private:
     std::unique_ptr<Demo> m_currentDemo;
     std::vector<std::pair<std::string, std::function<std::unique_ptr<Demo>(GLRenderer&)>>> m_demos;

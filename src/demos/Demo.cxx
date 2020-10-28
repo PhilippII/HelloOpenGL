@@ -1,6 +1,9 @@
 #include "demos/Demo.h"
 #include "imgui.h"
 
+#include <algorithm> // for std::find_if()
+#include <iostream>
+
 namespace demo {
 
 // Demo:
@@ -81,6 +84,28 @@ void DemoSuite::OnImGuiRender()
                 }
             }
         }
+    }
+}
+
+void DemoSuite::SelectDemo(std::string_view name)
+{
+    auto search = std::find_if(m_demos.begin(), m_demos.end(),
+                               [&](const auto& value) { return value.first == name; });
+    // TODO: is find_if() guaranteed to be able to handle a generic lambda?
+    //       (generic = with "auto"-argument type)
+    //       how exactly does this generic lambda stuff work in c++?
+    if (search != m_demos.end()) {
+        // clean up old demo:
+        m_currentDemo.reset();
+        getRenderer().setClearColor();
+
+        // initialize new demo:
+        m_currentDemo = search->second(getRenderer());
+        if (m_width >= 0) {
+            m_currentDemo->OnWindowSizeChanged(m_width, m_height);
+        }
+    } else {
+        std::cout << "sorry demo " << name << " was not found. Stay in main-menu.\n";
     }
 }
 
