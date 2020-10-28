@@ -83,7 +83,7 @@ void demo::DemoLinearColorspace::OnWindowSizeChanged(int width, int height)
     m_camera.setAspect(width / static_cast<float>(height));
 }
 
-void demo::DemoLinearColorspace::OnKeyPressed(int key, int scancode, int action, int mods)
+bool demo::DemoLinearColorspace::OnKeyPressed(int key, int scancode, int action, int mods)
 {
     constexpr float stepSize = .2f;
     constexpr float rotDelta = glm::radians(5.f);
@@ -110,7 +110,12 @@ void demo::DemoLinearColorspace::OnKeyPressed(int key, int scancode, int action,
         m_camera.rotatePitch(-rotDelta);
     } else if (key == GLFW_KEY_KP_DECIMAL && action == GLFW_PRESS) {
         m_camera.resetLocRot();
+    } else {
+        // we do not know what to do with this key (ask caller to handle it for us):
+        return false;
     }
+    // tell the caller we have handled the key (he should NOT handle it for us):
+    return true;
 }
 
 void demo::DemoLinearColorspace::OnRender()

@@ -24,7 +24,7 @@ public:
     ~DemoPhongReflectionModel();
 
     void OnWindowSizeChanged(int width, int height) override;
-    void OnKeyPressed(int key, int scancode, int action, int mods) override;
+    bool OnKeyPressed(int key, int scancode, int action, int mods) override;
     void OnRender() override;
     void OnImGuiRender() override;
 

@@ -131,14 +131,16 @@ void update_window_size(GLFWwindow* window, int width, int height) {
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (ImGui::GetIO().WantCaptureKeyboard) {
-        return;
-    }
-    // handle keys that are not meant for imgui here:
-    if (auto demo_sp = demo_global_ptr.lock()) {
-        demo_sp->OnKeyPressed(key, scancode, action, mods);
-    }
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
+        // do nothing Dear ImGui handles it for us
+    } else {
+        auto demo_sp = demo_global_ptr.lock();
+        if (demo_sp && demo_sp->OnKeyPressed(key, scancode, action, mods)) {
+            // do nothing the demo handled it for us
+        } else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+        } else {
+            // ignore key
+        }
     }
 }
 

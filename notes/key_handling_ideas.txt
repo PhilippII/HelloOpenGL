@@ -1,0 +1,48 @@
+X::handlekey() {
+    if (!A.handlekey()) {
+        if (!B.handlekey()) {
+            if (!C.handlekey()) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+X::handlekey() {
+    if (A.handlekey()) {
+        return true;
+    } else if (B.handlekey()) {
+        return true;
+    } else if (C.handlekey()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+X::handlekey() {
+    if (A.handlekey()) {
+    } else if (B.handlekey()) {
+    } else if (C.handlekey()) {
+    } else {
+        return false;
+    }
+    return true;
+}
+
+X::handlekey() {
+    bool keyHandled = A.handlekey() || B.handlekey() || C.handlekey();
+    if (!keyHandled) {
+        // handle myself:
+        if (..) {
+            ...
+            keyHandled = true;
+        } else if (..) {
+            ...
+            keyHandled = true;
+        }
+    }
+    return keyHandled;
+}
+
