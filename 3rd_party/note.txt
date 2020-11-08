@@ -1,0 +1,6 @@
+Libraries in this directory where not created by myself.
+However in some cases I added my own CMakeLists.txt, slightly changed
+the directory structure and/or removed a few source files that
+were not needed for this project.
+
+
