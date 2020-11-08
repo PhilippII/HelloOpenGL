@@ -49,7 +49,7 @@ find_package(glfw3 REQUIRED)
 target_link_libraries(OpenGLDemos PUBLIC glfw)
 
 find_package(GLEW REQUIRED)
-target_link_libraries(OpenGLDemos PUBLIC GLEW)
+target_link_libraries(OpenGLDemos PUBLIC GLEW::GLEW)
 
 
 set(VENDOR_DIR "3rd_party")
