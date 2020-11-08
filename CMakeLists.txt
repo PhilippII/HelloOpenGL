@@ -39,4 +39,11 @@ target_include_directories(OpenGLDemos PUBLIC
                            inc
                            inc/demos)
 
+find_package(glfw3 REQUIRED)
+# find_package(glfw3 3.3 REQUIRED)
+target_link_libraries(OpenGLDemos PUBLIC glfw)
+
+find_package(GLEW REQUIRED)
+target_link_libraries(OpenGLDemos PUBLIC GLEW)
+
 

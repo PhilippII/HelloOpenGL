@@ -1,3 +1,12 @@
+cmake + compile on windows:
+- #define GLFW_DLL?
+	-> automatically defined by cmake glfw imported target ?
+		(INTERFACE_COMPILE_DEFINITIONS) ?
+- require version 3.3 for GLFW?
+- GLEW: checking for extensions (check if anisotropic filtering is 
+	actually available before using it)
+
+
 important:
 - how should VertexAttributeLayout::setLocations(..) prevent attributes of nonexistent shader 
 	variables to take the same location as attributes of actually existing shader variables
