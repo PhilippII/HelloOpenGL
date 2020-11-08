@@ -33,6 +33,10 @@
 
 # build directory
 build/
+build_Debug/
+build_Release/
+build_RelWithDebInfo/
+build_MinSizeRel/
 
 #QT
 HelloOpenGL.creator.user
