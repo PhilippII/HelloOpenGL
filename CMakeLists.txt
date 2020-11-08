@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 
 project(HelloOpenGL)
 
-add_executable(OpenGLDemos)
-
 add_executable(OpenGLDemos
 	src/Camera.cxx
 	src/colorspace_utils.cxx
