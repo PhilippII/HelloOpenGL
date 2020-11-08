@@ -35,7 +35,8 @@ add_executable(OpenGLDemos
 	src/demos/DemoPhongReflectionModelTextured.cxx
 )
 
-
-
+target_include_directories(OpenGLDemos PUBLIC
+                           inc
+                           inc/demos)
 
 
