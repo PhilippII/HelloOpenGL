@@ -63,5 +63,8 @@ target_link_libraries(OpenGLDemos PUBLIC DearImGui_glfw_opengl3)
 add_subdirectory("${VENDOR_DIR}/GSL-master")
 target_link_libraries(OpenGLDemos PUBLIC GSL)
 
+add_subdirectory("${VENDOR_DIR}/stb_image")
+target_link_libraries(OpenGLDemos PUBLIC stb_image)
+
 
 

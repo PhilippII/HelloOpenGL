@@ -1,4 +1,4 @@
 inc/stb_image.h is from https://github.com/nothings/stb
 
-the Makefile (and the tiny two line src/stb_image.cxx) was created by me
+the CMakeLists.txt (and the tiny two line src/stb_image.cxx) was created by me
 
