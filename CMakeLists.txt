@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.11)
+# CMP0072 -policy regarding find_package(OpenGL ...)
+# is new in version 3.11
 
 project(HelloOpenGL)
 
