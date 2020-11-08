@@ -51,3 +51,8 @@ set(VENDOR_DIR "3rd_party")
 add_subdirectory("${VENDOR_DIR}/glm")
 target_link_libraries(OpenGLDemos PUBLIC GLM)
 
+add_subdirectory("${VENDOR_DIR}/dear_imgui/imgui")
+target_link_libraries(OpenGLDemos PUBLIC DearImGui_glfw_opengl3)
+
+
+
