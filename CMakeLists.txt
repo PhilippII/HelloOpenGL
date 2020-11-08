@@ -51,6 +51,9 @@ target_link_libraries(OpenGLDemos PUBLIC glfw)
 find_package(GLEW REQUIRED)
 target_link_libraries(OpenGLDemos PUBLIC GLEW::GLEW)
 
+find_package(OpenGL REQUIRED)
+target_link_libraries(OpenGLDemos PUBLIC OpenGL::GL)
+
 
 set(VENDOR_DIR "3rd_party")
 
