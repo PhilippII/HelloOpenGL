@@ -5,6 +5,15 @@ cmake + compile on windows:
 - require version 3.3 for GLFW?
 - GLEW: checking for extensions (check if anisotropic filtering is 
 	actually available before using it)
+- what is the correct way to deal with resource files?
+	-> copy or link them from the source-directory into the 
+		build directory? (and how to do that?)
+	-> how to tell cmake that Qt-Creator should show the shader files
+		in the outliner?
+	-> how to figure out which of the resource files are actually used/needed 
+		to build/run the application?
+		(e.g. the gimp *.xcf-files are not used directly while building and
+		 running the application, only the manually exported *.png-files are)
 
 
 important:
@@ -36,7 +45,6 @@ GLFW:
 - static vs. dynamic linking against glfw and glew. which is better?
 	-> and why does pkg-config --libs --static not include -Wl,-Bstatic -Wl,-Bdynamic ?
 - #define GLFW_INCLUDE_NONE ?
-- add key callbacks to move camera when pressing e.g. an arrow key or one of WASD
 - glfw-timer vs. c++-stdlib timer?
 
 
