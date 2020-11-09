@@ -10,6 +10,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
+add_library(warning_flags INTERFACE)
+set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU>")
+set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
+target_compile_options(warning_flags INTERFACE
+    "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-pedantic;-Wconversion;-Wshadow;-Wcast-qual;-Wwrite-strings;-Wold-style-cast>>"
+    "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
+    )
+
+
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
     file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/res ${CMAKE_CURRENT_BINARY_DIR}/res SYMBOLIC)
 endif()
@@ -52,7 +61,10 @@ add_executable(OpenGLDemos
 
 target_include_directories(OpenGLDemos PUBLIC
                            inc
-                           inc/demos)
+                           inc/demos
+                           )
+
+target_link_libraries(OpenGLDemos PUBLIC warning_flags)
 
 
 find_package(glfw3 REQUIRED)
