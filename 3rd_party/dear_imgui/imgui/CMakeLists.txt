@@ -7,7 +7,8 @@ add_library(DearImGui_glfw_opengl3 STATIC
 	bindings/imgui_impl_opengl3.cpp	
 )
 
-target_include_directories(DearImGui_glfw_opengl3 
+# specify headers as system headers in order to skip warinings
+target_include_directories(DearImGui_glfw_opengl3 SYSTEM
                            PUBLIC . bindings)
 
 
