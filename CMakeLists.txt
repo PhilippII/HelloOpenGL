@@ -10,13 +10,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
-add_library(warning_flags INTERFACE)
 set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU>")
 set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
+add_library(warning_flags INTERFACE)
 target_compile_options(warning_flags INTERFACE
     "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-pedantic;-Wconversion;-Wshadow;-Wcast-qual;-Wwrite-strings;-Wold-style-cast>>"
     "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
     )
+
+add_library(debug_stl INTERFACE)
+target_compile_definitions(debug_stl INTERFACE
+    "$<$<CONFIG:Debug>:$<${gcc_like_cxx}:$<BUILD_INTERFACE:_GLIBCXX_DEBUG;_GLIBCXX_DEBUG_PEDANTIC>>>"
+    )
+# also use _GLIBCXX_CONCEPT_CHECKS ?
+
 
 
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
@@ -65,6 +72,7 @@ target_include_directories(OpenGLDemos PUBLIC
                            )
 
 target_link_libraries(OpenGLDemos PUBLIC warning_flags)
+target_link_libraries(OpenGLDemos PUBLIC debug_stl)
 
 
 find_package(glfw3 REQUIRED)
