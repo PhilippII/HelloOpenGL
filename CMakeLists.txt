@@ -21,7 +21,6 @@ add_executable(OpenGLDemos
 	src/cpu_mesh_structs.cxx
 	src/cpu_mesh_utils.cxx
 	src/debug_utils.cxx
-	src/demos
 	src/GLBufferObject.cxx
 	src/GLIndexBuffer.cxx
 	src/GLRenderer.cxx
