@@ -10,6 +10,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
+if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
+    file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/res ${CMAKE_CURRENT_BINARY_DIR}/res SYMBOLIC)
+endif()
+
+
 add_executable(OpenGLDemos
 	src/Camera.cxx
 	src/colorspace_utils.cxx
@@ -38,6 +43,11 @@ add_executable(OpenGLDemos
 	src/demos/DemoMultipleConcepts.cxx
 	src/demos/DemoPhongReflectionModel.cxx
 	src/demos/DemoPhongReflectionModelTextured.cxx
+
+        # hopefully cmake understands by the file suffix that the
+        # following files should only be shown in qt-creator's outliner
+        # but not compiled:
+        res/shaders/TexturedPhongRefl.shader
 )
 
 target_include_directories(OpenGLDemos PUBLIC
