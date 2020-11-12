@@ -1,5 +1,6 @@
 # 3rd party documentation
 3rd_party/windows/glfw-3.3.2.bin.WIN64/docs/
+3rd_party/windows/glew-2.1.0/doc/
 
 # build directory
 build/

@@ -75,6 +75,7 @@ target_link_libraries(OpenGLDemos PUBLIC warning_flags)
 target_link_libraries(OpenGLDemos PUBLIC debug_stl)
 
 if(WIN32)
+	# glfw:
     add_library(glfw SHARED IMPORTED)
     set(GLFW_WIN_DIR "${PROJECT_SOURCE_DIR}/3rd_party/windows/glfw-3.3.2.bin.WIN64")
     # TODO: select correct folder lib-vc20** according to visual studio version
@@ -86,7 +87,14 @@ if(WIN32)
 
     target_link_libraries(OpenGLDemos PUBLIC glfw)
 
-    # TODO: also link against GLEW
+	# glew:
+    add_library(glew STATIC IMPORTED)
+	set(GLEW_WIN_DIR "${PROJECT_SOURCE_DIR}/3rd_party/windows/glew-2.1.0")
+	set_property(TARGET glew PROPERTY
+	             IMPORTED_LOCATION "${GLEW_WIN_DIR}/lib/release/x64/glew32s.lib")
+	target_include_directories(glew INTERFACE "${GLEW_WIN_DIR}/include")
+
+	target_link_libraries(OpenGLDemos PUBLIC glew)
 else()
     find_package(glfw3 REQUIRED)
     # find_package(glfw3 3.3 REQUIRED)
