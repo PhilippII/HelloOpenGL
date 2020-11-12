@@ -74,13 +74,27 @@ target_include_directories(OpenGLDemos PUBLIC
 target_link_libraries(OpenGLDemos PUBLIC warning_flags)
 target_link_libraries(OpenGLDemos PUBLIC debug_stl)
 
+if(WIN32)
+    add_library(glfw SHARED IMPORTED)
+    set(GLFW_WIN_DIR "${PROJECT_SOURCE_DIR}/3rd_party/windows/glfw-3.3.2.bin.WIN64")
+    # TODO: select correct folder lib-vc20** according to visual studio version
+    set_property(TARGET glfw PROPERTY
+                 IMPORTED_LOCATION "${GLFW_WIN_DIR}/lib-vc2017/glfw3.dll")
+    set_property(TARGET glfw PROPERTY
+                 IMPORTED_IMPLIB "${GLFW_WIN_DIR}/lib-vc2017/glfw3dll.lib")
+    target_include_directories(glfw INTERFACE "${GLFW_WIN_DIR}/include")
 
-find_package(glfw3 REQUIRED)
-# find_package(glfw3 3.3 REQUIRED)
-target_link_libraries(OpenGLDemos PUBLIC glfw)
+    target_link_libraries(OpenGLDemos PUBLIC glfw)
 
-find_package(GLEW REQUIRED)
-target_link_libraries(OpenGLDemos PUBLIC GLEW::GLEW)
+    # TODO: also link against GLEW
+else()
+    find_package(glfw3 REQUIRED)
+    # find_package(glfw3 3.3 REQUIRED)
+    target_link_libraries(OpenGLDemos PUBLIC glfw)
+
+    find_package(GLEW REQUIRED)
+    target_link_libraries(OpenGLDemos PUBLIC GLEW::GLEW)
+endif()
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(OpenGLDemos PUBLIC OpenGL::GL)
