@@ -1,3 +1,7 @@
+windows:
+- WIN32 correct macro to figure out if we are on windows
+	and if we have __debugbreak() ?
+
 cmake + compile on windows:
 - #define GLFW_DLL?
 	-> automatically defined by cmake glfw imported target ?
