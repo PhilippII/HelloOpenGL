@@ -26,7 +26,7 @@ GLTexture::GLTexture(std::filesystem::path filepath, int channels, bool sRGB)
     stbi_set_flip_vertically_on_load(1);
     int width, height, channels_in_file;
     myAssert(1 <= channels && channels <= 4);
-    unsigned char* pix_data = stbi_load(filepath.c_str(), &width, &height, &channels_in_file, channels);
+    unsigned char* pix_data = stbi_load(filepath.string().c_str(), &width, &height, &channels_in_file, channels);
     myAssert(pix_data);
     m_width = width;
     m_height = height;
