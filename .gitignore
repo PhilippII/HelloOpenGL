@@ -1,35 +1,5 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-#*.obj # this is a wavefront-OBJ not a compiled object file
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+# 3rd party documentation
+3rd_party/windows/glfw-3.3.2.bin.WIN64/docs/
 
 # build directory
 build/
@@ -37,13 +7,6 @@ build_Debug/
 build_Release/
 build_RelWithDebInfo/
 build_MinSizeRel/
-
-#QT
-HelloOpenGL.creator.user
-*.autosave
-
-#imgui
-imgui.ini
 
 #Qt-Creator?
 CMakeLists.txt.user
