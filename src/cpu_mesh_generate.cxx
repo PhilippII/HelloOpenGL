@@ -1,6 +1,8 @@
 #include "cpu_mesh_generate.h"
 
-#include <cmath> // M_PI and cos(...) sin(...)
+//#include <cmath> // M_PI and cos(...) sin(...)
+#include "glm/glm.hpp" // for sin(...) cos(...)
+#include "glm/ext/scalar_constants.hpp"
 
 struct ColoredVertex {
     std::array<float, 2> pos;
@@ -9,7 +11,7 @@ struct ColoredVertex {
 
 CPUMesh<GLuint> generateStar(int n_spikes, float r_in, float r_out, const std::array<float, 4>& centerColor, const std::array<float, 4>& spikeColor)
 {
-    constexpr float pi_f = static_cast<float>(M_PI);
+    constexpr float pi_f = glm::pi<float>();
     float dPhi = pi_f / n_spikes; // 2*M_PI / (2*n_spikes)
     float phi_0 = .5f * pi_f - dPhi;
     std::vector<float> radii {r_in, r_out};
@@ -19,7 +21,7 @@ CPUMesh<GLuint> generateStar(int n_spikes, float r_in, float r_out, const std::a
         float phi_i = phi_0 + i * dPhi;
         float radius = radii[i % 2];
         starVertices.push_back(ColoredVertex{
-                                    std::array<float, 2>{radius * cosf(phi_i), radius * sinf(phi_i)},
+                                    std::array<float, 2>{radius * glm::cos(phi_i), radius * glm::sin(phi_i)},
                                     colors[i % 2]
                                });
     }
