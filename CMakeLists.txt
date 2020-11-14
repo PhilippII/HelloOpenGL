@@ -91,8 +91,9 @@ if(WIN32)
     add_library(glew STATIC IMPORTED)
 	set(GLEW_WIN_DIR "${PROJECT_SOURCE_DIR}/3rd_party/windows/glew-2.1.0")
 	set_property(TARGET glew PROPERTY
-	             IMPORTED_LOCATION "${GLEW_WIN_DIR}/lib/release/x64/glew32s.lib")
+	             IMPORTED_LOCATION "${GLEW_WIN_DIR}/lib/Release/x64/glew32s.lib")
 	target_include_directories(glew INTERFACE "${GLEW_WIN_DIR}/include")
+	target_compile_definitions(glew INTERFACE "GLEW_STATIC")
 
 	target_link_libraries(OpenGLDemos PUBLIC glew)
 else()
