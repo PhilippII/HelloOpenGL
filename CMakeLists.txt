@@ -26,12 +26,6 @@ target_compile_definitions(debug_stl INTERFACE
 # also use _GLIBCXX_CONCEPT_CHECKS ?
 
 
-
-if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
-    file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/res ${CMAKE_CURRENT_BINARY_DIR}/res SYMBOLIC)
-endif()
-
-
 add_executable(OpenGLDemos
 	src/Camera.cxx
 	src/colorspace_utils.cxx
@@ -127,6 +121,21 @@ target_link_libraries(OpenGLDemos PUBLIC GSL)
 
 add_subdirectory("${VENDOR_DIR}/stb_image")
 target_link_libraries(OpenGLDemos PUBLIC stb_image)
+
+
+if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
+    #file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/res ${CMAKE_CURRENT_BINARY_DIR}/res SYMBOLIC)
+	set(RESOURCE_FILES "shaders/TexturedPhongRefl.shader"
+						"meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01.obj"
+						"meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01_Textures/GothicBed_01_8-bit_Diffuse.png")
+	foreach(RES_FILE ${RESOURCE_FILES})
+		add_custom_command(TARGET OpenGLDemos
+						   POST_BUILD
+						   COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+								${CMAKE_CURRENT_SOURCE_DIR}/res/${RES_FILE} 
+								${CMAKE_CURRENT_BINARY_DIR}/res/${RES_FILE} )
+	endforeach()
+endif()
 
 if(WIN32)
 	set_property(TARGET OpenGLDemos
