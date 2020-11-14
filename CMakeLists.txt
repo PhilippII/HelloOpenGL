@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(WINDOWS_QUASI_RPATH "")
 
 set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU>")
 set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
@@ -84,6 +85,7 @@ if(WIN32)
     set_property(TARGET glfw PROPERTY
                  IMPORTED_IMPLIB "${GLFW_WIN_DIR}/lib-vc2017/glfw3dll.lib")
     target_include_directories(glfw INTERFACE "${GLFW_WIN_DIR}/include")
+	list(PREPEND WINDOWS_QUASI_RPATH "${GLFW_WIN_DIR}/lib-vc2017")
 
     target_link_libraries(OpenGLDemos PUBLIC glfw)
 
@@ -126,5 +128,8 @@ target_link_libraries(OpenGLDemos PUBLIC GSL)
 add_subdirectory("${VENDOR_DIR}/stb_image")
 target_link_libraries(OpenGLDemos PUBLIC stb_image)
 
-
-
+if(WIN32)
+	set_property(TARGET OpenGLDemos
+				 PROPERTY VS_DEBUGGER_ENVIRONMENT "PATH=${WINDOWS_QUASI_RPATH};%PATH%")
+	message(STATUS "WINDOWS_QUASI_RPATH=${WINDOWS_QUASI_RPATH}")
+endif()
