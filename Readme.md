@@ -47,12 +47,14 @@ to compile the application with 64-bit as well.
 To do that *pass the -A x64 flag to cmake if you are on windows* when configuring your build directory.
 
 Otherwise you can configure and build the project as usual like any other cmake-project, for example a debug build on linux:
+```
 $ cd path/to/HelloOpenGL
 $ mkdir build_Debug
 $ cd build_Debug
 $ cmake .. -DCMAKE_BUILD_TYPE=Debug
 $ cmake --build .
 $ ./OpenGLDemos
+```
 
 (You may speed up the build a little bit by using
 cmake --build . -- -j8
@@ -61,10 +63,12 @@ or by using ninja instead of the default Makefile-generator.)
 
 On windows with visual studio you do not need to specify the build type when configuring the build 
 directory. CMake will create one Visual Studio project, which contains all build-types (including Debug *and* Release) instead of requiring you to create a separate build-directory for each build-type. But do not forget to add the *-A x64* flag mentioned before. For example:
+```
 $ cd path/to/HelloOpenGL
 $ mkdir build
 $ cd build
 $ cmake .. *-A x64*
+```
 
 Now you could also build and run the project from the command line, but at this point it is probably more convenient to just open the generated .sln-file with Visual Studio. Then you can build and run the project from the GUI of Visual Studio.
 
