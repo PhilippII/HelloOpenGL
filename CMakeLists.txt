@@ -70,16 +70,35 @@ target_link_libraries(OpenGLDemos PUBLIC warning_flags)
 target_link_libraries(OpenGLDemos PUBLIC debug_stl)
 
 if(WIN32)
+    # select glfw version corresponding to the newest visual studio version, 
+	# which is not newer then the actually used visual studio version defined 
+	# by MSVC_TOOLSET_VERSION.
+	# if MSVC_TOOLSET_VERSION is undefined use newest version. (=2019)
+	# If all available versions are newer than MSVC_TOOLSET_VERSION 
+	# use oldest version. (=2012)
+	if(MSVC_TOOLSET_VERSION GREATER_EQUAL 142 OR NOT MSVC_TOOLSET_VERSION)
+		set(GLFW_MSVC_YEAR 2019)
+	elseif(MSVC_TOOLSET_VERSION GREATER_EQUAL 141)
+		set(GLFW_MSVC_YEAR 2017)
+	elseif(MSVC_TOOLSET_VERSION GREATER_EQUAL 140)
+		set(GLFW_MSVC_YEAR 2015)
+	elseif(MSVC_TOOLSET_VERSION GREATER_EQUAL 120)
+		set(GLFW_MSVC_YEAR 2013)
+	else()
+		set(GLFW_MSVC_YEAR 2012)
+	endif()
+	message(STATUS "GLFW_MSVC_YEAR=${GLFW_MSVC_YEAR}")
+
 	# glfw:
     add_library(glfw SHARED IMPORTED)
     set(GLFW_WIN_DIR "${PROJECT_SOURCE_DIR}/3rd_party/windows/glfw-3.3.2.bin.WIN64")
     # TODO: select correct folder lib-vc20** according to visual studio version
     set_property(TARGET glfw PROPERTY
-                 IMPORTED_LOCATION "${GLFW_WIN_DIR}/lib-vc2017/glfw3.dll")
+                 IMPORTED_LOCATION "${GLFW_WIN_DIR}/lib-vc${GLFW_MSVC_YEAR}/glfw3.dll")
     set_property(TARGET glfw PROPERTY
-                 IMPORTED_IMPLIB "${GLFW_WIN_DIR}/lib-vc2017/glfw3dll.lib")
+                 IMPORTED_IMPLIB "${GLFW_WIN_DIR}/lib-vc${GLFW_MSVC_YEAR}/glfw3dll.lib")
     target_include_directories(glfw INTERFACE "${GLFW_WIN_DIR}/include")
-	list(PREPEND WINDOWS_QUASI_RPATH "${GLFW_WIN_DIR}/lib-vc2017")
+	list(PREPEND WINDOWS_QUASI_RPATH "${GLFW_WIN_DIR}/lib-vc${GLFW_MSVC_YEAR}")
 
     target_link_libraries(OpenGLDemos PUBLIC glfw)
 
