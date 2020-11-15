@@ -67,7 +67,7 @@ directory. CMake will create one Visual Studio project, which contains all build
 $ cd path/to/HelloOpenGL
 $ mkdir build
 $ cd build
-$ cmake .. *-A x64*
+$ cmake .. -A x64
 ```
 
 Now you could also build and run the project from the command line, but at this point it is probably more convenient to just open the generated .sln-file with Visual Studio. Then you can build and run the project from the GUI of Visual Studio.
