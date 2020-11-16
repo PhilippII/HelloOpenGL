@@ -1,6 +1,6 @@
 ## tl;dr
 - Use cmake to build this project.
-- On Windows you need to specify *-A x64* to cmake when configuring.
+- On Windows you need to specify **-A x64** to cmake when configuring.
 - On Linux you first need to install glfw and glew on your system.
 - Apple is not supported unfortunately.
 - This project is an exercise to myself and it should also become a portfolio, that I can show to potential employers.
@@ -44,7 +44,7 @@ Windows versions of the glfw and glew library are already included in the reposi
 (in 3rd_party/windows). Therefore you do not need to install any additional libraries on windows.
 But the included windows libraries are 64-bit versions. Therefore on windows you need
 to compile the application with 64-bit as well. 
-To do that *pass the -A x64 flag to cmake if you are on windows* when configuring your build directory.
+To do that **pass the -A x64 flag to cmake if you are on windows** when configuring your build directory.
 
 Otherwise you can configure and build the project as usual like any other cmake-project, for example a debug build on linux:
 ```
@@ -57,12 +57,12 @@ $ ./OpenGLDemos
 ```
 
 (You may speed up the build a little bit by using
-cmake --build . -- -j8
+`cmake --build . -- -j8`
 or by using ninja instead of the default Makefile-generator.)
 
 
 On windows with visual studio you do not need to specify the build type when configuring the build 
-directory. CMake will create one Visual Studio project, which contains all build-types (including Debug *and* Release) instead of requiring you to create a separate build-directory for each build-type. But do not forget to add the *-A x64* flag mentioned before. For example:
+directory. CMake will create one Visual Studio project, which contains all build-types (including Debug *and* Release) instead of requiring you to create a separate build-directory for each build-type. But do not forget to add the **-A x64** flag mentioned before. For example:
 ```
 $ cd path/to/HelloOpenGL
 $ mkdir build
@@ -70,7 +70,7 @@ $ cd build
 $ cmake .. -A x64
 ```
 
-Now you could also build and run the project from the command line, but at this point it is probably more convenient to just open the generated .sln-file with Visual Studio. Then you can build and run the project from the GUI of Visual Studio.
+Now you could also build and run the project from the command line as in the previous example on linux. But at this point it is probably more convenient to just open the generated \*.sln-file with Visual Studio. Then you can build and run the project from the GUI of Visual Studio.
 
 For more info on how to use CMake, see also:
-https://cmake.org/cmake/help/latest/guide/user-interaction/index.html#guide:User%20Interaction%20Guide
+<https://cmake.org/cmake/help/latest/guide/user-interaction/index.html#guide:User%20Interaction%20Guide>
