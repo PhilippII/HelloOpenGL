@@ -55,10 +55,13 @@ add_executable(OpenGLDemos
 	src/demos/DemoPhongReflectionModel.cxx
 	src/demos/DemoPhongReflectionModelTextured.cxx
 
-        # hopefully cmake understands by the file suffix that the
-        # following files should only be shown in qt-creator's outliner
-        # but not compiled:
-        res/shaders/TexturedPhongRefl.shader
+    # hopefully cmake understands by the file suffix that the
+    # following files should only be shown in qt-creator's outliner
+    # but not compiled:
+    res/shaders/Basic.shader
+	res/shaders/Texture.shader
+	res/shaders/PhongReflModel.shader
+	res/shaders/TexturedPhongRefl.shader
 )
 
 target_include_directories(OpenGLDemos PUBLIC
@@ -144,7 +147,13 @@ target_link_libraries(OpenGLDemos PUBLIC stb_image)
 
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
     #file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/res ${CMAKE_CURRENT_BINARY_DIR}/res SYMBOLIC)
-	set(RESOURCE_FILES "shaders/TexturedPhongRefl.shader"
+	set(RESOURCE_FILES  "shaders/Basic.shader"
+						"shaders/Texture.shader"
+						"shaders/PhongReflModel.shader"
+						"shaders/TexturedPhongRefl.shader"
+						"textures/alpha_texture_test.png"
+						"textures/uv_grid.png"
+						"meshes/suzanne_horn_smooth_subdiv_1.obj"
 						"meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01.obj"
 						"meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01_Textures/GothicBed_01_8-bit_Diffuse.png")
 	foreach(RES_FILE ${RESOURCE_FILES})
