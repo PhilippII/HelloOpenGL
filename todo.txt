@@ -3,6 +3,7 @@ windows:
 	and if we have __debugbreak() ?
 
 cmake + compile on windows:
+- use ALIASes to avoid case distinction in dear_imgui's CMakeLists.txt
 - #define GLFW_DLL?
 	-> automatically defined by cmake glfw imported target ?
 		(INTERFACE_COMPILE_DEFINITIONS) ?
