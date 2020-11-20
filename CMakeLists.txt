@@ -27,41 +27,41 @@ target_compile_definitions(debug_stl INTERFACE
 
 
 add_executable(OpenGLDemos
-	src/Camera.cxx
-	src/colorspace_utils.cxx
-	src/ControllerCamera.cxx
-	src/ControllerCameraStepped.cxx
-	src/ControllerSun.cxx
-	src/cpu_mesh_generate.cxx
-	src/cpu_mesh_import.cxx
-	src/cpu_mesh_structs.cxx
-	src/cpu_mesh_utils.cxx
-	src/debug_utils.cxx
-	src/GLBufferObject.cxx
-	src/GLIndexBuffer.cxx
-	src/GLRenderer.cxx
-	src/GLShader.cxx
-	src/GLShaderProgram.cxx
-	src/GLTexture.cxx
-	src/GLVertexArray.cxx
-	src/GLVertexBuffer.cxx
-	src/main.cxx
-	src/VertexBufferLayout.cxx
-	src/demos/DemoClearColor.cxx
-	src/demos/Demo.cxx
-	src/demos/DemoLinearColorspace.cxx
-	src/demos/DemoLoadOBJ.cxx
-	src/demos/DemoMultipleConcepts.cxx
-	src/demos/DemoPhongReflectionModel.cxx
-	src/demos/DemoPhongReflectionModelTextured.cxx
+    src/Camera.cxx
+    src/colorspace_utils.cxx
+    src/ControllerCamera.cxx
+    src/ControllerCameraStepped.cxx
+    src/ControllerSun.cxx
+    src/cpu_mesh_generate.cxx
+    src/cpu_mesh_import.cxx
+    src/cpu_mesh_structs.cxx
+    src/cpu_mesh_utils.cxx
+    src/debug_utils.cxx
+    src/GLBufferObject.cxx
+    src/GLIndexBuffer.cxx
+    src/GLRenderer.cxx
+    src/GLShader.cxx
+    src/GLShaderProgram.cxx
+    src/GLTexture.cxx
+    src/GLVertexArray.cxx
+    src/GLVertexBuffer.cxx
+    src/main.cxx
+    src/VertexBufferLayout.cxx
+    src/demos/DemoClearColor.cxx
+    src/demos/Demo.cxx
+    src/demos/DemoLinearColorspace.cxx
+    src/demos/DemoLoadOBJ.cxx
+    src/demos/DemoMultipleConcepts.cxx
+    src/demos/DemoPhongReflectionModel.cxx
+    src/demos/DemoPhongReflectionModelTextured.cxx
 
     # hopefully cmake understands by the file suffix that the
     # following files should only be shown in qt-creator's outliner
     # but not compiled:
     res/shaders/Basic.shader
-	res/shaders/Texture.shader
-	res/shaders/PhongReflModel.shader
-	res/shaders/TexturedPhongRefl.shader
+    res/shaders/Texture.shader
+    res/shaders/PhongReflModel.shader
+    res/shaders/TexturedPhongRefl.shader
 )
 
 target_include_directories(OpenGLDemos PUBLIC
@@ -74,25 +74,25 @@ target_link_libraries(OpenGLDemos PUBLIC debug_stl)
 
 if(WIN32)
     # select glfw version corresponding to the newest visual studio version, 
-	# which is not newer then the actually used visual studio version defined 
-	# by MSVC_TOOLSET_VERSION.
-	# if MSVC_TOOLSET_VERSION is undefined use newest version. (=2019)
-	# If all available versions are newer than MSVC_TOOLSET_VERSION 
-	# use oldest version. (=2012)
-	if(MSVC_TOOLSET_VERSION GREATER_EQUAL 142 OR NOT MSVC_TOOLSET_VERSION)
-		set(GLFW_MSVC_YEAR 2019)
-	elseif(MSVC_TOOLSET_VERSION GREATER_EQUAL 141)
-		set(GLFW_MSVC_YEAR 2017)
-	elseif(MSVC_TOOLSET_VERSION GREATER_EQUAL 140)
-		set(GLFW_MSVC_YEAR 2015)
-	elseif(MSVC_TOOLSET_VERSION GREATER_EQUAL 120)
-		set(GLFW_MSVC_YEAR 2013)
-	else()
-		set(GLFW_MSVC_YEAR 2012)
-	endif()
-	message(STATUS "GLFW_MSVC_YEAR=${GLFW_MSVC_YEAR}")
+    # which is not newer then the actually used visual studio version defined 
+    # by MSVC_TOOLSET_VERSION.
+    # if MSVC_TOOLSET_VERSION is undefined use newest version. (=2019)
+    # If all available versions are newer than MSVC_TOOLSET_VERSION 
+    # use oldest version. (=2012)
+    if(MSVC_TOOLSET_VERSION GREATER_EQUAL 142 OR NOT MSVC_TOOLSET_VERSION)
+        set(GLFW_MSVC_YEAR 2019)
+    elseif(MSVC_TOOLSET_VERSION GREATER_EQUAL 141)
+        set(GLFW_MSVC_YEAR 2017)
+    elseif(MSVC_TOOLSET_VERSION GREATER_EQUAL 140)
+        set(GLFW_MSVC_YEAR 2015)
+    elseif(MSVC_TOOLSET_VERSION GREATER_EQUAL 120)
+        set(GLFW_MSVC_YEAR 2013)
+    else()
+        set(GLFW_MSVC_YEAR 2012)
+    endif()
+    message(STATUS "GLFW_MSVC_YEAR=${GLFW_MSVC_YEAR}")
 
-	# glfw:
+    # glfw:
     add_library(glfw SHARED IMPORTED)
     set(GLFW_WIN_DIR "${PROJECT_SOURCE_DIR}/3rd_party/windows/glfw-3.3.2.bin.WIN64")
     # TODO: select correct folder lib-vc20** according to visual studio version
@@ -101,19 +101,19 @@ if(WIN32)
     set_property(TARGET glfw PROPERTY
                  IMPORTED_IMPLIB "${GLFW_WIN_DIR}/lib-vc${GLFW_MSVC_YEAR}/glfw3dll.lib")
     target_include_directories(glfw INTERFACE "${GLFW_WIN_DIR}/include")
-	list(PREPEND WINDOWS_QUASI_RPATH "${GLFW_WIN_DIR}/lib-vc${GLFW_MSVC_YEAR}")
+    list(PREPEND WINDOWS_QUASI_RPATH "${GLFW_WIN_DIR}/lib-vc${GLFW_MSVC_YEAR}")
 
     target_link_libraries(OpenGLDemos PUBLIC glfw)
 
-	# glew:
+    # glew:
     add_library(glew STATIC IMPORTED)
-	set(GLEW_WIN_DIR "${PROJECT_SOURCE_DIR}/3rd_party/windows/glew-2.1.0")
-	set_property(TARGET glew PROPERTY
-	             IMPORTED_LOCATION "${GLEW_WIN_DIR}/lib/Release/x64/glew32s.lib")
-	target_include_directories(glew INTERFACE "${GLEW_WIN_DIR}/include")
-	target_compile_definitions(glew INTERFACE "GLEW_STATIC")
+    set(GLEW_WIN_DIR "${PROJECT_SOURCE_DIR}/3rd_party/windows/glew-2.1.0")
+    set_property(TARGET glew PROPERTY
+                 IMPORTED_LOCATION "${GLEW_WIN_DIR}/lib/Release/x64/glew32s.lib")
+    target_include_directories(glew INTERFACE "${GLEW_WIN_DIR}/include")
+    target_compile_definitions(glew INTERFACE "GLEW_STATIC")
 
-	target_link_libraries(OpenGLDemos PUBLIC glew)
+    target_link_libraries(OpenGLDemos PUBLIC glew)
 else()
     find_package(glfw3 REQUIRED)
     # find_package(glfw3 3.3 REQUIRED)
@@ -147,27 +147,27 @@ target_link_libraries(OpenGLDemos PUBLIC stb_image)
 
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
     #file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/res ${CMAKE_CURRENT_BINARY_DIR}/res SYMBOLIC)
-	set(RESOURCE_FILES  "shaders/Basic.shader"
-						"shaders/Texture.shader"
-						"shaders/PhongReflModel.shader"
-						"shaders/TexturedPhongRefl.shader"
-						"textures/alpha_texture_test.png"
-						"textures/uv_grid.png"
-						"meshes/suzanne_horn_smooth_subdiv_1.obj"
-						"meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01.obj"
-						"meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01_Textures/GothicBed_01_8-bit_Diffuse.png")
-	foreach(RES_FILE ${RESOURCE_FILES})
-		add_custom_command(TARGET OpenGLDemos
-						   POST_BUILD
-						   COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-								${CMAKE_CURRENT_SOURCE_DIR}/res/${RES_FILE} 
-								${CMAKE_CURRENT_BINARY_DIR}/res/${RES_FILE} )
-	endforeach()
+    set(RESOURCE_FILES  "shaders/Basic.shader"
+                        "shaders/Texture.shader"
+                        "shaders/PhongReflModel.shader"
+                        "shaders/TexturedPhongRefl.shader"
+                        "textures/alpha_texture_test.png"
+                        "textures/uv_grid.png"
+                        "meshes/suzanne_horn_smooth_subdiv_1.obj"
+                        "meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01.obj"
+                        "meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01_Textures/GothicBed_01_8-bit_Diffuse.png")
+    foreach(RES_FILE ${RESOURCE_FILES})
+        add_custom_command(TARGET OpenGLDemos
+                           POST_BUILD
+                           COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+                                ${CMAKE_CURRENT_SOURCE_DIR}/res/${RES_FILE} 
+                                ${CMAKE_CURRENT_BINARY_DIR}/res/${RES_FILE} )
+    endforeach()
 endif()
 
 if(WIN32)
-	set_property(TARGET OpenGLDemos
-				 PROPERTY VS_DEBUGGER_ENVIRONMENT "PATH=${WINDOWS_QUASI_RPATH};%PATH%")
-	message(STATUS "WINDOWS_QUASI_RPATH=${WINDOWS_QUASI_RPATH}")
-	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT OpenGLDemos)
+    set_property(TARGET OpenGLDemos
+                 PROPERTY VS_DEBUGGER_ENVIRONMENT "PATH=${WINDOWS_QUASI_RPATH};%PATH%")
+    message(STATUS "WINDOWS_QUASI_RPATH=${WINDOWS_QUASI_RPATH}")
+    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT OpenGLDemos)
 endif()
