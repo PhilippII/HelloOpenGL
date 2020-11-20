@@ -10,16 +10,13 @@ add_library(DearImGui_glfw_opengl3 STATIC
 # specify headers as system headers in order to skip warinings
 target_include_directories(DearImGui_glfw_opengl3 SYSTEM
                            PUBLIC . bindings)
-if(WIN32)
-	# manually imported:
-	target_link_libraries(DearImGui_glfw_opengl3
-						  PRIVATE glfw
-						  PRIVATE glew)
-else()
-	# from find_package():
-	target_link_libraries(DearImGui_glfw_opengl3
-						  PRIVATE glfw
-						  PRIVATE GLEW::GLEW)
-endif()
-target_link_libraries(DearImGui_glfw_opengl3 PRIVATE OpenGL::GL)
+
+# By using the aliases we avoid having to make a case distinction
+# whether glfw and glew were imported manually or via find_package().
+# Also this allows us to control from the main CMakeLists.txt-file 
+# which exact version of glfw and glew we want to use:
+target_link_libraries(DearImGui_glfw_opengl3
+						PRIVATE glfw_alias
+						PRIVATE glew_alias
+                        PRIVATE OpenGL::GL)
 

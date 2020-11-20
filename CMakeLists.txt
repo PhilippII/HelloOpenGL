@@ -103,8 +103,6 @@ if(WIN32)
     target_include_directories(glfw INTERFACE "${GLFW_WIN_DIR}/include")
     list(PREPEND WINDOWS_QUASI_RPATH "${GLFW_WIN_DIR}/lib-vc${GLFW_MSVC_YEAR}")
 
-    target_link_libraries(OpenGLDemos PUBLIC glfw)
-
     # glew:
     add_library(glew STATIC IMPORTED)
     set(GLEW_WIN_DIR "${PROJECT_SOURCE_DIR}/3rd_party/windows/glew-2.1.0")
@@ -113,15 +111,24 @@ if(WIN32)
     target_include_directories(glew INTERFACE "${GLEW_WIN_DIR}/include")
     target_compile_definitions(glew INTERFACE "GLEW_STATIC")
 
-    target_link_libraries(OpenGLDemos PUBLIC glew)
+    # add aliases so we can use the same names
+    # whether we imported the library manually 
+    # or via find_package():
+    add_library(glfw_alias ALIAS glfw)
+    add_library(glew_alias ALIAS glew)
 else()
     find_package(glfw3 REQUIRED)
     # find_package(glfw3 3.3 REQUIRED)
-    target_link_libraries(OpenGLDemos PUBLIC glfw)
-
     find_package(GLEW REQUIRED)
-    target_link_libraries(OpenGLDemos PUBLIC GLEW::GLEW)
+    
+    # add aliases so we can use the same names
+    # whether we imported the library manually 
+    # or via find_package():
+    add_library(glfw_alias ALIAS glfw)
+    add_library(glew_alias ALIAS GLEW::GLEW)
 endif()
+target_link_libraries(OpenGLDemos PUBLIC glfw_alias)
+target_link_libraries(OpenGLDemos PUBLIC glew_alias)
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(OpenGLDemos PUBLIC OpenGL::GL)
