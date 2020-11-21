@@ -1,6 +1,7 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.13)
 # CMP0072 -policy regarding find_package(OpenGL ...)
 # is new in version 3.11
+# VS_DEBUGGER_ENVIRONMENT requires version 3.13
 
 project(HelloOpenGL)
 
