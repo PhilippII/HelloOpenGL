@@ -10,7 +10,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(WINDOWS_QUASI_RPATH "")
 
 set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU>")
 set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
@@ -102,7 +101,6 @@ if(WIN32)
     set_property(TARGET glfw PROPERTY
                  IMPORTED_IMPLIB "${GLFW_WIN_DIR}/lib-vc${GLFW_MSVC_YEAR}/glfw3dll.lib")
     target_include_directories(glfw INTERFACE "${GLFW_WIN_DIR}/include")
-    list(PREPEND WINDOWS_QUASI_RPATH "${GLFW_WIN_DIR}/lib-vc${GLFW_MSVC_YEAR}")
 
     # glew:
     add_library(glew STATIC IMPORTED)
@@ -174,6 +172,17 @@ if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
 endif()
 
 if(WIN32)
+    # if a .dll is not found when running the OpenGLDemos executable, then add
+    # the corresponding library target to this list:
+    set(LIBS "glfw_alias")
+    set(WINDOWS_QUASI_RPATH "")
+    foreach(LIB ${LIBS})
+        get_property(LIB_TYPE TARGET ${LIB} PROPERTY TYPE)
+        if(${LIB_TYPE} STREQUAL "SHARED_LIBRARY")
+            list(APPEND WINDOWS_QUASI_RPATH "$<TARGET_FILE_DIR:${LIB}>")
+        endif()
+    endforeach()
+    message(STATUS "WINDOWS_QUASI_RPATH=${WINDOWS_QUASI_RPATH}")
     set_property(TARGET OpenGLDemos
                  PROPERTY VS_DEBUGGER_ENVIRONMENT "PATH=${WINDOWS_QUASI_RPATH};%PATH%")
     message(STATUS "WINDOWS_QUASI_RPATH=${WINDOWS_QUASI_RPATH}")
