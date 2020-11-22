@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "Camera.h"
+#include "ControllerCamera.h"
 
 #include "GLVertexArray.h"
 #include "GLVertexBuffer.h"
@@ -29,6 +30,7 @@ public:
 
     void OnWindowSizeChanged(int width, int height) override;
     bool OnKeyPressed(int key, int scancode, int action, int mods) override;
+    void OnUpdate(float deltaSeconds) override;
     void OnRender() override;
     void OnImGuiRender() override;
 
@@ -36,6 +38,7 @@ private:
     static const GLuint texUnit;
 
     Camera m_camera;
+    ControllerCamera m_cameraController;
     std::unique_ptr<GLShaderProgram> m_shaderP;
 
     // light properties:

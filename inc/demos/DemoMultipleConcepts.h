@@ -20,6 +20,7 @@
 #include <memory> // for std::unique_ptr
 
 #include "Camera.h"
+#include "ControllerCamera.h"
 #include "GLShaderProgram.h"
 
 #include "GLVertexBuffer.h"
@@ -52,6 +53,7 @@ private:
         GLIndexBuffer ib;
     };
     Camera m_camera;
+    ControllerCamera m_cameraController;
 
     std::unique_ptr<GLShaderProgram> m_shaderProgram;
     std::unique_ptr<GLVertexBuffer> m_houseVBO;
