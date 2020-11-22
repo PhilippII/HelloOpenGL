@@ -13,6 +13,7 @@ public:
 
     bool OnKeyPressed(int key, int scancode, int action, int mods);
     void OnUpdate(float deltaSeconds);
+    void OnImGuiRender();
 private:
     void updateValue(int &value, int action);
     Camera& m_camera;

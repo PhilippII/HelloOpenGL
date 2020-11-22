@@ -154,6 +154,9 @@ void demo::DemoLinearColorspace::OnImGuiRender()
     // ImGui::ColorEdit4("k_a", &m_k_a.x);
     ImGui::Text("k_d := k_a := texture color");
     ImGui::SliderFloat("shininess", &m_shininess, 1.f, 500.f);
+
+    // camera controls:
+    m_camereController.OnImGuiRender();
 }
 
 

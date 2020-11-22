@@ -4,6 +4,8 @@
 
 #include "glm/glm.hpp"
 
+#include "imgui.h"
+
 ControllerCamera::ControllerCamera(Camera &camera)
     : m_camera(camera),
       m_forward_vel(0),
@@ -105,4 +107,15 @@ void ControllerCamera::updateValue(int &value, int action)
     } else if (action == GLFW_RELEASE) {
         value = 0;
     }
+}
+
+
+void ControllerCamera::OnImGuiRender()
+{
+    ImGui::Text("Camera Controls:");
+    ImGui::BulletText("move: W, A, S, D");
+    ImGui::BulletText("up/down: E, Q");
+    ImGui::BulletText("rotate: arrow keys");
+    ImGui::BulletText("reset: numpad decimal separator");
+    ImGui::Separator();
 }
