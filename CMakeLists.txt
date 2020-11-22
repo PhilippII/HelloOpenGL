@@ -69,8 +69,9 @@ target_include_directories(OpenGLDemos PUBLIC
                            inc/demos
                            )
 
-target_link_libraries(OpenGLDemos PUBLIC warning_flags)
-target_link_libraries(OpenGLDemos PUBLIC debug_stl)
+target_link_libraries(OpenGLDemos 
+                      PUBLIC warning_flags
+                      PUBLIC debug_stl)
 
 if(WIN32)
     # select glfw version corresponding to the newest visual studio version, 
@@ -126,8 +127,9 @@ else()
     add_library(glfw_alias ALIAS glfw)
     add_library(glew_alias ALIAS GLEW::GLEW)
 endif()
-target_link_libraries(OpenGLDemos PUBLIC glfw_alias)
-target_link_libraries(OpenGLDemos PUBLIC glew_alias)
+target_link_libraries(OpenGLDemos 
+                      PUBLIC glfw_alias
+                      PUBLIC glew_alias)
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(OpenGLDemos PUBLIC OpenGL::GL)
