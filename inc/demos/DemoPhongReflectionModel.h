@@ -16,6 +16,8 @@
 
 #include "GLShaderProgram.h"
 
+#include "ControllerSun.h"
+
 namespace demo {
 
 class DemoPhongReflectionModel : public Demo
@@ -39,7 +41,7 @@ private:
     glm::vec3 m_i_s;
     glm::vec3 m_i_d;
     glm::vec3 m_i_a;
-    glm::vec3 m_toLight_wc;
+    ControllerSun m_sunController;
 
     // material properties:
     glm::vec3 m_k_s;

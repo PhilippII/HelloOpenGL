@@ -21,7 +21,7 @@ demo::DemoPhongReflectionModel::DemoPhongReflectionModel(GLRenderer &renderer)
       m_i_s(1.f, 1.f, 1.f),
       m_i_d(1.f, 1.f, 1.f),
       m_i_a(.3f, .3f, .3f),
-      m_toLight_wc(0.f, 1.f, 0.f), // must be normalized!
+      m_sunController(glm::radians(45.f), glm::radians(135.f)),
       m_k_s(1.f, 1.f, 1.f),
       m_k_d(.8f, .2f, .8f),
       m_k_a(.8f, .2f, .8f),
@@ -95,9 +95,8 @@ void demo::DemoPhongReflectionModel::OnRender()
     //m_shaderP->setUniform3f("u_i_s", m_i_s);
     //m_shaderP->setUniform3f("u_i_d", m_i_d);
     //m_shaderP->setUniform3f("u_i_a", m_i_a);
-    glm::vec3 toLightNormalized_wc = (m_toLight_wc == glm::vec3(0.f)) ? glm::vec3(0.f, 1.f, 0.f)
-                                                                      : glm::normalize(m_toLight_wc);
-    glm::vec3 toLight_cc = glm::vec3(cc_from_wc * glm::vec4(toLightNormalized_wc, 0.f));
+    glm::vec3 toLight_wc = m_sunController.makeToSun_wc();
+    glm::vec3 toLight_cc = glm::vec3(cc_from_wc * glm::vec4(toLight_wc, 0.f));
     m_shaderP->setUniform3f("u_L_cc", toLight_cc);
 
     // set material properties uniforms:
@@ -129,7 +128,7 @@ void demo::DemoPhongReflectionModel::OnImGuiRender()
     ImGui::ColorEdit3("i_s", &m_i_s.x);
     ImGui::ColorEdit3("i_d", &m_i_d.x);
     ImGui::ColorEdit3("i_a", &m_i_a.x);
-    ImGui::SliderFloat3("light direction (world space coordinates)", &m_toLight_wc.x, -1.f, 1.f);
+    m_sunController.OnImGuiRender();
 
     // material properties:
     ImGui::ColorEdit3("k_s", &m_k_s.x);
