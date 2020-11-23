@@ -50,7 +50,7 @@ demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
         GLVertexArray vao;
         cpu_mesh.va.layout.setLocations(*m_shaderP);
         vao.addBuffer(vbo, cpu_mesh.va.layout);
-        GLIndexBuffer ibo(GL_UNSIGNED_INT, cpu_mesh.ib.indices.size(),
+        GLIndexBuffer ibo(GL_UNSIGNED_INT, static_cast<GLIndexBuffer::count_type>(cpu_mesh.ib.indices.size()),
                           reinterpret_cast<GLvoid*>(cpu_mesh.ib.indices.data()));
         m_glMeshes.push_back(std::tuple{std::move(vbo), std::move(vao), std::move(ibo)});
     }
