@@ -38,7 +38,6 @@ private:
     Camera m_camera;
     ControllerCamera m_cameraController;
     std::unique_ptr<GLShaderProgram> m_shaderP;
-    glm::vec3 m_toLight_wc;
     std::vector<std::tuple<GLVertexBuffer, GLVertexArray, GLIndexBuffer>> m_glMeshes;
     std::unique_ptr<GLTexture> m_texBaseColor;
 };

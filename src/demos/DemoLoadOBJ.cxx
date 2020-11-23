@@ -20,8 +20,7 @@ const GLuint demo::DemoLoadOBJ::texUnit = 0;
 demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
     : demo::Demo(renderer),
       m_camera(glm::radians(45.f), 1.f, .1f, 10.f),
-      m_cameraController(m_camera),
-      m_toLight_wc(0.f, 1.f, 0.f) // must be normalized!
+      m_cameraController(m_camera)
 {
     namespace fs = std::filesystem;
 
@@ -29,18 +28,8 @@ demo::DemoLoadOBJ::DemoLoadOBJ(GLRenderer &renderer)
     m_camera.translate_global(glm::vec3(0.f, 0.f, 4.f));
 
     // load shader:
-    m_shaderP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/TexturedPhongRefl.shader",
+    m_shaderP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/ShadelessTexture.shader",
                                                            fs::path::format::generic_format));
-    // light properties:
-    // m_shaderP->setUniform3f("u_i_s", 1.f, 1.f, 1.f); -> we just set u_i_s := u_i_d
-    m_shaderP->setUniform3f("u_i_d", 1.f, 1.f, 1.f);
-    m_shaderP->setUniform3f("u_i_a", .5f, .5f, .5f);
-
-    // material properties:
-    m_shaderP->setUniform3f("u_k_s", .5f, .5f, .5f);
-    // m_shaderP->setUniform3f("u_k_d", .8f, .2f, .8f); // -> is read from texture
-    // m_shaderP->setUniform3f("u_k_a", .8f, .2f, .8f); // -> we just set u_k_a := u_k_d
-    m_shaderP->setUniform1f("u_shininess", 20.f);
 
     // load meshes from file:
     std::vector<CPUMesh<GLuint>> cpu_meshes = loadOBJfile(fs::path("res/meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01.obj",
@@ -103,12 +92,6 @@ void demo::DemoLoadOBJ::OnRender()
     m_shaderP->setUniformMat4f("u_cc_from_oc", cc_from_oc);
     m_shaderP->setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
 
-    glm::vec3 toLightNormalized_wc = (m_toLight_wc == glm::vec3(0.f)) ? glm::vec3(0.f, 1.f, 0.f)
-                                                                      : glm::normalize(m_toLight_wc);
-    glm::vec3 toLight_cc = glm::vec3(cc_from_wc * glm::vec4(toLightNormalized_wc, 0.f));
-    m_shaderP->setUniform3f("u_L_cc", toLight_cc);
-
-
     for (auto& glMesh : m_glMeshes) {
         getRenderer().draw(std::get<GLVertexArray>(glMesh),
                            std::get<GLIndexBuffer>(glMesh),
@@ -122,8 +105,6 @@ void demo::DemoLoadOBJ::OnRender()
 
 void demo::DemoLoadOBJ::OnImGuiRender()
 {
-    ImGui::SliderFloat3("light direction (world space coordinates)", &m_toLight_wc.x, -1.f, 1.f);
-
     // camera controls:
     m_cameraController.OnImGuiRender();
 }
