@@ -1,3 +1,4 @@
+// blend vertex colors with uniform color
 #shader vertex
 #version 330 core
 in vec4 position_oc;

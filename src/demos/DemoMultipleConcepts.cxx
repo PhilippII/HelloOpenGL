@@ -34,7 +34,7 @@ demo::DemoMultipleConcepts::DemoMultipleConcepts(GLRenderer &renderer)
     m_camera.translate_local(glm::vec3( 0.f,  0.f, +5.f));
 
     // initialize shader:
-    m_shaderProgram = std::make_unique<GLShaderProgram>(fs::path("res/shaders/Basic.shader",
+    m_shaderProgram = std::make_unique<GLShaderProgram>(fs::path("res/shaders/BlendVertColUniCol.shader",
                                                                  fs::path::format::generic_format));
     // m_shaderProgram->bind() is called automatically in constructor
 
@@ -83,7 +83,7 @@ demo::DemoMultipleConcepts::DemoMultipleConcepts(GLRenderer &renderer)
                                                  houseCPUMesh.ib.indices.data());
 
     // initialize shader for textured stuff:
-    m_texturedSP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/Texture.shader",
+    m_texturedSP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/ShadelessTexture.shader",
                                                               fs::path::format::generic_format));
 
     // initialize rectangle:

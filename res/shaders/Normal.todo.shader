@@ -1,3 +1,5 @@
+//TODO: model view matrix and model view projection matrix are missing!
+//	(and should we really visualize the normal in ndc rather than cc?)
 #shader vertex
 #version 330 core
 in vec4 position_oc;

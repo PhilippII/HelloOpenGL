@@ -58,8 +58,8 @@ add_executable(OpenGLDemos
     # hopefully cmake understands by the file suffix that the
     # following files should only be shown in qt-creator's outliner
     # but not compiled:
-    res/shaders/Basic.shader
-    res/shaders/Texture.shader
+    res/shaders/BlendVertColUniCol.shader
+    res/shaders/ShadelessTexture.shader
     res/shaders/PhongReflModel.shader
     res/shaders/TexturedPhongRefl.shader
 )
@@ -155,8 +155,8 @@ target_link_libraries(OpenGLDemos PUBLIC stb_image)
 
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
     #file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/res ${CMAKE_CURRENT_BINARY_DIR}/res SYMBOLIC)
-    set(RESOURCE_FILES  "shaders/Basic.shader"
-                        "shaders/Texture.shader"
+    set(RESOURCE_FILES  "shaders/BlendVertColUniCol.shader"
+                        "shaders/ShadelessTexture.shader"
                         "shaders/PhongReflModel.shader"
                         "shaders/TexturedPhongRefl.shader"
                         "textures/alpha_texture_test.png"
