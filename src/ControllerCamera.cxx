@@ -89,13 +89,13 @@ void ControllerCamera::OnUpdate(float deltaSeconds)
 
     int yawDir = m_yaw_right_vel - m_yaw_left_vel;
     if (yawDir != 0) {
-        float yawVelocity = rotSpeed * yawDir;
+        float yawVelocity = rotSpeed * static_cast<float>(yawDir);
         m_camera.rotateYaw(deltaSeconds * yawVelocity);
     }
 
     int pitchDir = m_pitch_up_vel - m_pitch_down_vel;
     if (pitchDir != 0) {
-        float pitchVelocity = rotSpeed * pitchDir;
+        float pitchVelocity = rotSpeed * static_cast<float>(pitchDir);
         m_camera.rotatePitch(deltaSeconds * pitchVelocity);
     }
 }

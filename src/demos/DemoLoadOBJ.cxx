@@ -76,7 +76,7 @@ demo::DemoLoadOBJ::~DemoLoadOBJ()
 void demo::DemoLoadOBJ::OnWindowSizeChanged(int width, int height)
 {
     getRenderer().setViewport(0, 0, width, height);
-    m_camera.setAspect(width / static_cast<float>(height));
+    m_camera.setAspect(static_cast<float>(width) / static_cast<float>(height));
 }
 
 bool demo::DemoLoadOBJ::OnKeyPressed(int key, int scancode, int action, int mods)

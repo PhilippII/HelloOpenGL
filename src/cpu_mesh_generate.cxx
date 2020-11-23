@@ -12,13 +12,13 @@ struct ColoredVertex {
 CPUMesh<GLuint> generateStar(int n_spikes, float r_in, float r_out, const std::array<float, 4>& centerColor, const std::array<float, 4>& spikeColor)
 {
     constexpr float pi_f = glm::pi<float>();
-    float dPhi = pi_f / n_spikes; // 2*M_PI / (2*n_spikes)
+    float dPhi = pi_f / static_cast<float>(n_spikes); // 2*M_PI / (2*n_spikes)
     float phi_0 = .5f * pi_f - dPhi;
     std::vector<float> radii {r_in, r_out};
     std::array<std::array<float, 4>, 2> colors {centerColor, spikeColor};
     std::vector<ColoredVertex> starVertices;
     for (int i = 0; i < 2 * n_spikes; ++i) {
-        float phi_i = phi_0 + i * dPhi;
+        float phi_i = phi_0 + static_cast<float>(i) * dPhi;
         float radius = radii[i % 2];
         starVertices.push_back(ColoredVertex{
                                     std::array<float, 2>{radius * glm::cos(phi_i), radius * glm::sin(phi_i)},

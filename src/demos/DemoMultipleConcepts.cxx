@@ -181,7 +181,7 @@ demo::DemoMultipleConcepts::~DemoMultipleConcepts()
 void demo::DemoMultipleConcepts::OnWindowSizeChanged(int width, int height)
 {
     getRenderer().setViewport(0, 0, width, height);
-    m_camera.setAspect(width / static_cast<float>(height));
+    m_camera.setAspect(static_cast<float>(width) / static_cast<float>(height));
 }
 
 bool demo::DemoMultipleConcepts::OnKeyPressed(int key, int scancode, int action, int mods)
