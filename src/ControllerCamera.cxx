@@ -20,7 +20,8 @@ ControllerCamera::ControllerCamera(Camera &camera)
       m_pitch_up_vel(0)
 {}
 
-bool ControllerCamera::OnKeyPressed(int key, int scancode, int action, int mods)
+// uncomment unused parameter names to avoid -Wunused-parameter warnings:
+bool ControllerCamera::OnKeyPressed(int key, int /*scancode*/, int action, int /*mods*/)
 {
     switch (key) {
     case GLFW_KEY_W:

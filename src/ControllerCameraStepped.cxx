@@ -4,7 +4,8 @@
 
 #include "glm/glm.hpp"
 
-bool ControllerCameraStepped::OnKeyPressed(int key, int scancode, int action, int mods)
+// uncomment unused parameter names to avoid -Wunused-parameter warnings:
+bool ControllerCameraStepped::OnKeyPressed(int key, int /*scancode*/, int action, int /*mods*/)
 {
     constexpr float stepSize = .2f;
     constexpr float rotDelta = glm::radians(5.f);
@@ -39,7 +40,7 @@ bool ControllerCameraStepped::OnKeyPressed(int key, int scancode, int action, in
     return true;
 }
 
-void ControllerCameraStepped::OnUpdate(float deltaSeconds)
+void ControllerCameraStepped::OnUpdate(float /*deltaSeconds*/)
 {
 
 }

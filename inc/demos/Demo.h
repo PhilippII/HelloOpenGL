@@ -22,8 +22,8 @@ public:
 
     virtual void OnWindowSizeChanged(int width, int height);
     // return true if you handle the key, false if you want someone else to handle it:
-    virtual bool OnKeyPressed(int key, int scancode, int action, int mods) { return false; }
-    virtual void OnUpdate(float deltaSeconds) {}
+    virtual bool OnKeyPressed(int key, int scancode, int action, int mods);
+    virtual void OnUpdate(float deltaSeconds);
     virtual void OnRender() {}
     virtual void OnImGuiRender() {}
 

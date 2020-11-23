@@ -12,6 +12,17 @@ void Demo::OnWindowSizeChanged(int width, int height)
     getRenderer().setViewport(0, 0, width, height);
 }
 
+// uncomment parameter names to avoid -Wunused-parameter warnings:
+bool Demo::OnKeyPressed(int /*key*/, int /*scancode*/, int /*action*/, int /*mods*/)
+{
+    return false;
+}
+
+void Demo::OnUpdate(float /*deltaSeconds*/)
+{
+    // do nothing by default
+}
+
 // DemoSuite:
 DemoSuite::DemoSuite(GLRenderer &renderer)
     : Demo(renderer),
