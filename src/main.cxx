@@ -123,7 +123,8 @@ void error_callback(int error, const char* description) {
     std::cout << "GLFW-error [" << error << "]: " << description << '\n';
 }
 
-void update_window_size(GLFWwindow* window, int width, int height) {
+// uncomment unused parameter name to avoid -Wunused-parameter warning:
+void update_window_size(GLFWwindow* /*window*/, int width, int height) {
     if (auto demo_sp = demo_global_ptr.lock()) {
         demo_sp->OnWindowSizeChanged(width, height);
     }
