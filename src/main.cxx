@@ -193,7 +193,7 @@ int main(int argc, char **argv)
     // Setup Dear ImGui context:
     IMGUI_CHECKVERSION();
     raii_fy::ImGuiContext imgui_context;
-    ImGuiIO& io = ImGui::GetIO();
+    //ImGuiIO& io = ImGui::GetIO();
 
     ImGui::StyleColorsDark();
 
