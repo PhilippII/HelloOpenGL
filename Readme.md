@@ -4,6 +4,7 @@
 - On Linux you first need to install glfw and glew on your system.
 - Apple is not supported unfortunately.
 - This project is an exercise to myself and it should also become a portfolio, that I can show to potential employers.
+- this project is initially based on cherno's OpenGL-tutorial series, but it also contains some additional stuff that was not covered in cherno's tutorial series
 
 # HelloOpenGL
 
