@@ -2,7 +2,6 @@
 #define GLSHADERPROGRAM_H
 
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 
 #include "GLShader.h"
 

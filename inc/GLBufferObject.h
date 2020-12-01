@@ -2,7 +2,6 @@
 #define GLBUFFER_H_INCLUDED
 
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 
 #include "debug_utils.h"
 
