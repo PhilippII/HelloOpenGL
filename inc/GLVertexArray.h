@@ -28,12 +28,12 @@ public:
     void addBuffer(const GLVertexBuffer& vb, const VertexBufferLayout& layout);
 
     void bind() {
-        GLCall(glBindVertexArray(m_rendererID));
+        glBindVertexArray(m_rendererID);
     }
 
     void unbind() {
         myAssert(isBound());
-        GLCall(glBindVertexArray(0));
+        glBindVertexArray(0);
     }
 
     GLuint getRendererID() const {

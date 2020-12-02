@@ -28,12 +28,12 @@ public:
     virtual ~GLBufferObject();
 
 	void bind() {
-        GLCall(glBindBuffer(m_target, m_rendererId));
+        glBindBuffer(m_target, m_rendererId);
 	}
 
 	void unbind() {
         myAssert(isBound());
-        GLCall(glBindBuffer(m_target, 0));
+        glBindBuffer(m_target, 0);
 	}
 
     bool isBound() const;

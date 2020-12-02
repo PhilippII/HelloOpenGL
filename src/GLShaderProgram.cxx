@@ -67,7 +67,7 @@ GLShaderProgram& GLShaderProgram::operator=(GLShaderProgram&& other) {
         if (isBound()) {
             unbind();
         }
-        GLCall(glDeleteProgram(m_rendererID));
+        glDeleteProgram(m_rendererID);
     }
     m_rendererID = other.m_rendererID;
     other.m_rendererID = 0;
@@ -82,7 +82,7 @@ GLShaderProgram::~GLShaderProgram() {
         if (isBound()) {
             unbind();
         }
-        GLCall(glDeleteProgram(m_rendererID));
+        glDeleteProgram(m_rendererID);
     }
     // docs.gl:
     // - shaders will be automatically detached
@@ -98,7 +98,7 @@ GLShaderProgram::~GLShaderProgram() {
 
 void GLShaderProgram::addShaderFromSource(const ShaderSource &source) {
     m_shaders.push_back(GLShader(source.type, source.sourceCode, false));
-    GLCall(glAttachShader(m_rendererID, m_shaders.back().getRendererID()));
+    glAttachShader(m_rendererID, m_shaders.back().getRendererID());
 }
 
 bool GLShaderProgram::compileShaders() {
@@ -110,7 +110,7 @@ bool GLShaderProgram::compileShaders() {
 }
 
 bool GLShaderProgram::link() {
-    GLCall(glLinkProgram(m_rendererID));
+    glLinkProgram(m_rendererID);
     bool success = (getParam(GL_LINK_STATUS) == GL_TRUE);
     if (success) {
         std::cout << "shader program linked successfully. Log:\n";
@@ -122,7 +122,7 @@ bool GLShaderProgram::link() {
 }
 
 bool GLShaderProgram::validate() {
-    GLCall(glValidateProgram(m_rendererID));
+    glValidateProgram(m_rendererID);
     bool success = (getParam(GL_VALIDATE_STATUS) == GL_TRUE);
     if (success) {
         std::cout << "shader program validated successfully. Log:\n";
@@ -153,19 +153,19 @@ bool GLShaderProgram::buildAll() {
 }
 
 void GLShaderProgram::bind() {
-    GLCall(glUseProgram(m_rendererID));
+    glUseProgram(m_rendererID);
 }
 
 void GLShaderProgram::unbind() {
     myAssert(isBound());
-    GLCall(glUseProgram(0));
+    glUseProgram(0);
 }
 
 void GLShaderProgram::printShaderProgramInfoLog() const {
     int length = getParam(GL_INFO_LOG_LENGTH);
     if (length > 0) {
         char* message = static_cast<char*>(alloca(length * sizeof(char)));
-        GLCall(glGetProgramInfoLog(m_rendererID, length, nullptr, message));
+        glGetProgramInfoLog(m_rendererID, length, nullptr, message);
         std::cout << message << '\n';
     } else {
         std::cout << "(no log)\n";
@@ -175,13 +175,13 @@ void GLShaderProgram::printShaderProgramInfoLog() const {
 GLint GLShaderProgram::getParam(GLenum pname) const {
     GLint param;
     myAssert(pname != GL_COMPUTE_WORK_GROUP_SIZE); // returns three integers
-    GLCall(glGetProgramiv(m_rendererID, pname, &param));
+    glGetProgramiv(m_rendererID, pname, &param);
     return param;
 }
 
 
 GLint GLShaderProgram::getAttribLocation(const std::string& name) const {
-    GLCall(GLint location = glGetAttribLocation(m_rendererID, name.c_str()));
+    GLint location = glGetAttribLocation(m_rendererID, name.c_str());
     return location;
 }
 
@@ -192,7 +192,7 @@ GLint GLShaderProgram::getUniformLocation(const std::string &name) const {
         return search->second;
     }
     // cache miss:
-    GLCall(GLint location = glGetUniformLocation(m_rendererID, name.c_str()));
+    GLint location = glGetUniformLocation(m_rendererID, name.c_str());
     if (location == -1) {
         // docs.gl:
         // "This function returns -1 if name does not correspond
@@ -206,7 +206,7 @@ GLint GLShaderProgram::getUniformLocation(const std::string &name) const {
 void GLShaderProgram::setUniform1i(GLint location, int v)
 {
     myAssert(isBound());
-    GLCall(glUniform1i(location, v));
+    glUniform1i(location, v);
     // docs.gl:
     // "If location is equal to -1, the data passed in will be silently ignored
     //    and the specified uniform variable will not be changed."
@@ -220,7 +220,7 @@ void GLShaderProgram::setUniform1i(const std::string &name, int v)
 void GLShaderProgram::setUniform1f(GLint location, float value)
 {
     myAssert(isBound());
-    GLCall(glUniform1f(location, value));
+    glUniform1f(location, value);
 }
 
 void GLShaderProgram::setUniform1f(const std::string &name, float value)
@@ -231,7 +231,7 @@ void GLShaderProgram::setUniform1f(const std::string &name, float value)
 void GLShaderProgram::setUniform3f(GLint location, float v0, float v1, float v2)
 {
     myAssert(isBound());
-    GLCall(glUniform3f(location, v0, v1, v2));
+    glUniform3f(location, v0, v1, v2);
 }
 
 void GLShaderProgram::setUniform3f(const std::string &name, float v0, float v1, float v2)
@@ -242,7 +242,7 @@ void GLShaderProgram::setUniform3f(const std::string &name, float v0, float v1, 
 void GLShaderProgram::setUniform3f(GLint location, const glm::vec3& vector)
 {
     myAssert(isBound());
-    GLCall(glUniform3f(location, vector.x, vector.y, vector.z));
+    glUniform3f(location, vector.x, vector.y, vector.z);
 }
 
 void GLShaderProgram::setUniform3f(const std::string &name, const glm::vec3& vector)
@@ -253,7 +253,7 @@ void GLShaderProgram::setUniform3f(const std::string &name, const glm::vec3& vec
 void GLShaderProgram::setUniform4f(GLint location, float v0, float v1, float v2, float v3)
 {
     myAssert(isBound());
-    GLCall(glUniform4f(location, v0, v1, v2, v3));
+    glUniform4f(location, v0, v1, v2, v3);
 }
 
 void GLShaderProgram::setUniform4f(const std::string &name, float v0, float v1, float v2, float v3)
@@ -264,7 +264,7 @@ void GLShaderProgram::setUniform4f(const std::string &name, float v0, float v1, 
 void GLShaderProgram::setUniform4fv(GLint location, const GLfloat *value)
 {
     myAssert(isBound());
-    GLCall(glUniform4fv(location, 1, value));
+    glUniform4fv(location, 1, value);
 }
 
 void GLShaderProgram::setUniform4fv(const std::string &name, const GLfloat *value)
@@ -275,7 +275,7 @@ void GLShaderProgram::setUniform4fv(const std::string &name, const GLfloat *valu
 void GLShaderProgram::setUniformMat4f(GLint location, const glm::mat4 &matrix)
 {
     myAssert(isBound());
-    GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]));
+    glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]);
 }
 
 void GLShaderProgram::setUniformMat4f(const std::string &name, const glm::mat4 &matrix)
@@ -286,7 +286,7 @@ void GLShaderProgram::setUniformMat4f(const std::string &name, const glm::mat4 &
 bool GLShaderProgram::isBound() const
 {
     GLint currID;
-    GLCall(glGetIntegerv(GL_CURRENT_PROGRAM, &currID));
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currID);
     return (m_rendererID == static_cast<GLuint>(currID));
 }
 

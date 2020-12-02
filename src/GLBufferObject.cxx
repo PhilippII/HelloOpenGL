@@ -2,11 +2,11 @@
 
 GLBufferObject::GLBufferObject(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage, bool keepBound) {
 	this->m_target = target;
-    GLCall(glGenBuffers(1, &(this->m_rendererId)));
-    GLCall(glBindBuffer(target, this->m_rendererId));
-    GLCall(glBufferData(target, size, data, usage));
+    glGenBuffers(1, &(this->m_rendererId));
+    glBindBuffer(target, this->m_rendererId);
+    glBufferData(target, size, data, usage);
     if (!keepBound) {
-        GLCall(glBindBuffer(target, 0));
+        glBindBuffer(target, 0);
     }
 }
 
@@ -21,7 +21,7 @@ GLBufferObject& GLBufferObject::operator=(GLBufferObject&& other) {
         return *this;
     }
     if (m_rendererId) {
-        GLCall(glDeleteBuffers(1, &m_rendererId));
+        glDeleteBuffers(1, &m_rendererId);
 	}
 	m_target = other.m_target;
     m_rendererId = other.m_rendererId;
@@ -32,14 +32,14 @@ GLBufferObject& GLBufferObject::operator=(GLBufferObject&& other) {
 
 GLBufferObject::~GLBufferObject() {
     if (m_rendererId) {
-        GLCall(glDeleteBuffers(1, &m_rendererId));
+        glDeleteBuffers(1, &m_rendererId);
     }
 }
 
 bool GLBufferObject::isBound() const
 {
     GLint currBuff;
-    GLCall(glGetIntegerv(getBindingEnum(m_target), &currBuff));
+    glGetIntegerv(getBindingEnum(m_target), &currBuff);
     return (static_cast<GLenum>(currBuff) == m_rendererId);
 }
 
