@@ -119,6 +119,21 @@ namespace raii_fy {
 
 std::weak_ptr<demo::Demo> demo_global_ptr;
 
+// OpenGL callback:
+void GLAPIENTRY gl_debug_output_callback(GLenum source, GLenum type,
+                                         GLuint id, GLenum severity,
+                                         GLsizei /*length*/, const GLchar* message,
+                                         const void* /*userParam*/) {
+    std::ostream& os {(type == GL_DEBUG_SEVERITY_NOTIFICATION) ? std::cout : std::cerr};
+    os << ((type == GL_DEBUG_TYPE_ERROR) ? "[GL-ERROR] " : "[gl-debug-message] ");
+    os << message << '\n';
+    os << std::hex << "(source = 0x" << source << " type = 0x" << type << " severity = 0x" << severity
+       << " id = 0x" << id << ")\n" << std::dec;
+    myAssert(severity == GL_DEBUG_SEVERITY_NOTIFICATION);
+}
+
+
+// GLFW callbacks:
 void error_callback(int error, const char* description) {
     std::cout << "GLFW-error [" << error << "]: " << description << '\n';
 }
@@ -146,6 +161,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
+// main function:
 int main(int argc, char **argv)
 {
     #ifdef NDEBUG
@@ -167,6 +183,9 @@ int main(int argc, char **argv)
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // for anisotropic filtering without extension
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifndef NDEBUG
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+#endif
     raii_fy::GLFW_Window window(960, 640, "Hello World");
     if (!window.get())
     {
@@ -189,6 +208,15 @@ int main(int argc, char **argv)
     }
     
     std::cout << glGetString(GL_VERSION) << '\n';
+
+    // set up OpenGL Debug Output:
+#ifndef NDEBUG
+    // rememeber we did: glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+    // so our OpenGL-context should be in Debug mode now
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(gl_debug_output_callback, nullptr);
+#endif
 
     // Setup Dear ImGui context:
     IMGUI_CHECKVERSION();
