@@ -167,13 +167,15 @@ if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
                         "meshes/suzanne_horn_smooth_subdiv_1.obj"
                         "meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01.obj"
                         "meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01_Textures/GothicBed_01_8-bit_Diffuse.png")
+    add_custom_target(copy_resource_files)
     foreach(RES_FILE ${RESOURCE_FILES})
-        add_custom_command(TARGET OpenGLDemos
+        add_custom_command(TARGET copy_resource_files
                            POST_BUILD
                            COMMAND ${CMAKE_COMMAND} -E copy_if_different 
                                 ${CMAKE_CURRENT_SOURCE_DIR}/res/${RES_FILE} 
                                 ${CMAKE_CURRENT_BINARY_DIR}/res/${RES_FILE} )
     endforeach()
+    add_dependencies(OpenGLDemos copy_resource_files)
 endif()
 
 if(WIN32)
