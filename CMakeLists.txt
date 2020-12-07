@@ -54,6 +54,7 @@ add_executable(OpenGLDemos
     src/demos/DemoMultipleConcepts.cxx
     src/demos/DemoPhongReflectionModel.cxx
     src/demos/DemoPhongReflectionModelTextured.cxx
+    src/demos/DemoFilter.cxx
 
     # hopefully cmake understands by the file suffix that the
     # following files should only be shown in qt-creator's outliner
@@ -62,6 +63,7 @@ add_executable(OpenGLDemos
     res/shaders/ShadelessTexture.shader
     res/shaders/PhongReflModel.shader
     res/shaders/TexturedPhongRefl.shader
+    res/shaders/Filter.shader
 )
 
 target_include_directories(OpenGLDemos PUBLIC
@@ -159,6 +161,7 @@ if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
                         "shaders/ShadelessTexture.shader"
                         "shaders/PhongReflModel.shader"
                         "shaders/TexturedPhongRefl.shader"
+                        "shaders/Filter.shader"
                         "textures/alpha_texture_test.png"
                         "textures/uv_grid.png"
                         "meshes/suzanne_horn_smooth_subdiv_1.obj"
