@@ -19,10 +19,12 @@ layout(location = 0) out vec4 out_color;
 
 void main()
 {
+    ivec2 maxCoord = textureSize(tex, 0) - ivec2(1);
     vec3 res = vec3(0.f);
     for (int offX = -1; offX <= 1; ++offX) {
         for (int offY = -1; offY <= 1; ++offY) {
-            vec3 in_color = texelFetch(tex, ivec2(gl_FragCoord.xy) + ivec2(offX, offY), 0).rgb;
+            ivec2 unnormTexCoord = clamp(ivec2(gl_FragCoord.xy) + ivec2(offX, offY), ivec2(0), maxCoord);
+            vec3 in_color = texelFetch(tex, unnormTexCoord, 0).rgb;
             int col = offX + 1;
             int row = 1 - offY;
             res += filter[3*row + col] * in_color;
