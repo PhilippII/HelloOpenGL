@@ -48,6 +48,8 @@ GLTexture::GLTexture(std::filesystem::path filepath, int channels, bool sRGB)
                    *(internalformats[static_cast<int>(sRGB)][channels - 1]),
                    m_width,
                    m_height);
+    // I believe glTexStorage2D(..) will also take care of setting GL_TEXTURE_MAX_LEVEL
+    // see: https://www.khronos.org/opengl/wiki/Common_Mistakes#Creating_a_complete_texture
 
     // upload actual data to the allocated storage:
     constexpr std::array<GLenum, 4> formats = {GL_RED, GL_RG, GL_RGB, GL_RGBA};
