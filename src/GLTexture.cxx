@@ -8,6 +8,17 @@
 #include "stb_image.h"
 
 
+namespace texture_sampling_presets {
+const Texture2DSamplingParameters noFilter {
+    GL_NEAREST, GL_NEAREST, false,
+    GL_REPEAT, GL_REPEAT
+};
+const Texture2DSamplingParameters filterPretty {
+    GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true,
+    GL_REPEAT, GL_REPEAT
+};
+}
+
 
 GLTexture::GLTexture(std::filesystem::path filepath, int channels, bool sRGB)
     : m_rendererId(0),

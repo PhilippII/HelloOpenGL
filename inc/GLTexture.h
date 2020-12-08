@@ -6,6 +6,29 @@
 #include <vector>
 #include <filesystem>
 
+
+struct Texture2DSamplingParameters {
+    GLint mag_filter = GL_LINEAR;
+    GLint min_filter = GL_NEAREST_MIPMAP_LINEAR;
+    bool try_anisotropic_filter = false;
+
+    GLint wrap_s = GL_REPEAT;
+    GLint wrap_t = GL_REPEAT;
+
+    bool requiresMipmap() const {
+        return min_filter == GL_NEAREST_MIPMAP_NEAREST
+                || min_filter == GL_LINEAR_MIPMAP_NEAREST
+                || min_filter == GL_NEAREST_MIPMAP_LINEAR
+                || min_filter == GL_LINEAR_MIPMAP_LINEAR;
+    }
+};
+
+namespace texture_sampling_presets {
+    extern const Texture2DSamplingParameters noFilter;
+    extern const Texture2DSamplingParameters filterPretty;
+}
+
+
 class GLTexture
 {
 public:
