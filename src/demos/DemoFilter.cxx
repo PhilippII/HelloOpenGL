@@ -45,8 +45,7 @@ DemoFilter::DemoFilter(GLRenderer &renderer)
 
 
     // init texture:
-    // load only 3 channels (ignore alpha channel):
-    m_texture = std::make_unique<GLTexture>(fs::path("res/textures/alpha_texture_test.png",
+    m_texture = std::make_unique<GLTexture>(fs::path("res/textures/solid_test_texture.png",
                                                      fs::path::format::generic_format),
                                             3);
     m_texture->bind(texUnit);

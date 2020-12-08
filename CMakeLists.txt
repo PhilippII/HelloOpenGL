@@ -163,6 +163,7 @@ if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
                         "shaders/TexturedPhongRefl.shader"
                         "shaders/Filter.shader"
                         "textures/alpha_texture_test.png"
+                        "textures/solid_test_texture.png"
                         "textures/uv_grid.png"
                         "meshes/suzanne_horn_smooth_subdiv_1.obj"
                         "meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01.obj"
