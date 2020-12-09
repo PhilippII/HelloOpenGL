@@ -8,8 +8,12 @@ cmake + compile on windows:
 	-> automatically defined by cmake glfw imported target ?
 		(INTERFACE_COMPILE_DEFINITIONS) ?
 - require version 3.3 for GLFW?
-- GLEW: checking for extensions (check if anisotropic filtering is 
-	actually available before using it)
+- GLEW: checking for extensions 
+	-> check if anisotropic filtering is actually available before using it
+		-> check if it is available as EXT_extension
+			DONE
+		-> check if it is available as ARB_extension or core feature instead
+			TODO
 - what is the correct way to deal with resource files?
 	-> copy or link them from the source-directory into the 
 		build directory? (and how to do that?)
