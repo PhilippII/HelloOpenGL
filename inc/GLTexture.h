@@ -33,7 +33,8 @@ class GLTexture
 {
 public:
     GLTexture() = delete;
-    GLTexture(std::filesystem::path filepath, int channels = 3, bool sRGB = false);
+    GLTexture(std::filesystem::path filepath, int channels = 3, bool sRGB = false,
+              const Tex2DSamplingParams& sampParams = texture_sampling_presets::filterPretty);
     // do not allow copying:
     GLTexture(const GLTexture& other) = delete;
     GLTexture& operator=(const GLTexture& other) = delete;

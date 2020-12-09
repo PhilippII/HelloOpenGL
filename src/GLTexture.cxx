@@ -20,7 +20,7 @@ const Tex2DSamplingParams filterPretty {
 }
 
 
-GLTexture::GLTexture(std::filesystem::path filepath, int channels, bool sRGB)
+GLTexture::GLTexture(std::filesystem::path filepath, int channels, bool sRGB, const Tex2DSamplingParams &sampParams)
     : m_rendererId(0),
       m_width(0), m_height(0),
       m_mipLevels(0)
@@ -41,7 +41,7 @@ GLTexture::GLTexture(std::filesystem::path filepath, int channels, bool sRGB)
     myAssert(pix_data);
     m_width = width;
     m_height = height;
-    m_mipLevels = computeMipLevelCount(m_width, m_height);
+    m_mipLevels = (sampParams.requiresMipmap()) ? computeMipLevelCount(m_width, m_height) : 1;
     debugDo(std::cout << "available channels in file " << filepath << ": " << channels_in_file << '\n');
     myAssert(channels_in_file >= channels);
 
@@ -80,14 +80,16 @@ GLTexture::GLTexture(std::filesystem::path filepath, int channels, bool sRGB)
     }
 
     // generate content of other mipmap levels:
-    glGenerateMipmap(GL_TEXTURE_2D);
+    if (m_mipLevels > 1) {
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
 
     // set sampling parameters:
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    if (GLEW_EXT_texture_filter_anisotropic) {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, sampParams.mag_filter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, sampParams.min_filter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, sampParams.wrap_s);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, sampParams.wrap_t);
+    if (sampParams.try_anisotropic_filter && GLEW_EXT_texture_filter_anisotropic) {
         float maxMaxAnisotropy = 1.f;
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxMaxAnisotropy);
         debugDo(std::cout << "GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT is " << maxMaxAnisotropy << '\n');
