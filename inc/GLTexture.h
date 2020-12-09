@@ -33,6 +33,7 @@ class GLTexture
 {
 public:
     GLTexture() = delete;
+    GLTexture(int width, int height, GLenum internalformat, const Tex2DSamplingParams &sampParams);
     GLTexture(std::filesystem::path filepath, int channels = 3, bool sRGB = false,
               const Tex2DSamplingParams& sampParams = texture_sampling_presets::filterPretty);
     // do not allow copying:
@@ -47,6 +48,7 @@ public:
     void bind(int texUnit = 0);
     void unbind();
 private:
+    void initAndKeepBound(int width, int height, GLenum internalformat, const Tex2DSamplingParams &sampParams);
     bool isBoundToActiveUnit() const;
     static GLsizei computeMipLevelCount(GLsizei width, GLsizei height);
     static std::vector<GLubyte> makeCheckerPattern(GLsizei& width, GLsizei& height);
