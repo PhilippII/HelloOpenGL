@@ -47,7 +47,10 @@ DemoFilter::DemoFilter(GLRenderer &renderer)
     // init texture:
     m_texture = std::make_unique<GLTexture>(fs::path("res/textures/solid_test_texture.png",
                                                      fs::path::format::generic_format),
-                                            3);
+                                            3, false,
+                                            texture_sampling_presets::noFilter);
+        // while technically the image is sRGB we do not explicitly use an sRGB texture here.
+        // As the framebuffer is sRGB too we do not need to do any conversion from/to sRGB anyway.
     m_texture->bind(texUnit);
     m_shaderP->setUniform1i("tex", texUnit);
 }
