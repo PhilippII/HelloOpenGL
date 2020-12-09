@@ -7,7 +7,7 @@
 #include <filesystem>
 
 
-struct Texture2DSamplingParameters {
+struct Tex2DSamplingParams {
     GLint mag_filter = GL_LINEAR;
     GLint min_filter = GL_NEAREST_MIPMAP_LINEAR;
     bool try_anisotropic_filter = false;
@@ -24,8 +24,8 @@ struct Texture2DSamplingParameters {
 };
 
 namespace texture_sampling_presets {
-    extern const Texture2DSamplingParameters noFilter;
-    extern const Texture2DSamplingParameters filterPretty;
+    extern const Tex2DSamplingParams noFilter;
+    extern const Tex2DSamplingParams filterPretty;
 }
 
 

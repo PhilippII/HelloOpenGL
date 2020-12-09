@@ -9,11 +9,11 @@
 
 
 namespace texture_sampling_presets {
-const Texture2DSamplingParameters noFilter {
+const Tex2DSamplingParams noFilter {
     GL_NEAREST, GL_NEAREST, false,
     GL_REPEAT, GL_REPEAT
 };
-const Texture2DSamplingParameters filterPretty {
+const Tex2DSamplingParams filterPretty {
     GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true,
     GL_REPEAT, GL_REPEAT
 };
