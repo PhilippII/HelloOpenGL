@@ -47,6 +47,10 @@ public:
 
     void bind(int texUnit = 0);
     void unbind();
+
+    GLuint getRendererId() const {
+        return m_rendererId;
+    }
 private:
     void initAndKeepBound(int width, int height, GLenum internalformat, const Tex2DSamplingParams &sampParams);
     bool isBoundToActiveUnit() const;
