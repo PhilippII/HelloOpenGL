@@ -20,6 +20,7 @@
 #include "demos/DemoPhongReflectionModelTextured.h"
 #include "demos/DemoLinearColorspace.h"
 #include "demos/DemoFilter.h"
+#include "demos/DemoFramebuffer.h"
 
 
 namespace raii_fy {
@@ -242,6 +243,7 @@ int main(int argc, char **argv)
     myDemoP->RegisterDemo<demo::DemoPhongReflectionModelTextured>("Phong Reflection Model with Texture");
     myDemoP->RegisterDemo<demo::DemoLinearColorspace>("Linear Colorspace");
     myDemoP->RegisterDemo<demo::DemoFilter>("Filter");
+    myDemoP->RegisterDemo<demo::DemoFramebuffer>("Framebuffer");
     if (argc >= 2) {
         myDemoP->SelectDemo(argv[1]);
     }
