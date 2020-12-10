@@ -68,6 +68,10 @@ demo::DemoFramebuffer::DemoFramebuffer(GLRenderer &renderer)
     getRenderer().enableDepthTest();
 
     getRenderer().enable_framebuffer_sRGB();
+
+    // m_texColorBuffer = see OnWindowSizeChanged()
+    // m_texDepthBuffer = see OnWindowSizeChanged()
+
 }
 
 demo::DemoFramebuffer::~DemoFramebuffer()
@@ -82,6 +86,11 @@ void demo::DemoFramebuffer::OnWindowSizeChanged(int width, int height)
 {
     getRenderer().setViewport(0, 0, width, height);
     m_camera.setAspect(static_cast<float>(width) / static_cast<float>(height));
+
+    glActiveTexture(GL_TEXTURE0 + texUnit + 1); // avoid unbinding the texture currently bound to texUnit in the constructors
+                                                // of the following two textures:
+    m_texColorBuffer = std::make_unique<GLTexture>(width, height, GL_RGBA32F, texture_sampling_presets::noFilter);
+    m_texDepthBuffer = std::make_unique<GLTexture>(width, height, GL_DEPTH_COMPONENT16, texture_sampling_presets::noFilter);
 }
 
 bool demo::DemoFramebuffer::OnKeyPressed(int key, int scancode, int action, int mods)
@@ -96,6 +105,8 @@ void demo::DemoFramebuffer::OnUpdate(float deltaSeconds)
 
 void demo::DemoFramebuffer::OnRender()
 {
+    myAssert(m_texColorBuffer); // otherwise OnWindowSizeChanged(..) has not been called yet.
+
     getRenderer().setClearColor(glm::vec4(linRGB_from_sRGB(m_clearColor_sRGB), 1.f));
     getRenderer().clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

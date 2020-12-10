@@ -60,6 +60,9 @@ private:
 
     std::vector<std::tuple<GLVertexBuffer, GLVertexArray, GLIndexBuffer>> m_glMeshes;
     std::unique_ptr<GLTexture> m_texBaseColor;
+
+    std::unique_ptr<GLTexture> m_texColorBuffer;
+    std::unique_ptr<GLTexture> m_texDepthBuffer;
 };
 
 }
