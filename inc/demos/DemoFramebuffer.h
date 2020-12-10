@@ -36,12 +36,15 @@ public:
     void OnImGuiRender() override;
 
 private:
-    static const GLuint texUnit;
+    static const GLuint texUnitDiffuse;
+    // static constexpr int texUnit {0};
 
+    // 1. members for rendering into fbo
+    // ---------------------------------
     Camera m_camera;
     ControllerCamera m_camereController;
 
-    std::unique_ptr<GLShaderProgram> m_shaderP;
+    std::unique_ptr<GLShaderProgram> m_phongReflModelSP;
 
     // clear color:
     glm::vec3 m_clearColor_sRGB;
@@ -61,10 +64,21 @@ private:
     std::vector<std::tuple<GLVertexBuffer, GLVertexArray, GLIndexBuffer>> m_glMeshes;
     std::unique_ptr<GLTexture> m_texBaseColor;
 
+    // 2. members for fbo
+    // ------------------
     std::unique_ptr<GLTexture> m_texColorBuffer;
     std::unique_ptr<GLTexture> m_texDepthBuffer;
-
     GLuint m_fbo_id;
+
+    // 3. members for rendering from fbo to screen
+    // -------------------------------------------
+    // std::unique_ptr<GLShaderProgram> m_shaderP;
+
+    // std::unique_ptr<GLIndexBuffer> m_ibo;
+    // std::unique_ptr<GLVertexBuffer> m_vbo;
+    // std::unique_ptr<GLVertexArray> m_vao;
+
+    // std::unique_ptr<GLTexture> m_texture;
 };
 
 }

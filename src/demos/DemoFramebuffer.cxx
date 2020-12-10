@@ -16,7 +16,7 @@
 
 
 
-const GLuint demo::DemoFramebuffer::texUnit = 0;
+const GLuint demo::DemoFramebuffer::texUnitDiffuse = 0;
 
 
 demo::DemoFramebuffer::DemoFramebuffer(GLRenderer &renderer)
@@ -39,7 +39,7 @@ demo::DemoFramebuffer::DemoFramebuffer(GLRenderer &renderer)
     m_camera.translate_global(glm::vec3(0.f, 0.f, 4.f));
 
     // load shader:
-    m_shaderP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/TexturedPhongRefl.shader",
+    m_phongReflModelSP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/TexturedPhongRefl.shader",
                                                            fs::path::format::generic_format));
 
     // load meshes from file:
@@ -48,7 +48,7 @@ demo::DemoFramebuffer::DemoFramebuffer(GLRenderer &renderer)
     for (auto& cpu_mesh : cpu_meshes) {
         GLVertexBuffer vbo(cpu_mesh.va.data.size(), cpu_mesh.va.data.data());
         GLVertexArray vao;
-        cpu_mesh.va.layout.setLocations(*m_shaderP);
+        cpu_mesh.va.layout.setLocations(*m_phongReflModelSP);
         vao.addBuffer(vbo, cpu_mesh.va.layout);
         GLIndexBuffer ibo(GL_UNSIGNED_INT, static_cast<GLIndexBuffer::count_type>(cpu_mesh.ib.indices.size()),
                           reinterpret_cast<GLvoid*>(cpu_mesh.ib.indices.data()));
@@ -59,9 +59,9 @@ demo::DemoFramebuffer::DemoFramebuffer(GLRenderer &renderer)
      m_texBaseColor = std::make_unique<GLTexture>(fs::path("res/meshes/3rd_party/3D_Model_Haven/GothicBed_01/GothicBed_01_Textures/GothicBed_01_8-bit_Diffuse.png",
                                                           fs::path::format::generic_format),
                                                   3, true);
-     m_texBaseColor->bind(texUnit);
-     m_shaderP->bind();
-     m_shaderP->setUniform1i("tex", texUnit);
+     m_texBaseColor->bind(texUnitDiffuse);
+     m_phongReflModelSP->bind();
+     m_phongReflModelSP->setUniform1i("tex", texUnitDiffuse);
 
     // enable culling and depth test:
     getRenderer().enableFaceCulling();
@@ -102,7 +102,7 @@ void demo::DemoFramebuffer::OnWindowSizeChanged(int width, int height)
 //                           GL_TEXTURE_2D, 0, 0);
 
     // allocate new textures of appropriate size (delete old textures if any):
-    glActiveTexture(GL_TEXTURE0 + texUnit + 1); // avoid unbinding the texture currently bound to texUnit in the constructors
+    glActiveTexture(GL_TEXTURE0 + texUnitDiffuse + 1); // avoid unbinding the texture currently bound to texUnit in the constructors
                                                 // of the following two textures:
     m_texColorBuffer = std::make_unique<GLTexture>(width, height, GL_RGBA32F, texture_sampling_presets::noFilter);
     m_texDepthBuffer = std::make_unique<GLTexture>(width, height, GL_DEPTH_COMPONENT16, texture_sampling_presets::noFilter);
@@ -138,35 +138,35 @@ void demo::DemoFramebuffer::OnRender()
     getRenderer().clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // set matrix uniforms:
-    m_shaderP->bind(); // binding needed to set the uniforms
+    m_phongReflModelSP->bind(); // binding needed to set the uniforms
     glm::mat4 ndc_from_cc = m_camera.mat_ndc_from_cc();
     glm::mat4 cc_from_wc = m_camera.mat_cc_from_wc();
     glm::mat4 wc_from_oc(1.f);
 
     glm::mat4 cc_from_oc = cc_from_wc * wc_from_oc;
     glm::mat4 ndc_from_oc = ndc_from_cc * cc_from_oc;
-    m_shaderP->setUniformMat4f("u_cc_from_oc", cc_from_oc);
-    m_shaderP->setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
+    m_phongReflModelSP->setUniformMat4f("u_cc_from_oc", cc_from_oc);
+    m_phongReflModelSP->setUniformMat4f("u_ndc_from_oc", ndc_from_oc);
 
     // set light properties uniforms:
     // m_shaderP->setUniform3f("u_i_s", m_i_s); -> we just set u_i_s := u_i_d
-    m_shaderP->setUniform3f("u_i_d", linRGB_from_sRGB(m_i_d_sRGB));
-    m_shaderP->setUniform3f("u_i_a", linRGB_from_sRGB(m_i_a_sRGB));
+    m_phongReflModelSP->setUniform3f("u_i_d", linRGB_from_sRGB(m_i_d_sRGB));
+    m_phongReflModelSP->setUniform3f("u_i_a", linRGB_from_sRGB(m_i_a_sRGB));
 
     glm::vec3 toLight_wc = m_sunController.makeToSun_wc();
     glm::vec3 toLight_cc = glm::vec3(cc_from_wc * glm::vec4(toLight_wc, 0.f));
-    m_shaderP->setUniform3f("u_L_cc", toLight_cc);
+    m_phongReflModelSP->setUniform3f("u_L_cc", toLight_cc);
 
     // set material properties uniforms:
-    m_shaderP->setUniform3f("u_k_s", linRGB_from_sRGB(m_k_s_sRGB));
+    m_phongReflModelSP->setUniform3f("u_k_s", linRGB_from_sRGB(m_k_s_sRGB));
     // m_shaderP->setUniform3f("u_k_d", m_k_d); // -> is read from texture
     // m_shaderP->setUniform3f("u_k_a", m_k_a); // -> we just set u_k_a := u_k_d
-    m_shaderP->setUniform1f("u_shininess", m_shininess);
+    m_phongReflModelSP->setUniform1f("u_shininess", m_shininess);
 
     for (auto& glMesh : m_glMeshes) {
         getRenderer().draw(std::get<GLVertexArray>(glMesh),
                            std::get<GLIndexBuffer>(glMesh),
-                           *m_shaderP);
+                           *m_phongReflModelSP);
         // note: while we did not need to pass the GLVertexBuffer here it was still necessary to
         //          store it. otherwise its destructor would have deallocated the vb's data
         //          on the GPU as well. But the data on the GPU is needed as it is referenced
