@@ -68,11 +68,9 @@ demo::DemoFramebuffer::DemoFramebuffer(GLRenderer &renderer)
      m_phongReflModelSP->bind();
      m_phongReflModelSP->setUniform1i("tex", texUnitDiffuse);
 
-    // enable culling and depth test:
+    // enable backface culling and sRGB conversion:
     getRenderer().enableFaceCulling();
-    getRenderer().enableDepthTest();
-
-    getRenderer().enable_framebuffer_sRGB();
+    getRenderer().enable_framebuffer_sRGB(); // affects only framebuffers with sRGB color format
 
     // 2. init fbo stuff
     // -----------------
@@ -128,8 +126,6 @@ demo::DemoFramebuffer::~DemoFramebuffer()
 {
     glDeleteFramebuffers(1, &m_fbo_id);
     getRenderer().disable_framebuffer_sRGB();
-
-    getRenderer().disableDepthTest();
     getRenderer().disableFaceCulling();
 }
 
@@ -180,6 +176,7 @@ void demo::DemoFramebuffer::OnRender()
     // I. render into fbo:
     // -------------------
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_id);
+    getRenderer().enableDepthTest();
     getRenderer().setClearColor(glm::vec4(linRGB_from_sRGB(m_clearColor_sRGB), 1.f));
     getRenderer().clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -222,7 +219,7 @@ void demo::DemoFramebuffer::OnRender()
     // II. render from fbo to screen:
     // ------------------------------
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    getRenderer().clear(GL_DEPTH_BUFFER_BIT);
+    getRenderer().disableDepthTest();
     getRenderer().draw(*m_rectVAO, *m_rectIBO, *m_filterSP);
 }
 
