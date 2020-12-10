@@ -69,13 +69,20 @@ demo::DemoFramebuffer::DemoFramebuffer(GLRenderer &renderer)
 
     getRenderer().enable_framebuffer_sRGB();
 
+    // init textures to be used in framebuffer
     // m_texColorBuffer = see OnWindowSizeChanged()
     // m_texDepthBuffer = see OnWindowSizeChanged()
 
+    glGenFramebuffers(1, &m_fbo_id);
+    // attach m_texColorBuffer and m_texColorBuffer, see OnWindowSizeChanged()
+    std::array<GLenum, 1> drawBuffers = { GL_COLOR_ATTACHMENT0 };
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_id);
+    glDrawBuffers(1, drawBuffers.data());
 }
 
 demo::DemoFramebuffer::~DemoFramebuffer()
 {
+    glDeleteFramebuffers(1, &m_fbo_id);
     getRenderer().disable_framebuffer_sRGB();
 
     getRenderer().disableDepthTest();
@@ -87,10 +94,28 @@ void demo::DemoFramebuffer::OnWindowSizeChanged(int width, int height)
     getRenderer().setViewport(0, 0, width, height);
     m_camera.setAspect(static_cast<float>(width) / static_cast<float>(height));
 
+    // clear existing attachments if any (is this necessary?):
+//    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_id);
+//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+//                           GL_TEXTURE_2D, 0, 0);
+//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+//                           GL_TEXTURE_2D, 0, 0);
+
+    // allocate new textures of appropriate size (delete old textures if any):
     glActiveTexture(GL_TEXTURE0 + texUnit + 1); // avoid unbinding the texture currently bound to texUnit in the constructors
                                                 // of the following two textures:
     m_texColorBuffer = std::make_unique<GLTexture>(width, height, GL_RGBA32F, texture_sampling_presets::noFilter);
     m_texDepthBuffer = std::make_unique<GLTexture>(width, height, GL_DEPTH_COMPONENT16, texture_sampling_presets::noFilter);
+
+    // attach new textures to framebuffer:
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_id);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                           GL_TEXTURE_2D, m_texColorBuffer->getRendererId(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                           GL_TEXTURE_2D, m_texDepthBuffer->getRendererId(), 0);
+
+    // check framebuffer completeness:
+    myAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 }
 
 bool demo::DemoFramebuffer::OnKeyPressed(int key, int scancode, int action, int mods)
@@ -107,6 +132,8 @@ void demo::DemoFramebuffer::OnRender()
 {
     myAssert(m_texColorBuffer); // otherwise OnWindowSizeChanged(..) has not been called yet.
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0); // for now
+    // TODO: glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_id);
     getRenderer().setClearColor(glm::vec4(linRGB_from_sRGB(m_clearColor_sRGB), 1.f));
     getRenderer().clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

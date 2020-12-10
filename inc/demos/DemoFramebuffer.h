@@ -63,6 +63,8 @@ private:
 
     std::unique_ptr<GLTexture> m_texColorBuffer;
     std::unique_ptr<GLTexture> m_texDepthBuffer;
+
+    GLuint m_fbo_id;
 };
 
 }
