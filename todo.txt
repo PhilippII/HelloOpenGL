@@ -1,7 +1,3 @@
-DemoFramebuffer:
-- when drawing screen filling rectangle disable depth test
-	instead of clearing the depth buffer
-
 windows:
 - WIN32 correct macro to figure out if we are on windows
 	and if we have __debugbreak() ?
