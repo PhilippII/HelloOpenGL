@@ -37,7 +37,8 @@ public:
 
 private:
     static const GLuint texUnitDiffuse;
-    // static constexpr int texUnit {0};
+    static const GLuint texUnitColorBuffer;
+    static const GLuint texUnitUnused;
 
     // 1. members for rendering into fbo
     // ---------------------------------
@@ -72,13 +73,11 @@ private:
 
     // 3. members for rendering from fbo to screen
     // -------------------------------------------
-    // std::unique_ptr<GLShaderProgram> m_shaderP;
+    std::unique_ptr<GLShaderProgram> m_filterSP;
 
-    // std::unique_ptr<GLIndexBuffer> m_ibo;
-    // std::unique_ptr<GLVertexBuffer> m_vbo;
-    // std::unique_ptr<GLVertexArray> m_vao;
-
-    // std::unique_ptr<GLTexture> m_texture;
+    std::unique_ptr<GLIndexBuffer> m_rectIBO;
+    std::unique_ptr<GLVertexBuffer> m_rectVBO;
+    std::unique_ptr<GLVertexArray> m_rectVAO;
 };
 
 }

@@ -17,6 +17,8 @@
 
 
 const GLuint demo::DemoFramebuffer::texUnitDiffuse = 0;
+const GLuint demo::DemoFramebuffer::texUnitColorBuffer = 1;
+const GLuint demo::DemoFramebuffer::texUnitUnused = 2;
 
 
 demo::DemoFramebuffer::DemoFramebuffer(GLRenderer &renderer)
@@ -34,6 +36,9 @@ demo::DemoFramebuffer::DemoFramebuffer(GLRenderer &renderer)
       m_shininess(150.f)
 {
     namespace fs = std::filesystem;
+
+    // 1. init stuff to render into fbo
+    // --------------------------------
 
     // move camera back a bit from the origin:
     m_camera.translate_global(glm::vec3(0.f, 0.f, 4.f));
@@ -69,15 +74,54 @@ demo::DemoFramebuffer::DemoFramebuffer(GLRenderer &renderer)
 
     getRenderer().enable_framebuffer_sRGB();
 
-    // init textures to be used in framebuffer
+    // 2. init fbo stuff
+    // -----------------
+
+    // init textures to be used in framebuffer:
     // m_texColorBuffer = see OnWindowSizeChanged()
     // m_texDepthBuffer = see OnWindowSizeChanged()
 
+    // init framebuffer:
     glGenFramebuffers(1, &m_fbo_id);
     // attach m_texColorBuffer and m_texColorBuffer, see OnWindowSizeChanged()
     std::array<GLenum, 1> drawBuffers = { GL_COLOR_ATTACHMENT0 };
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_id);
     glDrawBuffers(1, drawBuffers.data());
+
+    // 3. init stuff to render from fbo to screen
+    // ------------------------------------------
+    // init shader:
+    m_filterSP = std::make_unique<GLShaderProgram>(fs::path("res/shaders/Filter.shader",
+                                                           fs::path::format::generic_format));
+    m_filterSP->setUniform1i("tex", texUnitColorBuffer);
+
+
+    // init screen filling quad (VertexBuffer, IndexBuffer, VertexArray):
+    //  3--2
+    //  | /|
+    //  |/ |
+    //  0--1
+    std::array<GLfloat, 4 * 2> positions {
+        -1.0, -1.0,
+         1.0, -1.0,
+         1.0,  1.0,
+        -1.0,  1.0
+    };
+
+    std::array<GLuint, 2 * 3> indices {
+        0, 1, 2,
+        0, 2, 3
+    };
+
+    m_rectVBO = std::make_unique<GLVertexBuffer>(positions.size() * sizeof(GLfloat), positions.data());
+
+    m_rectIBO = std::make_unique<GLIndexBuffer>(GL_UNSIGNED_INT, indices.size(), indices.data());
+
+    m_rectVAO = std::make_unique<GLVertexArray>();
+    VertexBufferLayout layout;
+    layout.append<float>(2, "ndc_pos");
+    layout.setLocations(*m_filterSP);
+    m_rectVAO->addBuffer(*m_rectVBO, layout);
 }
 
 demo::DemoFramebuffer::~DemoFramebuffer()
@@ -102,10 +146,11 @@ void demo::DemoFramebuffer::OnWindowSizeChanged(int width, int height)
 //                           GL_TEXTURE_2D, 0, 0);
 
     // allocate new textures of appropriate size (delete old textures if any):
-    glActiveTexture(GL_TEXTURE0 + texUnitDiffuse + 1); // avoid unbinding the texture currently bound to texUnit in the constructors
-                                                // of the following two textures:
+    glActiveTexture(GL_TEXTURE0 + texUnitUnused); // avoid unbinding the texture currently bound to texUnit in the constructors
+                                                  // of the following two textures:
     m_texColorBuffer = std::make_unique<GLTexture>(width, height, GL_RGBA32F, texture_sampling_presets::noFilter);
     m_texDepthBuffer = std::make_unique<GLTexture>(width, height, GL_DEPTH_COMPONENT16, texture_sampling_presets::noFilter);
+    m_texColorBuffer->bind(texUnitColorBuffer);
 
     // attach new textures to framebuffer:
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_id);
@@ -132,8 +177,9 @@ void demo::DemoFramebuffer::OnRender()
 {
     myAssert(m_texColorBuffer); // otherwise OnWindowSizeChanged(..) has not been called yet.
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0); // for now
-    // TODO: glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_id);
+    // I. render into fbo:
+    // -------------------
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_id);
     getRenderer().setClearColor(glm::vec4(linRGB_from_sRGB(m_clearColor_sRGB), 1.f));
     getRenderer().clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -172,6 +218,12 @@ void demo::DemoFramebuffer::OnRender()
         //          on the GPU as well. But the data on the GPU is needed as it is referenced
         //          by the GLVertexArray.
     }
+
+    // II. render from fbo to screen:
+    // ------------------------------
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    getRenderer().clear(GL_DEPTH_BUFFER_BIT);
+    getRenderer().draw(*m_rectVAO, *m_rectIBO, *m_filterSP);
 }
 
 void demo::DemoFramebuffer::OnImGuiRender()
