@@ -4,6 +4,8 @@
 #include <GL/glew.h>
 #include <gsl/gsl> // for gsl::span<>
 
+#include "GLTexture.h"
+
 class GLFramebufferObject
 {
 public:
@@ -20,6 +22,9 @@ public:
     void bind(GLenum target = GL_FRAMEBUFFER);
 
     void setDrawBuffers(gsl::span<GLenum> drawBuffers);
+
+    void attachTexture(GLenum attachment, const GLTexture& texture, GLint mipLevel = 0);
+    void unattachTexture(GLenum attachment);
 
     static GLuint getMaxDrawBuffers();
 private:

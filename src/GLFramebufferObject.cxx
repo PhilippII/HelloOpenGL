@@ -47,6 +47,23 @@ void GLFramebufferObject::setDrawBuffers(gsl::span<GLenum> drawBuffers)
     glDrawBuffers(drawBuffers.size(), drawBuffers.data());
 }
 
+void GLFramebufferObject::attachTexture(GLenum attachment, const GLTexture &texture, GLint mipLevel)
+{
+    myAssert(isBound(GL_DRAW_FRAMEBUFFER));
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, attachment,
+                           GL_TEXTURE_2D, texture.getRendererId(), mipLevel);
+}
+
+void GLFramebufferObject::unattachTexture(GLenum attachment)
+{
+    myAssert(isBound(GL_DRAW_FRAMEBUFFER));
+    // TODO: is this also correct for other texture types?
+    //          e.g. GL_TEXTURE_3D
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, attachment,
+                           GL_TEXTURE_2D, 0, 0);
+
+}
+
 GLuint GLFramebufferObject::getMaxDrawBuffers()
 {
     GLint max = 0;
