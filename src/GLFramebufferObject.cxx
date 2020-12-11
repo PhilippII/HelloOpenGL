@@ -38,6 +38,12 @@ void GLFramebufferObject::bind(GLenum target)
     glBindFramebuffer(target, m_rendererId);
 }
 
+void GLFramebufferObject::unbind(GLenum target)
+{
+    myAssert(isBound(target));
+    glBindFramebuffer(target, 0);
+}
+
 void GLFramebufferObject::setDrawBuffers(gsl::span<GLenum> drawBuffers)
 {
     myAssert(isBound(GL_DRAW_FRAMEBUFFER));

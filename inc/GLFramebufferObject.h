@@ -20,6 +20,7 @@ public:
     ~GLFramebufferObject();
 
     void bind(GLenum target = GL_FRAMEBUFFER);
+    void unbind(GLenum target = GL_FRAMEBUFFER);
 
     void setDrawBuffers(gsl::span<GLenum> drawBuffers);
 
