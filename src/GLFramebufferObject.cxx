@@ -22,6 +22,7 @@ GLFramebufferObject &GLFramebufferObject::operator=(GLFramebufferObject&& other)
     glDeleteFramebuffers(1, &m_rendererId);
     m_rendererId = other.m_rendererId;
     other.m_rendererId = 0;
+    return *this;
 }
 
 
