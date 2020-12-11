@@ -1,5 +1,7 @@
 #include "GLFramebufferObject.h"
 
+#include "debug_utils.h"
+
 GLFramebufferObject::GLFramebufferObject()
 {
     glGenFramebuffers(1, &m_rendererId);
@@ -29,4 +31,44 @@ GLFramebufferObject::~GLFramebufferObject()
     // "The name zero is reserved by the GL and is silently ignored,
     //  should it occur in framebuffers, as are other unused names."
     // docs.gl
+}
+
+void GLFramebufferObject::bind(GLenum target)
+{
+    glBindFramebuffer(target, m_rendererId);
+}
+
+void GLFramebufferObject::setDrawBuffers(gsl::span<GLenum> drawBuffers)
+{
+    myAssert(isBound(GL_DRAW_FRAMEBUFFER));
+    // docs.gl: "For glDrawBuffers, the framebuffer object that is bound
+    //           to the GL_DRAW_FRAMEBUFFER binding will be used."
+    myAssert(drawBuffers.size() <= getMaxDrawBuffers());
+    glDrawBuffers(drawBuffers.size(), drawBuffers.data());
+}
+
+GLuint GLFramebufferObject::getMaxDrawBuffers()
+{
+    GLint max = 0;
+    glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max);
+    return static_cast<GLuint>(max);
+}
+
+bool GLFramebufferObject::isBound(GLenum target) const
+{
+    GLenum pname = 0;
+    switch (target) {
+    case GL_READ_FRAMEBUFFER:
+        pname = GL_READ_FRAMEBUFFER_BINDING;
+        break;
+    case GL_DRAW_FRAMEBUFFER:
+    case GL_FRAMEBUFFER:
+        pname = GL_DRAW_FRAMEBUFFER_BINDING;
+        break;
+    default:
+        myAssert(false);
+    }
+    GLint bound_fbo = 0;
+    glGetIntegerv(pname, &bound_fbo);
+    return m_rendererId == static_cast<GLuint>(bound_fbo);
 }
