@@ -26,6 +26,8 @@ public:
     void attachTexture(GLenum attachment, const GLTexture& texture, GLint mipLevel = 0);
     void unattachTexture(GLenum attachment);
 
+    GLenum checkFramebufferStatus() const;
+
     static GLuint getMaxDrawBuffers();
 private:
     bool isBound(GLenum target = GL_DRAW_FRAMEBUFFER) const;

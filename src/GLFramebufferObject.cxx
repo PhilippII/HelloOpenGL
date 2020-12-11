@@ -64,6 +64,12 @@ void GLFramebufferObject::unattachTexture(GLenum attachment)
 
 }
 
+GLenum GLFramebufferObject::checkFramebufferStatus() const
+{
+    myAssert(isBound(GL_DRAW_FRAMEBUFFER));
+    return glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+}
+
 GLuint GLFramebufferObject::getMaxDrawBuffers()
 {
     GLint max = 0;
