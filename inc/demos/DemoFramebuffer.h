@@ -20,6 +20,8 @@
 
 #include "ControllerSun.h"
 
+#include "GLFramebufferObject.h"
+
 
 namespace demo {
 
@@ -69,7 +71,7 @@ private:
     // ------------------
     std::unique_ptr<GLTexture> m_texColorBuffer;
     std::unique_ptr<GLTexture> m_texDepthBuffer;
-    GLuint m_fbo_id;
+    std::unique_ptr<GLFramebufferObject> m_fbo;
 
     // 3. members for rendering from fbo to screen
     // -------------------------------------------

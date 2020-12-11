@@ -80,11 +80,11 @@ demo::DemoFramebuffer::DemoFramebuffer(GLRenderer &renderer)
     // m_texDepthBuffer = see OnWindowSizeChanged()
 
     // init framebuffer:
-    glGenFramebuffers(1, &m_fbo_id);
+    m_fbo = std::make_unique<GLFramebufferObject>();
     // attach m_texColorBuffer and m_texColorBuffer, see OnWindowSizeChanged()
     std::array<GLenum, 1> drawBuffers = { GL_COLOR_ATTACHMENT0 };
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_id);
-    glDrawBuffers(1, drawBuffers.data());
+    m_fbo->bind();
+    m_fbo->setDrawBuffers(drawBuffers);
 
     // 3. init stuff to render from fbo to screen
     // ------------------------------------------
@@ -124,7 +124,6 @@ demo::DemoFramebuffer::DemoFramebuffer(GLRenderer &renderer)
 
 demo::DemoFramebuffer::~DemoFramebuffer()
 {
-    glDeleteFramebuffers(1, &m_fbo_id);
     getRenderer().disable_framebuffer_sRGB();
     getRenderer().disableFaceCulling();
 }
@@ -135,11 +134,9 @@ void demo::DemoFramebuffer::OnWindowSizeChanged(int width, int height)
     m_camera.setAspect(static_cast<float>(width) / static_cast<float>(height));
 
     // clear existing attachments if any (is this necessary?):
-//    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_id);
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-//                           GL_TEXTURE_2D, 0, 0);
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-//                           GL_TEXTURE_2D, 0, 0);
+//    m_fbo->bind();
+//    m_fbo->unattachTexture(GL_COLOR_ATTACHMENT0);
+//    m_fbo->unattachTexture(GL_DEPTH_ATTACHMENT);
 
     // allocate new textures of appropriate size (delete old textures if any):
     glActiveTexture(GL_TEXTURE0 + texUnitUnused); // avoid unbinding the texture currently bound to texUnit in the constructors
@@ -149,14 +146,12 @@ void demo::DemoFramebuffer::OnWindowSizeChanged(int width, int height)
     m_texColorBuffer->bind(texUnitColorBuffer);
 
     // attach new textures to framebuffer:
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_id);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                           GL_TEXTURE_2D, m_texColorBuffer->getRendererId(), 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                           GL_TEXTURE_2D, m_texDepthBuffer->getRendererId(), 0);
+    m_fbo->bind();
+    m_fbo->attachTexture(GL_COLOR_ATTACHMENT0, *m_texColorBuffer);
+    m_fbo->attachTexture(GL_DEPTH_ATTACHMENT, *m_texDepthBuffer);
 
     // check framebuffer completeness:
-    myAssert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+    myAssert(m_fbo->checkFramebufferStatus() == GL_FRAMEBUFFER_COMPLETE);
 }
 
 bool demo::DemoFramebuffer::OnKeyPressed(int key, int scancode, int action, int mods)
@@ -175,7 +170,7 @@ void demo::DemoFramebuffer::OnRender()
 
     // I. render into fbo:
     // -------------------
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_id);
+    m_fbo->bind();
     getRenderer().enableDepthTest();
     getRenderer().setClearColor(glm::vec4(linRGB_from_sRGB(m_clearColor_sRGB), 1.f));
     getRenderer().clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -218,7 +213,7 @@ void demo::DemoFramebuffer::OnRender()
 
     // II. render from fbo to screen:
     // ------------------------------
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_fbo->unbind();
     getRenderer().disableDepthTest();
     getRenderer().draw(*m_rectVAO, *m_rectIBO, *m_filterSP);
 }
