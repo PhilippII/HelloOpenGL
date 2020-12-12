@@ -51,7 +51,7 @@ void GLFramebufferObject::setDrawBuffers(gsl::span<GLenum> drawBuffers)
     // docs.gl: "For glDrawBuffers, the framebuffer object that is bound
     //           to the GL_DRAW_FRAMEBUFFER binding will be used."
     myAssert(drawBuffers.size() <= getMaxDrawBuffers());
-    glDrawBuffers(drawBuffers.size(), drawBuffers.data());
+    glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
 }
 
 void GLFramebufferObject::attachTexture(GLenum attachment, const GLTexture &texture, GLint mipLevel)
