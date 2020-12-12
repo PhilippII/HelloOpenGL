@@ -9,7 +9,7 @@ GLuint GLIndexBuffer::getIndexSize(GLenum type) {
       case GL_UNSIGNED_INT:
         return sizeof(GLuint);
       default:
-        myAssert(false);
+        ASSERT(false);
         return 0;
     }
 }

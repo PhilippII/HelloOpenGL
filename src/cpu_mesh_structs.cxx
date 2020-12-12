@@ -51,16 +51,16 @@ static void printAttribute(std::ostream& os, GLint dimCount, GLenum componentTyp
         // myAssert(dimCount == 4 || dimCount == GL_BGRA);
         cerr << "printing of types GL_INT_2_10_10_10_REV, GL_UNSIGNED_INT_2_10_10_10_REV\n";
         cerr << "and GL_UNSIGNED_INT_10F_11F_11F_REV not supported\n";
-        myAssert(false);
+        ASSERT(false);
         break;
       case GL_UNSIGNED_INT_10F_11F_11F_REV:
         // myAssert(dimCount == 3);
         cerr << "printing of types GL_INT_2_10_10_10_REV, GL_UNSIGNED_INT_2_10_10_10_REV\n";
         cerr << "and GL_UNSIGNED_INT_10F_11F_11F_REV not supported\n";
-        myAssert(false);
+        ASSERT(false);
         break;
       default:
-        myAssert(false);
+        ASSERT(false);
         break;
     }
 }

@@ -41,7 +41,7 @@ void GLFramebufferObject::bind(GLenum target)
 
 void GLFramebufferObject::unbind(GLenum target)
 {
-    myAssert(!isOtherFBObound(target)); // - do NOT allow unbinding a different fbo B
+    ASSERT(!isOtherFBObound(target)); // - do NOT allow unbinding a different fbo B
                                         //   by calling A.unbind() on a fbo A != B.
                                         // - do allow calling this method when the default framebuffer
                                         //   is bound (in this case it has no effect)
@@ -51,23 +51,23 @@ void GLFramebufferObject::unbind(GLenum target)
 
 void GLFramebufferObject::setDrawBuffers(gsl::span<GLenum> drawBuffers)
 {
-    myAssert(isBound(GL_DRAW_FRAMEBUFFER));
+    ASSERT(isBound(GL_DRAW_FRAMEBUFFER));
     // docs.gl: "For glDrawBuffers, the framebuffer object that is bound
     //           to the GL_DRAW_FRAMEBUFFER binding will be used."
-    myAssert(drawBuffers.size() <= getMaxDrawBuffers());
+    ASSERT(drawBuffers.size() <= getMaxDrawBuffers());
     glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
 }
 
 void GLFramebufferObject::attachTexture(GLenum attachment, const GLTexture &texture, GLint mipLevel)
 {
-    myAssert(isBound(GL_DRAW_FRAMEBUFFER));
+    ASSERT(isBound(GL_DRAW_FRAMEBUFFER));
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, attachment,
                            GL_TEXTURE_2D, texture.getRendererId(), mipLevel);
 }
 
 void GLFramebufferObject::unattachTexture(GLenum attachment)
 {
-    myAssert(isBound(GL_DRAW_FRAMEBUFFER));
+    ASSERT(isBound(GL_DRAW_FRAMEBUFFER));
     // TODO: is this also correct for other texture types?
     //          e.g. GL_TEXTURE_3D
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, attachment,
@@ -77,7 +77,7 @@ void GLFramebufferObject::unattachTexture(GLenum attachment)
 
 GLenum GLFramebufferObject::checkFramebufferStatus() const
 {
-    myAssert(isBound(GL_DRAW_FRAMEBUFFER));
+    ASSERT(isBound(GL_DRAW_FRAMEBUFFER));
     return glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
 }
 
@@ -100,7 +100,7 @@ GLuint GLFramebufferObject::getBoundFramebuffer(GLenum target)
         pname = GL_DRAW_FRAMEBUFFER_BINDING;
         break;
     default:
-        myAssert(false);
+        ASSERT(false);
         break;
     }
     GLint bound_fbo = 0;

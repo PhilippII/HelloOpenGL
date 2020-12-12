@@ -42,9 +42,9 @@ demo::DemoMultipleConcepts::DemoMultipleConcepts(GLRenderer &renderer)
     //myAssert(location != -1);
 
     GLint posAttrIndex = m_shaderProgram->getAttribLocation("position_oc");
-    myAssert(posAttrIndex != -1);
+    ASSERT(posAttrIndex != -1);
     GLint colAttrIndex = m_shaderProgram->getAttribLocation("color");
-    myAssert(colAttrIndex != -1);
+    ASSERT(colAttrIndex != -1);
 
 
     // initialize house:
@@ -138,7 +138,7 @@ demo::DemoMultipleConcepts::DemoMultipleConcepts(GLRenderer &renderer)
     std::cout << "loading suzanne took " << time_delta.count() << " milliseconds\n";
     if (suzanneCPUMeshes.empty()) {
         std::cerr << "error no object was found in obj file\n";
-        myAssert(false);
+        ASSERT(false);
     }
 
     for (auto& cpuMesh : suzanneCPUMeshes) {

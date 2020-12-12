@@ -15,8 +15,8 @@ void VertexBufferLayout::append(GLint dimCount, GLenum componentType, std::strin
 
 void VertexBufferLayout::append(GLint dimCount, GLenum componentType, VariableType castTo, loc_type location, std::string name)
 {
-    myAssert(isValidDimension(dimCount, componentType, castTo)); // if dimCount == GL_BGRA check that castTo == NORMALIZED_FLOAT
-    myAssert(isValidCast(componentType, castTo));
+    ASSERT(isValidDimension(dimCount, componentType, castTo)); // if dimCount == GL_BGRA check that castTo == NORMALIZED_FLOAT
+    ASSERT(isValidCast(componentType, castTo));
     m_attributes.push_back({static_cast<unsigned int>(m_stride),
                             dimCount, componentType, castTo,
                             location, name});
@@ -112,15 +112,15 @@ GLuint VertexBufferLayout::getAttributeSize(GLint dimCount, GLenum componentType
         break;
       case GL_INT_2_10_10_10_REV:
       case GL_UNSIGNED_INT_2_10_10_10_REV:
-        myAssert(dimCount == 4 || dimCount == GL_BGRA);
+        ASSERT(dimCount == 4 || dimCount == GL_BGRA);
         result = sizeof(GLuint);
         break;
       case GL_UNSIGNED_INT_10F_11F_11F_REV:
-        myAssert(dimCount == 3);
+        ASSERT(dimCount == 3);
         result = sizeof(GLuint);
         break;
       default:
-        myAssert(false);
+        ASSERT(false);
         break;
     }
     return static_cast<GLuint>(result);
@@ -148,7 +148,7 @@ bool VertexBufferLayout::isValidCast(GLenum componentType, VariableType castTo)
                     || castTo == VariableType::INT);
         break;
     default:
-        myAssert(false);
+        ASSERT(false);
         break;
     }
     return result;
@@ -170,7 +170,7 @@ VariableType VertexBufferLayout::getDefaultCast(GLenum componentType)
         break;
     default:
         result = VariableType::NORMALIZED_FLOAT;
-        myAssert(false);
+        ASSERT(false);
         break;
     }
     return result;

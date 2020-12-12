@@ -77,7 +77,7 @@ public:
         constexpr auto gl_type = gl_type_to_id<T>;
         static_assert(gl_type);
         if constexpr(gl_type->dimCount != 1) {
-            myAssert(dimCount == 1);
+            ASSERT(dimCount == 1);
             // NOTE: for packed types (like GL_INT_2_10_10_10_REV​)
             //      I actually expect
             //      myAssert(dimCount == gl_type->dimCount)
@@ -95,7 +95,7 @@ public:
         constexpr auto gl_type = gl_type_to_id<T>;
         static_assert(gl_type);
         if constexpr(gl_type->dimCount != 1) {
-            myAssert(dimCount == 1); // note comment on above overload
+            ASSERT(dimCount == 1); // note comment on above overload
             append(gl_type->dimCount, gl_type->id, castTo, name);
         } else {
             append(         dimCount, gl_type->id, castTo, name);
@@ -107,7 +107,7 @@ public:
         constexpr auto gl_type = gl_type_to_id<T>;
         static_assert(gl_type);
         if constexpr(gl_type->dimCount != 1) {
-            myAssert(dimCount == 1); // note comment on above overload
+            ASSERT(dimCount == 1); // note comment on above overload
             append(gl_type->dimCount, gl_type->id, name);
         } else {
             append(         dimCount, gl_type->id, name);

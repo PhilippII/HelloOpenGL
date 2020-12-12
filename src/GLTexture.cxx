@@ -40,11 +40,11 @@ GLTexture::GLTexture(std::filesystem::path filepath, int channels, bool sRGB, co
     // std::vector<GLubyte> pix_data = makeCheckerPattern(m_width, m_height);
     stbi_set_flip_vertically_on_load(1);
     int width, height, channels_in_file;
-    myAssert(1 <= channels && channels <= 4);
+    ASSERT(1 <= channels && channels <= 4);
     unsigned char* pix_data = stbi_load(filepath.string().c_str(), &width, &height, &channels_in_file, channels);
-    myAssert(pix_data);
-    debugDo(std::cout << "available channels in file " << filepath << ": " << channels_in_file << '\n');
-    myAssert(channels_in_file >= channels);
+    ASSERT(pix_data);
+    DEBUG_DO(std::cout << "available channels in file " << filepath << ": " << channels_in_file << '\n');
+    ASSERT(channels_in_file >= channels);
 
     // select internalformat based on #channels and based on whether we want to use sRGB:
     constexpr std::array<std::array<std::optional<GLenum>, 4>, 2> internalformats
@@ -54,7 +54,7 @@ GLTexture::GLTexture(std::filesystem::path filepath, int channels, bool sRGB, co
         //  not guaranteed to be supported for framebuffers.
         // the others are guaranteed to be supported (required formats) for both textures and framebuffers.
     std::optional<GLenum> myInternalformat = internalformats[static_cast<int>(sRGB)][channels - 1];
-    myAssert(myInternalformat);
+    ASSERT(myInternalformat);
 
     // call helper function to avoid code duplication with other constructor:
     //  1.) compute sensible number of mipmap levels and initialize
@@ -125,14 +125,14 @@ void GLTexture::bind(int texUnit)
 
 void GLTexture::unbind()
 {
-    myAssert(isBoundToActiveUnit());
+    ASSERT(isBoundToActiveUnit());
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void GLTexture::initAndKeepBound(int width, int height, GLenum internalformat, const Tex2DSamplingParams& sampParams)
 {
     // setup m_width, m_height and m_mipLevels:
-    myAssert(0 <= width && 0 <= height);
+    ASSERT(0 <= width && 0 <= height);
     m_width = width;
     m_height = height;
     m_mipLevels = (sampParams.requiresMipmap()) ? computeMipLevelCount(m_width, m_height) : 1;
@@ -162,7 +162,7 @@ void GLTexture::initAndKeepBound(int width, int height, GLenum internalformat, c
     if (sampParams.try_anisotropic_filter && GLEW_EXT_texture_filter_anisotropic) {
         float maxMaxAnisotropy = 1.f;
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxMaxAnisotropy);
-        debugDo(std::cout << "GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT is " << maxMaxAnisotropy << '\n');
+        DEBUG_DO(std::cout << "GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT is " << maxMaxAnisotropy << '\n');
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, std::min(maxMaxAnisotropy, 32.f));
     }
 }
@@ -201,7 +201,7 @@ std::vector<GLubyte> GLTexture::makeCheckerPattern(GLsizei &width, GLsizei &heig
                       std::back_inserter(res));
         }
     }
-    myAssert(res.size() == colors[0].size() * width * height);
-    myAssert(colors[0].size() == colors[1].size());
+    ASSERT(res.size() == colors[0].size() * width * height);
+    ASSERT(colors[0].size() == colors[1].size());
     return res;
 }

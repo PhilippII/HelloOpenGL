@@ -46,7 +46,7 @@ void GLVertexArray::addBuffer(const GLVertexBuffer &vb, const VertexBufferLayout
             continue;
         }
         glEnableVertexAttribArray(*attr.location);
-        myAssert(VertexBufferLayout::isValidCast(attr.componentType, attr.castTo));
+        ASSERT(VertexBufferLayout::isValidCast(attr.componentType, attr.castTo));
         switch (attr.castTo) {
           case VariableType::NORMALIZED_FLOAT:
           case VariableType::FLOAT:
@@ -65,7 +65,7 @@ void GLVertexArray::addBuffer(const GLVertexBuffer &vb, const VertexBufferLayout
                                   attr.offset);
             break;
           default:
-            myAssert(false);
+            ASSERT(false);
             break;
         }
         glVertexAttribBinding(*attr.location, bindingIndex);

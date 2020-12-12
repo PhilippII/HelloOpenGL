@@ -131,7 +131,7 @@ void GLAPIENTRY gl_debug_output_callback(GLenum source, GLenum type,
     os << message << '\n';
     os << std::hex << "(source = 0x" << source << " type = 0x" << type << " severity = 0x" << severity
        << " id = 0x" << id << ")\n" << std::dec;
-    myAssert(severity == GL_DEBUG_SEVERITY_NOTIFICATION);
+    ASSERT(severity == GL_DEBUG_SEVERITY_NOTIFICATION);
 }
 
 

@@ -151,7 +151,7 @@ void demo::DemoFramebuffer::OnWindowSizeChanged(int width, int height)
     m_fbo->attachTexture(GL_DEPTH_ATTACHMENT, *m_texDepthBuffer);
 
     // check framebuffer completeness:
-    myAssert(m_fbo->checkFramebufferStatus() == GL_FRAMEBUFFER_COMPLETE);
+    ASSERT(m_fbo->checkFramebufferStatus() == GL_FRAMEBUFFER_COMPLETE);
 }
 
 bool demo::DemoFramebuffer::OnKeyPressed(int key, int scancode, int action, int mods)
@@ -166,7 +166,7 @@ void demo::DemoFramebuffer::OnUpdate(float deltaSeconds)
 
 void demo::DemoFramebuffer::OnRender()
 {
-    myAssert(m_texColorBuffer); // otherwise OnWindowSizeChanged(..) has not been called yet.
+    ASSERT(m_texColorBuffer); // otherwise OnWindowSizeChanged(..) has not been called yet.
 
     // I. render into fbo:
     // -------------------

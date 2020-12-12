@@ -6,19 +6,19 @@
 #endif
 
 #ifdef NDEBUG
-#define myAssert(x)
+#define ASSERT(x)
 #else
 #ifdef WIN32
-#define myAssert(x) if (!(x)) __debugbreak()
+#define ASSERT(x) if (!(x)) __debugbreak()
 #else
-#define myAssert(x) if (!(x)) raise(SIGTRAP)
+#define ASSERT(x) if (!(x)) raise(SIGTRAP)
 #endif
 #endif
 
 #ifdef NDEBUG
-#define debugDo(x)
+#define DEBUG_DO(x)
 #else
-#define debugDo(x) x
+#define DEBUG_DO(x) x
 #endif
 
 

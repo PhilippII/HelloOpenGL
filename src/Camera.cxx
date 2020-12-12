@@ -67,6 +67,6 @@ glm::mat4 Camera::mat_cc_from_wc() const
     res = glm::rotate(res, m_pitch_rad, glm::vec3(-1.f,  0.f,  0.f));
     res = glm::rotate(res, m_yaw_rad,   glm::vec3( 0.f, +1.f,  0.f));
     res = glm::translate(res, -m_pos_wc);
-    myAssert(almostEqual(res, glm::inverse(mat_wc_from_cc()), .0001f));
+    ASSERT(almostEqual(res, glm::inverse(mat_wc_from_cc()), .0001f));
     return res;
 }

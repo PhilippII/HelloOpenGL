@@ -28,19 +28,19 @@ CPUMesh<Index> addIndexBuffer(const VertexBufferLayout& layout,
                               std::optional<gsl::span<const GLbyte>> restartVertex = {},
                               Index primitiveRestartIndex = std::numeric_limits<Index>::max()) {
     VertexBufferLayout::stride_type stride = layout.getStride();
-    myAssert(data.size() % stride == 0);
+    ASSERT(data.size() % stride == 0);
     Index count = static_cast<Index>(data.size() / stride);
 
     CPUMesh<Index> res;
     res.va.layout = layout;
-    myAssert(!restartVertex || restartVertex->size() == static_cast<std::size_t>(stride));
+    ASSERT(!restartVertex || restartVertex->size() == static_cast<std::size_t>(stride));
     res.ib.primitiveRestartIndex = (restartVertex) ? std::optional<Index>{primitiveRestartIndex} : std::nullopt;
 
     SpanDeepCompareLess<const GLbyte> compare;
     std::map<gsl::span<const GLbyte>, Index, decltype(compare)> vertex_to_index(compare);
 
     for (Index i_in = 0; i_in < count; ++i_in) {
-        myAssert(vertex_to_index.size() == res.va.data.size() / stride);
+        ASSERT(vertex_to_index.size() == res.va.data.size() / stride);
         Index i_out;
         gsl::span<const GLbyte> vertex = data.subspan(i_in * stride, stride);
         if (restartVertex && std::equal(vertex.begin(), vertex.end(), restartVertex->begin())) {
@@ -59,8 +59,8 @@ CPUMesh<Index> addIndexBuffer(const VertexBufferLayout& layout,
         }
         res.ib.indices.push_back(i_out);
     }
-    debugDo(std::cout << "removed " << (count - vertex_to_index.size()) << " doubles and/or restartVertices\n");
-    debugDo(std::cout << vertex_to_index.size() << " vertices remaining in vertex array\n");
+    DEBUG_DO(std::cout << "removed " << (count - vertex_to_index.size()) << " doubles and/or restartVertices\n");
+    DEBUG_DO(std::cout << vertex_to_index.size() << " vertices remaining in vertex array\n");
 
     return res;
 }
@@ -96,7 +96,7 @@ CPUVertexArray applyMultiIndex(gsl::span<const std::array<Index, N>> multiIndice
 
 template<typename Index, int N>
 CPUVertexArray applyMultiIndex(const CPUMultiIndexMesh<Index, N>& miMesh) {
-    myAssert(miMesh.mib.primitiveRestart == false);
+    ASSERT(miMesh.mib.primitiveRestart == false);
     return applyMultiIndex<Index, N>({miMesh.mib.indices.data(),
                                       miMesh.mib.indices.size()},
                                      miMesh.vas);
@@ -130,8 +130,8 @@ CPUIndexBuffer<Index> applyTriangleFan(const CPUIndexBuffer<Index>& ib) {
                                  GL_TRIANGLES,
                                  {} // disable primitiveRestartIndex in result
                                 };
-    myAssert(ib.primitiveType == GL_TRIANGLE_FAN);
-    myAssert(ib.primitiveRestartIndex);
+    ASSERT(ib.primitiveType == GL_TRIANGLE_FAN);
+    ASSERT(ib.primitiveRestartIndex);
 
     ib_count_t i = 0;
     while (i < ib.indices.size()) {

@@ -74,7 +74,7 @@ GLenum GLBufferObject::getBindingEnum(GLenum target) {
       case GL_UNIFORM_BUFFER:
         return GL_UNIFORM_BUFFER_BINDING;
       default:
-        myAssert(false);
+        ASSERT(false);
         return 0;
     }
 }

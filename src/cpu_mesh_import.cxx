@@ -120,7 +120,7 @@ inline bool parsePosition(WavefrontObject& obj, istringstream& iss, bool invert_
         {}
     if (i < v.size()) {
         cerr << "error reading vertex position\n";
-        myAssert(false);
+        ASSERT(false);
         return false;
     }
     if (invert_z) {
@@ -140,7 +140,7 @@ inline bool parseTexCoord(WavefrontObject& obj, istringstream& iss) {
         {}
     if (i < vt.size()) {
         cerr << "error reading texture coordinate\n";
-        myAssert(false);
+        ASSERT(false);
         return false;
     }
     obj.verts_vt.push_back(vt);
@@ -157,7 +157,7 @@ inline bool parseNormal(WavefrontObject& obj, istringstream& iss, bool invert_z)
         {}
     if (i < vn.size()) {
         cerr << "error reading normal\n";
-        myAssert(false);
+        ASSERT(false);
         return false;
     }
     if (invert_z) {
@@ -166,7 +166,7 @@ inline bool parseNormal(WavefrontObject& obj, istringstream& iss, bool invert_z)
     obj.verts_vn.push_back(vn);
     if (!(iss >> std::ws).eof()) {
         cerr << "error normal should only have three dimensions\n";
-        myAssert(false);
+        ASSERT(false);
         return false;
     }
     return true;
@@ -180,7 +180,7 @@ struct VertexCountSum {
 
 inline bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCountSum& count_sum, const vector<std::regex>& mi_pats) {
     string multIndStr;
-    debugDo(int n = 1);
+    DEBUG_DO(int n = 1);
     while (iss >> multIndStr) {
         std::smatch matches;
         bool success = false;
@@ -197,7 +197,7 @@ inline bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCoun
         }
         if (!success) {
             cerr << "error parsing vertex: " << multIndStr << '\n';
-            myAssert(false);
+            ASSERT(false);
             return false;
         }
 
@@ -209,7 +209,7 @@ inline bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCoun
                 v = static_cast<GLuint>(obj.verts_v.size()) + v_raw;
             } else if (static_cast<GLuint>(v_raw) <= count_sum.v) {
                 cerr << "error: sharing vertices between different objects is not supported by this implementation\n";
-                myAssert(false);
+                ASSERT(false);
                 return false;
             } else {
                 v = v_raw - count_sum.v - 1;
@@ -223,7 +223,7 @@ inline bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCoun
                 vt = static_cast<GLuint>(obj.verts_vt.size()) + vt_raw;
             } else if (static_cast<GLuint>(vt_raw) <= count_sum.vt) {
                 cerr << "error: sharing vertices between different object is not supported by this implementation\n";
-                myAssert(false);
+                ASSERT(false);
                 return false;
             } else {
                 vt = vt_raw - count_sum.vt - 1;
@@ -237,7 +237,7 @@ inline bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCoun
                 vn = static_cast<GLuint>(obj.verts_vn.size()) + vn_raw;
             } else if (static_cast<GLuint>(vn_raw) <= count_sum.vn) {
                 cerr << "error: sharing vertices between different object is not supported by this implementation\n";
-                myAssert(false);
+                ASSERT(false);
                 return false;
             } else {
                 vn = vn_raw - count_sum.vn - 1;
@@ -258,33 +258,33 @@ inline bool parseFace(WavefrontObject& obj, istringstream& iss, const VertexCoun
             obj.mib_v_vt_vn.indices.push_back({v, vt, vn});
             break;
         default:
-            myAssert(false);
+            ASSERT(false);
             break;
         }
-        debugDo(++n);
+        DEBUG_DO(++n);
     }
     switch (obj.miFormat) {
     case WavefrontObject::MultiIndexFormat::V:
-        myAssert(obj.mib_v.primitiveRestartMultiIndex);
+        ASSERT(obj.mib_v.primitiveRestartMultiIndex);
         obj.mib_v.indices.push_back(*obj.mib_v.primitiveRestartMultiIndex);
         break;
     case WavefrontObject::MultiIndexFormat::V_VT:
-        myAssert(obj.mib_v_vt.primitiveRestartMultiIndex);
+        ASSERT(obj.mib_v_vt.primitiveRestartMultiIndex);
         obj.mib_v_vt.indices.push_back(*obj.mib_v_vt.primitiveRestartMultiIndex);
         break;
     case WavefrontObject::MultiIndexFormat::V_VN:
-        myAssert(obj.mib_v_vn.primitiveRestartMultiIndex);
+        ASSERT(obj.mib_v_vn.primitiveRestartMultiIndex);
         obj.mib_v_vn.indices.push_back(*obj.mib_v_vn.primitiveRestartMultiIndex);
         break;
     case WavefrontObject::MultiIndexFormat::V_VT_VN:
-        myAssert(obj.mib_v_vt_vn.primitiveRestartMultiIndex);
+        ASSERT(obj.mib_v_vt_vn.primitiveRestartMultiIndex);
         obj.mib_v_vt_vn.indices.push_back(*obj.mib_v_vt_vn.primitiveRestartMultiIndex);
         break;
     default:
-        myAssert(false);
+        ASSERT(false);
         break;
     }
-    myAssert(n >= 3);
+    ASSERT(n >= 3);
     return true;
 }
 
@@ -343,7 +343,7 @@ inline CPUMesh<GLuint> wavefrontObjectToMesh(const WavefrontObject& obj, bool* s
                 }
                 break;
             default:
-                myAssert(false);
+                ASSERT(false);
                 break;
             }
             *success = false;
@@ -379,7 +379,7 @@ std::vector<CPUMesh<GLuint>> loadOBJfile(const std::filesystem::path& filepath, 
 
     VertexCountSum count_sum = {0, 0, 0};
 
-    debugDo(int lineNum = 0);
+    DEBUG_DO(int lineNum = 0);
     string nextName;
     while (ifs) {
         WavefrontObject obj;
@@ -403,7 +403,7 @@ std::vector<CPUMesh<GLuint>> loadOBJfile(const std::filesystem::path& filepath, 
                                                                            std::numeric_limits<GLuint>::max()};
         string line;
         while (nextName.empty() && getline(ifs, line)) {
-            debugDo(++lineNum);
+            DEBUG_DO(++lineNum);
             // cout << line << '\n';
             istringstream iss {line};
             string opcodeStr;
@@ -416,22 +416,22 @@ std::vector<CPUMesh<GLuint>> loadOBJfile(const std::filesystem::path& filepath, 
                 cout << "OBJ-file comment: " << opcodeStr << " " << commentStr << '\n';
             } else if (opcodeStr == "v") {
                 if (!parsePosition(obj, iss, invert_z)) {
-                    debugDo(cerr << "abort loading .obj-file due to error in line number " << lineNum << ":\n" << line << '\n');
+                    DEBUG_DO(cerr << "abort loading .obj-file due to error in line number " << lineNum << ":\n" << line << '\n');
                     return vector<CPUMesh<GLuint>>();
                 }
             } else if (opcodeStr == "vt") {
                 if (!parseTexCoord(obj, iss)) {
-                    debugDo(cerr << "abort loading .obj-file due to error in line number " << lineNum << ":\n" << line << '\n');
+                    DEBUG_DO(cerr << "abort loading .obj-file due to error in line number " << lineNum << ":\n" << line << '\n');
                     return vector<CPUMesh<GLuint>>();
                 }
             } else if (opcodeStr == "vn") {
                 if (!parseNormal(obj, iss, invert_z)) {
-                    debugDo(cerr << "abort loading .obj-file due to error in line number " << lineNum << ":\n" << line << '\n');
+                    DEBUG_DO(cerr << "abort loading .obj-file due to error in line number " << lineNum << ":\n" << line << '\n');
                     return vector<CPUMesh<GLuint>>();
                 }
             } else if (opcodeStr == "f") {
                 if (!parseFace(obj, iss, count_sum, mi_pats)) {
-                    debugDo(cerr << "abort loading .obj-file due to error in line number " << lineNum << ":\n" << line << '\n');
+                    DEBUG_DO(cerr << "abort loading .obj-file due to error in line number " << lineNum << ":\n" << line << '\n');
                     return vector<CPUMesh<GLuint>>();
                 }
             } else if (opcodeStr == "o") {
@@ -463,7 +463,7 @@ std::vector<CPUMesh<GLuint>> loadOBJfile(const std::filesystem::path& filepath, 
         } else {
             bool success;
             results.push_back(wavefrontObjectToMesh(obj, &success));
-            myAssert(success);
+            ASSERT(success);
         }
     }
 

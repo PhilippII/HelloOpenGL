@@ -38,7 +38,7 @@ GLShaderProgram::GLShaderProgram(const std::filesystem::path& filepath, SPReadin
         addShaderFromSource(src);
     }
     bool success = makeReady(readiness);
-    myAssert(success);
+    ASSERT(success);
 }
 
 GLShaderProgram::GLShaderProgram(std::vector<ShaderSource> sources, SPReadiness readiness)
@@ -49,7 +49,7 @@ GLShaderProgram::GLShaderProgram(std::vector<ShaderSource> sources, SPReadiness 
         addShaderFromSource(src);
     }
     bool success = makeReady(readiness);
-    myAssert(success);
+    ASSERT(success);
 }
 
 GLShaderProgram::GLShaderProgram(GLShaderProgram&& other)
@@ -157,7 +157,7 @@ void GLShaderProgram::bind() {
 }
 
 void GLShaderProgram::unbind() {
-    myAssert(isBound());
+    ASSERT(isBound());
     glUseProgram(0);
 }
 
@@ -174,7 +174,7 @@ void GLShaderProgram::printShaderProgramInfoLog() const {
 
 GLint GLShaderProgram::getParam(GLenum pname) const {
     GLint param;
-    myAssert(pname != GL_COMPUTE_WORK_GROUP_SIZE); // returns three integers
+    ASSERT(pname != GL_COMPUTE_WORK_GROUP_SIZE); // returns three integers
     glGetProgramiv(m_rendererID, pname, &param);
     return param;
 }
@@ -205,7 +205,7 @@ GLint GLShaderProgram::getUniformLocation(const std::string &name) const {
 
 void GLShaderProgram::setUniform1i(GLint location, int v)
 {
-    myAssert(isBound());
+    ASSERT(isBound());
     glUniform1i(location, v);
     // docs.gl:
     // "If location is equal to -1, the data passed in will be silently ignored
@@ -219,7 +219,7 @@ void GLShaderProgram::setUniform1i(const std::string &name, int v)
 
 void GLShaderProgram::setUniform1f(GLint location, float value)
 {
-    myAssert(isBound());
+    ASSERT(isBound());
     glUniform1f(location, value);
 }
 
@@ -230,7 +230,7 @@ void GLShaderProgram::setUniform1f(const std::string &name, float value)
 
 void GLShaderProgram::setUniform3f(GLint location, float v0, float v1, float v2)
 {
-    myAssert(isBound());
+    ASSERT(isBound());
     glUniform3f(location, v0, v1, v2);
 }
 
@@ -241,7 +241,7 @@ void GLShaderProgram::setUniform3f(const std::string &name, float v0, float v1, 
 
 void GLShaderProgram::setUniform3f(GLint location, const glm::vec3& vector)
 {
-    myAssert(isBound());
+    ASSERT(isBound());
     glUniform3f(location, vector.x, vector.y, vector.z);
 }
 
@@ -252,7 +252,7 @@ void GLShaderProgram::setUniform3f(const std::string &name, const glm::vec3& vec
 
 void GLShaderProgram::setUniform4f(GLint location, float v0, float v1, float v2, float v3)
 {
-    myAssert(isBound());
+    ASSERT(isBound());
     glUniform4f(location, v0, v1, v2, v3);
 }
 
@@ -263,7 +263,7 @@ void GLShaderProgram::setUniform4f(const std::string &name, float v0, float v1, 
 
 void GLShaderProgram::setUniform4fv(GLint location, const GLfloat *value)
 {
-    myAssert(isBound());
+    ASSERT(isBound());
     glUniform4fv(location, 1, value);
 }
 
@@ -274,7 +274,7 @@ void GLShaderProgram::setUniform4fv(const std::string &name, const GLfloat *valu
 
 void GLShaderProgram::setUniformMat4f(GLint location, const glm::mat4 &matrix)
 {
-    myAssert(isBound());
+    ASSERT(isBound());
     glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]);
 }
 
@@ -295,7 +295,7 @@ std::vector<ShaderSource> GLShaderProgram::parseShader(const std::filesystem::pa
     std::ifstream stream(filepath);
     if (!stream) {
         std::cerr << "error opening file " << filepath << '\n';
-        myAssert(false);
+        ASSERT(false);
         return std::vector<ShaderSource>();
     }
 
@@ -326,7 +326,7 @@ std::vector<ShaderSource> GLShaderProgram::parseShader(const std::filesystem::pa
             auto search = shaderTypes.find(typeStr);
             if (search == shaderTypes.end()) {
                 std::cerr << "warning: invalid shader type " << typeStr << '\n';
-                myAssert(false);
+                ASSERT(false);
                 type = {};
             } else {
                 type = search->second;

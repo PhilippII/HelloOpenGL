@@ -32,7 +32,7 @@ public:
 	}
 
 	void unbind() {
-        myAssert(isBound());
+        ASSERT(isBound());
         glBindBuffer(m_target, 0);
 	}
 

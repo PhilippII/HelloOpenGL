@@ -77,7 +77,7 @@ public:
     }
 
     GLuint getPrimitiveRestartIndex() const {
-        myAssert(m_primitiveRestartIndex.has_value());
+        ASSERT(m_primitiveRestartIndex.has_value());
         return *m_primitiveRestartIndex;
     }
 
