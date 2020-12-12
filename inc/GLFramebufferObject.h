@@ -31,7 +31,13 @@ public:
 
     static GLuint getMaxDrawBuffers();
 private:
+    static GLuint getBoundFramebuffer(GLenum target);
+
     bool isBound(GLenum target = GL_DRAW_FRAMEBUFFER) const;
+
+    // check if other fbo is bound,
+    // false if this fbo or the default framebuffer is bound:
+    bool isOtherFBObound(GLenum target = GL_DRAW_FRAMEBUFFER) const;
     GLuint m_rendererId;
 };
 

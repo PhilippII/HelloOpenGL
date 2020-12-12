@@ -41,7 +41,11 @@ void GLFramebufferObject::bind(GLenum target)
 
 void GLFramebufferObject::unbind(GLenum target)
 {
-    myAssert(isBound(target));
+    myAssert(!isOtherFBObound(target)); // - do NOT allow unbinding a different fbo B
+                                        //   by calling A.unbind() on a fbo A != B.
+                                        // - do allow calling this method when the default framebuffer
+                                        //   is bound (in this case it has no effect)
+                                        // - do allow unbinding fbo A by calling A.unbind()
     glBindFramebuffer(target, 0);
 }
 
@@ -84,7 +88,7 @@ GLuint GLFramebufferObject::getMaxDrawBuffers()
     return static_cast<GLuint>(max);
 }
 
-bool GLFramebufferObject::isBound(GLenum target) const
+GLuint GLFramebufferObject::getBoundFramebuffer(GLenum target)
 {
     GLenum pname = 0;
     switch (target) {
@@ -97,8 +101,23 @@ bool GLFramebufferObject::isBound(GLenum target) const
         break;
     default:
         myAssert(false);
+        break;
     }
     GLint bound_fbo = 0;
     glGetIntegerv(pname, &bound_fbo);
-    return m_rendererId == static_cast<GLuint>(bound_fbo);
+    return static_cast<GLuint>(bound_fbo);
+}
+
+
+
+bool GLFramebufferObject::isBound(GLenum target) const
+{
+
+    return m_rendererId == getBoundFramebuffer(target);
+}
+
+bool GLFramebufferObject::isOtherFBObound(GLenum target) const
+{
+    GLuint boundFB = getBoundFramebuffer(target);
+    return boundFB != m_rendererId && boundFB != 0;
 }
