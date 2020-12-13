@@ -2,6 +2,7 @@ GLFW:
 - #define GLFW_DLL?
 	-> automatically defined by cmake glfw imported target ?
 		(INTERFACE_COMPILE_DEFINITIONS) ?
+		-> NO on windows we import in manually (without find_package(..) )
 - import glfw with find_package(..) on windows to rather than manually?
 - also install glfw3-wayland?
 - glfw version 3.2.1 too old? (website recommends >= 3.3.2)
