@@ -106,6 +106,7 @@ if(WIN32)
     set_property(TARGET glfw PROPERTY
                  IMPORTED_IMPLIB "${GLFW_WIN_DIR}/lib-vc${GLFW_MSVC_YEAR}/glfw3dll.lib")
     target_include_directories(glfw INTERFACE "${GLFW_WIN_DIR}/include")
+    target_compile_definitions(glfw INTERFACE "GLFW_DLL")
 
     # glew:
     add_library(glew STATIC IMPORTED)
