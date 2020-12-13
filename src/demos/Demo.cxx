@@ -4,6 +4,8 @@
 #include <algorithm> // for std::find_if()
 #include <iostream>
 
+#include <GLFW/glfw3.h> // for GLFW_KEY_ESCAPE / GLFW_PRESS in OnKeyPressed(...)
+
 namespace demo {
 
 // Demo:

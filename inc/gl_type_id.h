@@ -2,7 +2,6 @@
 #define GL_TYPE_ID_H
 
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 
 #include <optional>
 #include <array>
