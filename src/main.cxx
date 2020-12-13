@@ -166,6 +166,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 // main function:
 int main(int argc, char **argv)
 {
+    // disable old c-style I/O to improve performance
+    // (see Stroustrup a tour of c++ Second Edition Section 10.9):
+    std::ios_base::sync_with_stdio(false);
+
     #ifdef NDEBUG
     std::cout << "RELEASE VERSION\n";
     #else

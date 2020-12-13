@@ -7,8 +7,7 @@ GLFW:
 - glfw version 3.2.1 too old? (website recommends >= 3.3.2)
 	-> compile GLFW from source instead?
 
-c++-stdlib:
-- use ios_base::sync_with_stdio(false) to improve performance?
+
 
 
 DONE removed differences me vs. cherno:
@@ -139,7 +138,10 @@ GLShaderProgram:
 DONE:
 -----
 
-VertexBufferLayout:
+DONE c++-stdlib:
+- use ios_base::sync_with_stdio(false) to improve performance?
+
+DONE VertexBufferLayout:
 - add templated versions of the other overloads of append(..) as well
 	-> maybe add helper-function/variable-template/whatever that converts
 		OpenGL types to their corresponding GLenum constant
