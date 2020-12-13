@@ -1,33 +1,103 @@
-windows:
-- WIN32 correct macro to figure out if we are on windows
-	and if we have __debugbreak() ?
-
-cmake + compile on windows:
-- use ALIASes to avoid case distinction in dear_imgui's CMakeLists.txt
+GLFW:
 - #define GLFW_DLL?
 	-> automatically defined by cmake glfw imported target ?
 		(INTERFACE_COMPILE_DEFINITIONS) ?
-- require version 3.3 for GLFW?
+- import glfw with find_package(..) on windows to rather than manually?
+- also install glfw3-wayland?
+- glfw version 3.2.1 too old? (website recommends >= 3.3.2)
+	-> compile GLFW from source instead?
+
+c++-stdlib:
+- use ios_base::sync_with_stdio(false) to improve performance?
+
+
+DONE removed differences me vs. cherno:
+- generally
+	-> cherno: member variables are prefixed with m_
+	-> cherno: ids of OpenGL-Objects are called m_RendererID
+- Buffers
+	- cherno: VertexBuffer and IndexBuffer are separate classes
+- BufferLayout
+	-> append takes componentType as template argument rather than as regular function argument
+	-> cherno: there is an actual class for the BufferLayout which contains VertexBufferElements
+	-> me: there is only a std::vector of VertexAttributeType (=VertexBufferElement)
+- GLMesh + VAO
+	-> cherno: there is no GLMesh class that takes care of vao, BufferLayout and vbo simultanously
+	-> cherno: but the vao-class itself also takes a BufferLayout and a reference to the vbo
+	-> cherno: vao-class still does not take a reference to an ibo
+	-> cherno: vao-class still does not create vbo by itself it merely takes it as a function 
+		argument to function AddBuffer(...)
+- ShaderProgram:
+	-> cherno: glUseProgram(..) is called Bind()
+	-> cherno: also contains parsing function and directly accepts filename in constructor
+- Renderer
+	-> me: separate renderer class does not exist: glDrawElements(...) is called from main(..) function directly
+
+
+
+MEDIUM PRIORITY:
+----------------
+
+c++:
+- gl_type_id.h 
+	template<typename C, std::size_t N>
+		constexpr std::optional<VertexAttribType> gl_type_to_id<std::array<C, N>> = ...
+	-> is partial template specialization allowed for variable templates
+		-> this says yes: https://www.fluentcpp.com/2017/08/11/how-to-do-partial-template-specialization-in-c/
+	-> does partial template specialization allow specializing template parameters in terms of new
+		template parameters (e.g. T=std::array<C, N> defines T but introduces new parameters C and N)
+	-> is this a partial template specialization or some kind of overload
+- std::optional<...>
+	-> generally use std::optional<..> everywhere where there is a boolean that keeps track of 
+		whether another variable is valid 
+		(maybe also where there is a pointer where nullptr represents an invalid value?)
+
+
+KIND OF DONE/LOW-PRIORITY/OBSOLETE/TOO DIFFICULT:
+------------------------------------------------
+
+abstraction into classes me vs. cherno:
+- generally:
+	-> cherno: debug utils are in same header as class Renderer
+	-> cherno: Bind() and Unbind() are const
+- ShaderProgram
+	-> cherno: ShaderProgram only called Shader
+	-> me: separate classes for Shader and ShaderProgram
+	-> cherno: it is not possible to create a Shader without immediately compiling/linking it in the constructor already
+
+abstracting into classes other TODOs:
+- ShaderProgram should not link before compiling and co.
+
+
+
+??:
+- how should VertexAttributeLayout::setLocations(..) prevent attributes of nonexistent shader 
+	variables to take the same location as attributes of actually existing shader variables
+	-> solution for now: setLocation(..) set the location of attributes corresponding to nonexistent
+		shader variables to std::nullopt (location is a std::optional<GLuint> now instead of just GLuint)
+
+cmake and compile on windows:
+- WIN32 correct macro to figure out if we are on windows
+	and if we have __debugbreak() ?
+	- https://docs.microsoft.com/de-de/cpp/intrinsics/debugbreak?view=msvc-160:
+		"Der systeminterne __debugbreak Compiler ist, ähnlich wie bei der Debugger, 
+		 eine Portable Win32-Methode, um einen Breakpoint auszulösen."
+			       -----
+	-> I guess its probably correct
 - GLEW: checking for extensions 
 	-> check if anisotropic filtering is actually available before using it
 		-> check if it is available as EXT_extension
 			DONE
 		-> check if it is available as ARB_extension or core feature instead
 			TODO
-- what is the correct way to deal with resource files?
-	-> copy or link them from the source-directory into the 
-		build directory? (and how to do that?)
-	-> how to tell cmake that Qt-Creator should show the shader files
-		in the outliner?
-	-> how to figure out which of the resource files are actually used/needed 
-		to build/run the application?
-		(e.g. the gimp *.xcf-files are not used directly while building and
-		 running the application, only the manually exported *.png-files are)
+
+GLFW:
+- #define GLFW_INCLUDE_NONE ?
+- glfw-timer vs. c++-stdlib timer?
+- static vs. dynamic linking against glfw and glew. which is better?
+	-> and why does pkg-config --libs --static not include -Wl,-Bstatic -Wl,-Bdynamic ?
 
 
-important:
-- how should VertexAttributeLayout::setLocations(..) prevent attributes of nonexistent shader 
-	variables to take the same location as attributes of actually existing shader variables
 
 Camera:
 - remove unnecessary inversion of z-coordinate in obj-import code?
@@ -47,51 +117,9 @@ Blending:
 		glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
 		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
 
-GLFW:
-- also install glfw3-wayland?
-- glfw version 3.2.1 too old? (website recommends >= 3.3.2)
-	-> compile GLFW from source instead?
-- static vs. dynamic linking against glfw and glew. which is better?
-	-> and why does pkg-config --libs --static not include -Wl,-Bstatic -Wl,-Bdynamic ?
-- #define GLFW_INCLUDE_NONE ?
-- glfw-timer vs. c++-stdlib timer?
-
-
-c++:
-- gl_type_id.h 
-	template<typename C, std::size_t N>
-		constexpr std::optional<VertexAttribType> gl_type_to_id<std::array<C, N>> = ...
-	-> is partial template specialization allowed for variable templates
-		-> this says yes: https://www.fluentcpp.com/2017/08/11/how-to-do-partial-template-specialization-in-c/
-	-> does partial template specialization allow specializing template parameters in terms of new
-		template parameters (e.g. T=std::array<C, N> defines T but introduces new parameters C and N)
-	-> is this a partial template specialization or some kind of overload
-
-c++-stdlib:
-- use ios_base::sync_with_stdio(false) to improve performance?
-- std::optional<...>
-	-> generally use std::optional<..> everywhere where there is a boolean that keeps track of 
-		whether another variable is valid 
-		(maybe also where there is a pointer where nullptr represents an invalid value?)
-
-cpu_mesh_utils:
-- in addIndexBuffer(..) use gsl::span from Guidelines Support Library instead of std::vector for
-	the current vertex and for the key_type in the array in order to avoid unnecessary copy operations
-	-> problem span does not have comparison operations
-		-> define custom < operation for the map
-		-> use std::equal(..) instead of == to compare the current vertex with the restartVertex
-
 
 OpenGL:
-- GLCall(...) macro is fragile
-	-> e.g. 
-		if (...)
-			GLCall(x());
-		if (...)
-			GLClearError();
-			x();
-			myAssert(GLLocCall(...))
-		-> x() is not part of the if's body anymore!!
+
 - std::array 
 	-> is std::array guaranteed to allow copy construction of new arrays?
 		-> also if array to be copied from is a line of a 2D-array?
@@ -101,12 +129,15 @@ GLTexture:
 - do GL_TEXTURE_MIN_FILTER, GL_TEXTURE_MAG_FILTER and GL_TEXTURE_WRAP_* really have no
 	default value according to the OpenGL specification? And is the implementation really
 	allow to draw a black texture when not explicitly setting those? (as claimed by cherno)
-- implement copy/move-constructor/assignment
+
 
 GLShaderProgram:
 - also cache vertex attribute locations (similar to the uniform locations)
 	-> how to avoid making getAttribLocation(...) non-const?
+		-> needs mutable keyword
 
+DONE:
+-----
 
 VertexBufferLayout:
 - add templated versions of the other overloads of append(..) as well
@@ -114,44 +145,47 @@ VertexBufferLayout:
 		OpenGL types to their corresponding GLenum constant
 		(How does this work?)
 
-
-abstraction into classes me vs. cherno:
-- generally:
-	-> cherno: debug utils are in same header as class Renderer
-	-> cherno: Bind() and Unbind() are const
-- ShaderProgram
-	-> cherno: ShaderProgram only called Shader
-	-> me: separate classes for Shader and ShaderProgram
-	-> cherno: also contains parsing function and directly accepts filename in constructor	
-	-> cherno: it is not possible to create a Shader without immediately compiling/linking it in the constructor already
+DONE GLTexture:
+- implement copy/move-constructor/assignment
 
 
+DONE OpenGL:
+- GLCall(...) macro is fragile
+	-> e.g. 
+		if (...)
+			GLCall(x());
+		if (...)
+			GLClearError();
+			x();
+			myAssert(GLLocCall(...))
+		-> x() is not part of the if's body anymore!!
 
-abstracting into classes other TODOs:
-- ShaderProgram should not link before compiling and co.
 
 
-removed differences me vs. cherno:
-- generally
-	-> cherno: member variables are prefixed with m_
-	-> cherno: ids of OpenGL-Objects are called m_RendererID
-- Buffers
-	- cherno: VertexBuffer and IndexBuffer are separate classes
-- BufferLayout
-	-> append takes componentType as template argument rather than as regular function argument
-	-> cherno: there is an actual class for the BufferLayout which contains VertexBufferElements
-	-> me: there is only a std::vector of VertexAttributeType (=VertexBufferElement)
-- GLMesh + VAO
-	-> cherno: there is no GLMesh class that takes care of vao, BufferLayout and vbo simultanously
-	-> cherno: but the vao-class itself also takes a BufferLayout and a reference to the vbo
-	-> cherno: vao-class still does not take a reference to an ibo
-	-> cherno: vao-class still does not create vbo by itself it merely takes it as a function 
-		argument to function AddBuffer(...)
-- ShaderProgram:
-	-> cherno: glUseProgram(..) is called Bind()
-- Renderer
-	-> me: separate renderer class does not exist: glDrawElements(...) is called from main(..) function directly
+DONE cpu_mesh_utils:
+- in addIndexBuffer(..) use gsl::span from Guidelines Support Library instead of std::vector for
+	the current vertex and for the key_type in the array in order to avoid unnecessary copy operations
+	-> problem span does not have comparison operations
+		-> define custom < operation for the map
+		-> use std::equal(..) instead of == to compare the current vertex with the restartVertex
 
+
+DONE CMake and compile on windows:
+- use ALIASes to avoid case distinction in dear_imgui's CMakeLists.txt
+- what is the correct way to deal with resource files?
+	-> copy or link them from the source-directory into the 
+		build directory? (and how to do that?)
+		-> probably not link them because then the buildsystem could also write into 
+		the source directory accidentially if we make a mistake. This would defeat the
+		purpose of an out of source build
+	-> how to tell cmake that Qt-Creator should show the shader files
+		in the outliner?
+		-> list them as sources to the application
+	-> how to figure out which of the resource files are actually used/needed 
+		to build/run the application?
+		(e.g. the gimp *.xcf-files are not used directly while building and
+		 running the application, only the manually exported *.png-files are)
+		-> for now just provide a manually crafted list of needed resource files
 
 DONE GLFW:
 - set an error callback
