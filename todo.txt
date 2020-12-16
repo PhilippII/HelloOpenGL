@@ -1,38 +1,5 @@
 GLFW:
-- #define GLFW_DLL?
-	-> automatically defined by cmake glfw imported target ?
-		(INTERFACE_COMPILE_DEFINITIONS) ?
-		-> NO on windows we import in manually (without find_package(..) )
-- import glfw with find_package(..) on windows to rather than manually?
-- also install glfw3-wayland?
-- glfw version 3.2.1 too old? (website recommends >= 3.3.2)
-	-> compile GLFW from source instead?
-
-
-
-
-DONE removed differences me vs. cherno:
-- generally
-	-> cherno: member variables are prefixed with m_
-	-> cherno: ids of OpenGL-Objects are called m_RendererID
-- Buffers
-	- cherno: VertexBuffer and IndexBuffer are separate classes
-- BufferLayout
-	-> append takes componentType as template argument rather than as regular function argument
-	-> cherno: there is an actual class for the BufferLayout which contains VertexBufferElements
-	-> me: there is only a std::vector of VertexAttributeType (=VertexBufferElement)
-- GLMesh + VAO
-	-> cherno: there is no GLMesh class that takes care of vao, BufferLayout and vbo simultanously
-	-> cherno: but the vao-class itself also takes a BufferLayout and a reference to the vbo
-	-> cherno: vao-class still does not take a reference to an ibo
-	-> cherno: vao-class still does not create vbo by itself it merely takes it as a function 
-		argument to function AddBuffer(...)
-- ShaderProgram:
-	-> cherno: glUseProgram(..) is called Bind()
-	-> cherno: also contains parsing function and directly accepts filename in constructor
-- Renderer
-	-> me: separate renderer class does not exist: glDrawElements(...) is called from main(..) function directly
-
+- import glfw with find_package(..) on windows too rather than manually?
 
 
 MEDIUM PRIORITY:
@@ -47,10 +14,6 @@ c++:
 	-> does partial template specialization allow specializing template parameters in terms of new
 		template parameters (e.g. T=std::array<C, N> defines T but introduces new parameters C and N)
 	-> is this a partial template specialization or some kind of overload
-- std::optional<...>
-	-> generally use std::optional<..> everywhere where there is a boolean that keeps track of 
-		whether another variable is valid 
-		(maybe also where there is a pointer where nullptr represents an invalid value?)
 
 
 KIND OF DONE/LOW-PRIORITY/OBSOLETE/TOO DIFFICULT:
@@ -138,6 +101,9 @@ GLShaderProgram:
 
 DONE:
 -----
+
+
+
 
 DONE c++-stdlib:
 - use ios_base::sync_with_stdio(false) to improve performance?
@@ -236,5 +202,25 @@ DONE:
 	-> use std::optional<std::vector<GLbyte>> for parameter restartVertex
 		in addIndexBuffer()
 
-
+DONE removed differences me vs. cherno:
+- generally
+	-> cherno: member variables are prefixed with m_
+	-> cherno: ids of OpenGL-Objects are called m_RendererID
+- Buffers
+	- cherno: VertexBuffer and IndexBuffer are separate classes
+- BufferLayout
+	-> append takes componentType as template argument rather than as regular function argument
+	-> cherno: there is an actual class for the BufferLayout which contains VertexBufferElements
+	-> me: there is only a std::vector of VertexAttributeType (=VertexBufferElement)
+- GLMesh + VAO
+	-> cherno: there is no GLMesh class that takes care of vao, BufferLayout and vbo simultanously
+	-> cherno: but the vao-class itself also takes a BufferLayout and a reference to the vbo
+	-> cherno: vao-class still does not take a reference to an ibo
+	-> cherno: vao-class still does not create vbo by itself it merely takes it as a function 
+		argument to function AddBuffer(...)
+- ShaderProgram:
+	-> cherno: glUseProgram(..) is called Bind()
+	-> cherno: also contains parsing function and directly accepts filename in constructor
+- Renderer
+	-> me: separate renderer class does not exist: glDrawElements(...) is called from main(..) function directly
 
