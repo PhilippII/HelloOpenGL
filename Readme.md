@@ -27,12 +27,12 @@ The project also contains stuff not (yet) covered in Cherno's OpenGL series. Mos
 
 
 ### Third party libraries used
-- GLFW
-- GLEW
-- Dear ImGui
-- GLM
-- stb_image
-- Guidelines Support Library
+- GLFW https://www.glfw.org/
+- GLEW http://glew.sourceforge.net/
+- Dear ImGui https://github.com/ocornut/imgui
+- GLM https://github.com/g-truc/glm
+- stb_image https://github.com/nothings/stb/blob/master/stb_image.h
+- Guidelines Support Library (for gsl::span<...>) https://github.com/microsoft/gsl
 
 ### Non-Code Third-Party Resources:
 The 3D Model of the bed is from 3dmodelhaven.com . I converted it into the OBJ-file format with the help of Blender.
