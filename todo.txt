@@ -1,3 +1,10 @@
+obj file reading:
+- in unifyIndexBuffer(..) reinterpret_cast<..>-s really allowed?
+	-> cppcon: https://youtu.be/rqVWj0aVSxg
+		says that casting a pointer A* to a pointer B* where
+		B is not a base class of A is undefined behavior!!
+
+
 class layout:
 - use alignas(..) in vertex-struct?
 
