@@ -1,3 +1,6 @@
+class layout:
+- use alignas(..) in vertex-struct?
+
 GLFW:
 - import glfw with find_package(..) on windows too rather than manually?
 
