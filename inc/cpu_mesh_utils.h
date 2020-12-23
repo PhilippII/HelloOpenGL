@@ -105,21 +105,45 @@ CPUVertexArray applyMultiIndex(const CPUMultiIndexMesh<Index, N>& miMesh) {
 template <typename Index, int N>
 CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
                                 Index restartIndex = std::numeric_limits<Index>::max()) {
-    VertexBufferLayout mibLayout;
-    mibLayout.append<Index>(N);
-    CPUMesh<Index> res = addIndexBuffer<Index>(mibLayout,
-                                               {reinterpret_cast<const GLbyte*>(miMesh.mib.indices.data()), miMesh.mib.indices.size() * mibLayout.getStride()},
-                                               (miMesh.mib.primitiveRestartMultiIndex.has_value()) ?
-                                                   std::optional<gsl::span<const GLbyte>>{gsl::span<const GLbyte>(reinterpret_cast<const GLbyte*>(miMesh.mib.primitiveRestartMultiIndex->data()),
-                                                                                                                  mibLayout.getStride())}
-                                                   : std::nullopt,
-                                               restartIndex);
+    // 1. remove duplicates from multidimensional index buffer and add a single
+    //      dimensional index buffer that references the multidimensional index buffer:
+    CPUMesh<Index> res;
     res.ib.primitiveType = miMesh.mib.primitiveType;
-    // right now res.va contains the multi-dimensional indices instead of the actual data.
-    // To replace the multi-dimensional indices with the actual data we do:
-    res.va = applyMultiIndex<Index, N>({reinterpret_cast<const std::array<Index, N>*>(res.va.data.data()),
-                                        res.va.data.size() / sizeof(std::array<Index, N>)},
-                                       miMesh.vas);
+    res.ib.primitiveRestartIndex = restartIndex;
+    std::vector<std::array<Index, N>> mib;
+    std::map<std::array<Index, N>, Index> multiIndex_to_i_out;
+    for (std::size_t i_in = 0; i_in < miMesh.mib.indices.size(); ++i_in) {
+        Index i_out = 0;
+        const std::array<Index, N>& multiIndex = miMesh.mib.indices[i_in];
+        if (multiIndex == miMesh.mib.primitiveRestartMultiIndex) {
+            i_out = restartIndex;
+        } else {
+            auto search = multiIndex_to_i_out.find(multiIndex);
+            if (search != multiIndex_to_i_out.end()) {
+                i_out = search->second;
+            } else {
+                i_out = mib.size();
+                mib.push_back(multiIndex);
+                multiIndex_to_i_out.insert({multiIndex, i_out});
+            }
+        }
+        res.ib.indices.push_back(i_out);
+    }
+
+    // 2. replace mib with actual data:
+    for (auto& multiIndex : mib) {
+        for (int i_va = 0; i_va < N; ++i_va) {
+            const CPUVertexArray& va = miMesh.vas[i_va];
+            auto stride = va.layout.getStride();
+            std::copy(va.data.data() + multiIndex[i_va] * stride,
+                      va.data.data() + multiIndex[i_va] * stride + stride,
+                      std::back_inserter(res.va.data));
+        }
+    }
+    for (int i_va = 0; i_va < N; ++i_va) {
+        res.va.layout += miMesh.vas[i_va].layout;
+    }
+
     return res;
 }
 
