@@ -23,84 +23,45 @@ public:
 };
 
 template <typename Index>
-CPUMesh<Index> addIndexBuffer(const VertexBufferLayout& layout,
-                              gsl::span<const GLbyte> data,
+CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va,
                               std::optional<gsl::span<const GLbyte>> restartVertex = {},
                               Index primitiveRestartIndex = std::numeric_limits<Index>::max()) {
-    VertexBufferLayout::stride_type stride = layout.getStride();
-    ASSERT(data.size() % stride == 0);
-    Index count = static_cast<Index>(data.size() / stride);
+    VertexBufferLayout::stride_type stride = va.layout.getStride();
+    ASSERT(va.data.size() % stride == 0);
+    const Index vertCount_in = static_cast<Index>(va.data.size() / stride);
 
     CPUMesh<Index> res;
-    res.va.layout = layout;
+    res.va.layout = va.layout;
     ASSERT(!restartVertex || restartVertex->size() == static_cast<std::size_t>(stride));
     res.ib.primitiveRestartIndex = (restartVertex) ? std::optional<Index>{primitiveRestartIndex} : std::nullopt;
 
-    SpanDeepCompareLess<const GLbyte> compare;
-    std::map<gsl::span<const GLbyte>, Index, decltype(compare)> vertex_to_index(compare);
+    SpanDeepCompareLess<const GLbyte> comp;
+    std::map<gsl::span<const GLbyte>, Index, decltype(comp)> vertex_to_i_out(comp);
 
-    for (Index i_in = 0; i_in < count; ++i_in) {
-        ASSERT(vertex_to_index.size() == res.va.data.size() / stride);
-        Index i_out;
-        gsl::span<const GLbyte> vertex = data.subspan(i_in * stride, stride);
+    for (Index i_in = 0; i_in < vertCount_in; ++i_in) {
+        Index i_out = 0;
+        ASSERT(vertex_to_i_out.size() == res.va.data.size() / stride);
+        gsl::span<const GLbyte> vertex(va.data.data() + i_in * stride, stride);
         if (restartVertex && std::equal(vertex.begin(), vertex.end(), restartVertex->begin())) {
             i_out = primitiveRestartIndex;
         } else {
-            auto search = vertex_to_index.find(vertex);
-            if (search != vertex_to_index.end()) {
-                i_out = search->second;
-            } else {
-                i_out = static_cast<Index>(vertex_to_index.size()); // index, where the new vertex
-                                                                    // will be added to the output vertex array
-                std::copy(vertex.begin(), vertex.end(),
-                          std::back_inserter(res.va.data));
-                vertex_to_index.insert({vertex, i_out});
-            }
+             auto search = vertex_to_i_out.find(vertex);
+             if (search != vertex_to_i_out.end()) {
+                 i_out = search->second;
+             } else {
+                 i_out = static_cast<Index>(vertex_to_i_out.size());
+                 std::copy(vertex.begin(), vertex.end(), std::back_inserter(res.va.data));
+                 vertex_to_i_out.insert({vertex, i_out});
+             }
         }
         res.ib.indices.push_back(i_out);
     }
-    DEBUG_DO(std::cout << "removed " << (count - vertex_to_index.size()) << " doubles and/or restartVertices\n");
-    DEBUG_DO(std::cout << vertex_to_index.size() << " vertices remaining in vertex array\n");
+    DEBUG_DO(std::cout << "removed " << (vertCount_in - vertex_to_i_out.size()) << " duplicate vertices and/or restartVertices\n");
+    DEBUG_DO(std::cout << vertex_to_i_out.size() << " vertices remaining in vertex array\n");
 
     return res;
 }
 
-template <typename Index>
-CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va) {
-    return addIndexBuffer<Index>(va.layout,
-                                 {va.data.data(), va.data.size()});
-}
-
-// assumes that there are no primitiveRestartIndices anymore in multiIndices
-template <typename Index, int N>
-CPUVertexArray applyMultiIndex(gsl::span<const std::array<Index, N>> multiIndices,
-                               const std::array<CPUVertexArray, N>& vas) {
-    CPUVertexArray res;
-    for (std::size_t i_vert = 0; i_vert < multiIndices.size(); ++i_vert) {
-        // TODO: i_buff and N should be unsigned int ?
-        for (int i_va = 0; i_va < N; ++i_va) {
-            VertexBufferLayout::stride_type stride_va = vas[i_va].layout.getStride();
-            Index index = multiIndices[i_vert][i_va];
-            std::copy(vas[i_va].data.data() +  index    * stride_va,
-                      vas[i_va].data.data() + (index+1) * stride_va,
-                      std::back_inserter(res.data));
-        }
-    }
-
-    for (const auto& va : vas) {
-        res.layout += va.layout;
-    }
-
-    return res;
-}
-
-template<typename Index, int N>
-CPUVertexArray applyMultiIndex(const CPUMultiIndexMesh<Index, N>& miMesh) {
-    ASSERT(miMesh.mib.primitiveRestart == false);
-    return applyMultiIndex<Index, N>({miMesh.mib.indices.data(),
-                                      miMesh.mib.indices.size()},
-                                     miMesh.vas);
-}
 
 template <typename Index, int N>
 CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
