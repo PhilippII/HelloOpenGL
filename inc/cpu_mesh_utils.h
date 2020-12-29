@@ -26,8 +26,11 @@ template <typename Index>
 CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va,
                               std::optional<gsl::span<const GLbyte>> restartVertex = {},
                               Index primitiveRestartIndex = std::numeric_limits<Index>::max()) {
+    DEBUG_DO(constexpr std::size_t MAX_INDEX = static_cast<std::size_t>(std::numeric_limits<Index>::max()));
+
     VertexBufferLayout::stride_type stride = va.layout.getStride();
     ASSERT(va.data.size() % stride == 0);
+    ASSERT(va.data.size() / stride <= MAX_INDEX);
     const Index vertCount_in = static_cast<Index>(va.data.size() / stride);
 
     CPUMesh<Index> res;
@@ -49,6 +52,7 @@ CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va,
              if (search != vertex_to_i_out.end()) {
                  i_out = search->second;
              } else {
+                 ASSERT(vertex_to_i_out.size() <= MAX_INDEX);
                  i_out = static_cast<Index>(vertex_to_i_out.size());
                  std::copy(vertex.begin(), vertex.end(), std::back_inserter(res.va.data));
                  vertex_to_i_out.insert({vertex, i_out});
@@ -66,6 +70,8 @@ CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va,
 template <typename Index, int N>
 CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
                                 Index restartIndex = std::numeric_limits<Index>::max()) {
+    DEBUG_DO(constexpr std::size_t MAX_INDEX = static_cast<std::size_t>(std::numeric_limits<Index>::max()));
+
     // 1. remove duplicates from multidimensional index buffer and add a single
     //      dimensional index buffer that references the multidimensional index buffer:
     CPUMesh<Index> res;
@@ -83,7 +89,8 @@ CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
             if (search != multiIndex_to_i_out.end()) {
                 i_out = search->second;
             } else {
-                i_out = mib.size();
+                ASSERT(mib.size() <= MAX_INDEX);
+                i_out = static_cast<Index>(mib.size());
                 mib.push_back(multiIndex);
                 multiIndex_to_i_out.insert({multiIndex, i_out});
             }
