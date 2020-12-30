@@ -26,22 +26,23 @@ template <typename Index>
 CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va,
                               std::optional<gsl::span<const GLbyte>> restartVertex = {},
                               Index primitiveRestartIndex = std::numeric_limits<Index>::max()) {
-    DEBUG_DO(constexpr std::size_t MAX_INDEX = static_cast<std::size_t>(std::numeric_limits<Index>::max()));
+    using Index_IN = std::size_t;
+    DEBUG_DO(constexpr Index_IN MAX_INDEX_OUT = static_cast<Index_IN>(std::numeric_limits<Index>::max()));
 
     VertexBufferLayout::stride_type stride = va.layout.getStride();
     ASSERT(va.data.size() % stride == 0);
-    ASSERT(va.data.size() / stride <= MAX_INDEX);
-    const Index vertCount_in = static_cast<Index>(va.data.size() / stride);
+    const Index_IN vertCount_in = va.data.size() / stride;
 
     CPUMesh<Index> res;
-    res.va.layout = va.layout;
     ASSERT(!restartVertex || restartVertex->size() == static_cast<std::size_t>(stride));
     res.ib.primitiveRestartIndex = (restartVertex) ? std::optional<Index>{primitiveRestartIndex} : std::nullopt;
+
+    res.va.layout = va.layout;
 
     SpanDeepCompareLess<const GLbyte> comp;
     std::map<gsl::span<const GLbyte>, Index, decltype(comp)> vertex_to_i_out(comp);
 
-    for (Index i_in = 0; i_in < vertCount_in; ++i_in) {
+    for (Index_IN i_in = 0; i_in < vertCount_in; ++i_in) {
         Index i_out = 0;
         ASSERT(vertex_to_i_out.size() == res.va.data.size() / stride);
         gsl::span<const GLbyte> vertex(va.data.data() + i_in * stride, stride);
@@ -52,7 +53,7 @@ CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va,
              if (search != vertex_to_i_out.end()) {
                  i_out = search->second;
              } else {
-                 ASSERT(vertex_to_i_out.size() <= MAX_INDEX);
+                 ASSERT(vertex_to_i_out.size() <= MAX_INDEX_OUT);
                  i_out = static_cast<Index>(vertex_to_i_out.size());
                  std::copy(vertex.begin(), vertex.end(), std::back_inserter(res.va.data));
                  vertex_to_i_out.insert({vertex, i_out});
@@ -70,17 +71,22 @@ CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va,
 template <typename Index, int N>
 CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
                                 Index restartIndex = std::numeric_limits<Index>::max()) {
-    DEBUG_DO(constexpr std::size_t MAX_INDEX = static_cast<std::size_t>(std::numeric_limits<Index>::max()));
-
     // 1. remove duplicates from multidimensional index buffer and add a single
     //      dimensional index buffer that references the multidimensional index buffer:
+    using Index_IN = std::size_t;
+    DEBUG_DO(constexpr Index_IN MAX_INDEX_OUT = static_cast<std::size_t>(std::numeric_limits<Index>::max()));
+
     CPUMesh<Index> res;
     res.ib.primitiveType = miMesh.mib.primitiveType;
-    res.ib.primitiveRestartIndex = restartIndex;
+    res.ib.primitiveRestartIndex = (miMesh.mib.primitiveRestartMultiIndex) ? std::optional<Index>{restartIndex} : std::nullopt;
+
     std::vector<std::array<Index, N>> mib;
+
     std::map<std::array<Index, N>, Index> multiIndex_to_i_out;
-    for (std::size_t i_in = 0; i_in < miMesh.mib.indices.size(); ++i_in) {
+
+    for (Index_IN i_in = 0; i_in < miMesh.mib.indices.size(); ++i_in) {
         Index i_out = 0;
+        ASSERT(multiIndex_to_i_out.size() == mib.size());
         const std::array<Index, N>& multiIndex = miMesh.mib.indices[i_in];
         if (multiIndex == miMesh.mib.primitiveRestartMultiIndex) {
             i_out = restartIndex;
@@ -89,7 +95,7 @@ CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
             if (search != multiIndex_to_i_out.end()) {
                 i_out = search->second;
             } else {
-                ASSERT(mib.size() <= MAX_INDEX);
+                ASSERT(mib.size() <= MAX_INDEX_OUT);
                 i_out = static_cast<Index>(mib.size());
                 mib.push_back(multiIndex);
                 multiIndex_to_i_out.insert({multiIndex, i_out});
@@ -97,6 +103,17 @@ CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
         }
         res.ib.indices.push_back(i_out);
     }
+    // TODO: code of part 1. is similar to addIndexBuffer(..)
+    //  where
+    //      miMesh.mib -> va
+    //      mib -> res.va
+    //      res.ib -> res.ib
+    //      multiIndex -> vertex
+    //  --> how can we reuse code from addIndexBuffer(..) here?
+    //          ("Don't repeat yourself"-principle)
+    //          commit tagged with ugly_cast contains an attempt to reuse code
+    //          but that led to some ugly casting. (some casts may even be
+    //          undefined behavior.)
 
     // 2. replace mib with actual data:
     for (auto& multiIndex : mib) {
