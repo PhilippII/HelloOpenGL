@@ -115,6 +115,15 @@ CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
     //          but that led to some ugly casting. (some casts may even be
     //          undefined behavior.)
 
+    // explanation of step 1. and step 2.:
+    //      after step 1. we have two levels of indirection:
+    //      i) each index in res.ib references a multi dimensional index in mib
+    //      ii) each multi dimensional index in mib references vertex data
+    //              in miMesh.vas[0], miMesh.vas[1], ...
+    //      to get rid of the second level of indirection we need to copy the data from miMesh.vas[..]
+    //              directly into res.va such that res.ib can be used as an index into res.va directly
+    //              -> we will do that in step 2.
+
     // 2. replace mib with actual data:
     for (auto& multiIndex : mib) {
         for (int i_va = 0; i_va < N; ++i_va) {
@@ -132,6 +141,18 @@ CPUMesh<Index> unifyIndexBuffer(const CPUMultiIndexMesh<Index, N>& miMesh,
     return res;
 }
 
+/**
+ * The individual polygons in the index buffer are separated from each other with
+ * ib.primitiveRestartIndex. This function triangulates each polygon by interpreting
+ * it as a triangle fan.
+ * this is similar to rendering the index buffer with
+ *  glEnable(GL_PRIMITIVE_RESTART);
+ *  glPrimitiveRestartIndex(*ib.primitiveRestartIndex);
+ *  glDrawElements(GL_TRIANGLE_STRIP, ...);
+ * rather than
+ *  glDisable(GL_PRIMITIVE_RESTART);
+ *  glDrawElements(GL_TRIANGLES, ...);
+ */
 template <typename Index>
 CPUIndexBuffer<Index> applyTriangleFan(const CPUIndexBuffer<Index>& ib) {
     using ib_count_t = typename std::vector<Index>::size_type;
