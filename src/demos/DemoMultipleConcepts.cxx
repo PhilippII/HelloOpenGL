@@ -64,7 +64,7 @@ demo::DemoMultipleConcepts::DemoMultipleConcepts(GLRenderer &renderer)
 
         {{-.5f * hSz,  .5f * hSz}, {.5f, .5f, .5f, .0f}},
         {{ .5f * hSz,  .5f * hSz}, {.5f, .5f, .5f, .0f}},
-        {{ .0f * hSz,  .75f * hSz}, {.5f, .5f, .5f, .0f}}
+        {{ .0f * hSz,  1.f * hSz}, {.5f, .5f, .5f, .0f}}
     };
     VertexBufferLayout houseLayout;
     houseLayout.append<decltype(Vertex::pos)>(1, VariableType::FLOAT, posAttrIndex);
