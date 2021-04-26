@@ -10,18 +10,6 @@
 #include "gsl/gsl" // or "gsl/gsl" ?
 
 
-// TODO: maybe SpanDeepCompareLess out of public namespace?
-template <typename Elem>
-class SpanDeepCompareLess {
-public:
-    bool operator()(gsl::span<Elem> a, gsl::span<Elem> b) const {
-        return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
-    }
-    // using this comparison function map will consider two spans equivalent
-    // if they point to arrays with the same content, even if the
-    // actual memory adresses may be different
-};
-
 template <typename Index>
 CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va,
                               std::optional<gsl::span<const GLbyte>> restartVertex = {},
@@ -39,8 +27,12 @@ CPUMesh<Index> addIndexBuffer(const CPUVertexArray& va,
 
     res.va.layout = va.layout;
 
-    SpanDeepCompareLess<const GLbyte> comp;
-    std::map<gsl::span<const GLbyte>, Index, decltype(comp)> vertex_to_i_out(comp);
+    auto deepCompareLess = [](gsl::span<const GLbyte> a, gsl::span<const GLbyte> b)
+            { return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end()); };
+    // using this comparison function map will consider two spans equivalent
+    // if they point to arrays with the same content, even if the
+    // actual memory adresses may be different
+    std::map<gsl::span<const GLbyte>, Index, decltype(deepCompareLess)> vertex_to_i_out(deepCompareLess);
 
     for (Index_IN i_in = 0; i_in < vertCount_in; ++i_in) {
         Index i_out = 0;
