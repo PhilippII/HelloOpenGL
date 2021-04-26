@@ -11,9 +11,9 @@ void main()
 #version 330 core
 // in vec4 gl_FragCoord;
 uniform sampler2D tex;
-const float[3 * 3] filter = float[](1.0f/16.0f, 2.0f/16.0f, 1.0f/16.0f,
-                                    2.0f/16.0f, 4.0f/16.0f, 2.0f/16.0f,
-                                    1.0f/16.0f, 2.0f/16.0f, 1.0f/16.0f);
+const float[3 * 3] filter = float[]( 1.f, 0.f, -1.f,
+                                     2.f, 0.f, -2.f,
+                                     1.f, 0.f, -1.f);
 
 layout(location = 0) out vec4 out_color;
 
@@ -30,7 +30,8 @@ void main()
             res += filter[3*row + col] * in_color;
        }
     }
-    out_color = vec4(res, 1.f);
+    // out_color = vec4(res, 1.f);
+    out_color = vec4(abs(res), 1.f);
 }
 
 
