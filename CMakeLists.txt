@@ -55,7 +55,6 @@ add_executable(OpenGLDemos
     src/demos/DemoMultipleConcepts.cxx
     src/demos/DemoPhongReflectionModel.cxx
     src/demos/DemoPhongReflectionModelTextured.cxx
-    src/demos/DemoFilter.cxx
     src/demos/DemoFramebuffer.cxx
 
     # hopefully cmake understands by the file suffix that the
