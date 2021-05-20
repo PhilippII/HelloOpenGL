@@ -104,6 +104,9 @@ GLTexture& GLTexture::operator=(GLTexture &&other)
     if (this == &other) {
         return *this;
     }
+
+    glDeleteTextures(1, &m_rendererId); // docs.gl: "glDeleteTextures(..) silently ignores 0's [...]"
+
     m_rendererId = other.m_rendererId;
     other.m_rendererId = 0;
     m_width = other.m_width;
