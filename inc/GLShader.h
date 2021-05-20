@@ -13,6 +13,8 @@ class GLShader
 public:
     GLShader(GLenum type, const std::string& source, bool compileNow = true);
 
+    GLShader() = delete;
+
     // do not allow copying:
     GLShader(const GLShader& other) = delete;
 
