@@ -9,7 +9,7 @@
 class GLRenderer
 {
 public:
-    GLRenderer();
+    GLRenderer() {}
 
     void setViewport(GLint x, GLint y, GLsizei width, GLsizei height);
 

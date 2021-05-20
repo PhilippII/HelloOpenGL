@@ -1,10 +1,5 @@
 #include "GLRenderer.h"
 
-GLRenderer::GLRenderer()
-{
-
-}
-
 void GLRenderer::setViewport(GLint x, GLint y, GLsizei width, GLsizei height)
 {
     glViewport(x, y, width, height);
