@@ -10,6 +10,8 @@
 
 #include <optional>
 
+#include <utility> // std::move(..), std::exchange(..)
+
 using namespace std::literals::string_literals;
 
 
@@ -52,26 +54,31 @@ GLShaderProgram::GLShaderProgram(std::vector<ShaderSource> sources, SPReadiness 
     ASSERT(success);
 }
 
-GLShaderProgram::GLShaderProgram(GLShaderProgram&& other)
-    : m_rendererID(other.m_rendererID),
+GLShaderProgram::GLShaderProgram(GLShaderProgram&& other) noexcept
+    : m_rendererID(std::exchange(other.m_rendererID, 0)),
       m_shaders(std::move(other.m_shaders))
 {
-    other.m_rendererID = 0;
+    // other.m_rendererID = glCreateProgram();
+                                // would put moved from object
+                                // into default-constructed state. (would be good)
+                                // but problems:
+                                //   - unnecessary performance overhead
+                                //   - still noexcept?
 }
 
 GLShaderProgram& GLShaderProgram::operator=(GLShaderProgram&& other) {
     if (this == &other) {
         return *this;
     }
+
     if (m_rendererID) {
         if (isBound()) {
             unbind();
         }
         glDeleteProgram(m_rendererID);
     }
-    m_rendererID = other.m_rendererID;
-    other.m_rendererID = 0;
 
+    m_rendererID = std::exchange(other.m_rendererID, 0);
     m_shaders = std::move(other.m_shaders);
 
     return *this;

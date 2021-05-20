@@ -8,20 +8,20 @@ GLFramebufferObject::GLFramebufferObject()
 }
 
 
-GLFramebufferObject::GLFramebufferObject(GLFramebufferObject&& other)
-    : m_rendererId(other.m_rendererId)
-{
-    other.m_rendererId = 0;
-}
+GLFramebufferObject::GLFramebufferObject(GLFramebufferObject&& other) noexcept
+    : m_rendererId(std::exchange(other.m_rendererId, 0))
+{}
 
 GLFramebufferObject &GLFramebufferObject::operator=(GLFramebufferObject&& other)
 {
     if (this == &other) {
         return *this;
     }
+
     glDeleteFramebuffers(1, &m_rendererId);
-    m_rendererId = other.m_rendererId;
-    other.m_rendererId = 0;
+
+    m_rendererId = std::exchange(other.m_rendererId, 0);
+
     return *this;
 }
 

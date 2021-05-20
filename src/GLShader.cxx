@@ -1,6 +1,7 @@
 #include "GLShader.h"
 
 #include <iostream>
+#include <utility> // std::move(..), std::exchange(..)
 
 GLShader::GLShader(GLenum type, const std::string& source, bool compileNow)
     : m_type(type)
@@ -14,24 +15,24 @@ GLShader::GLShader(GLenum type, const std::string& source, bool compileNow)
     }
 }
 
-GLShader::GLShader(GLShader&& other)
-    : m_type(other.m_type), m_rendererId(other.m_rendererId), m_state(other.m_state)
-{
-    other.m_rendererId = 0;
-}
+GLShader::GLShader(GLShader&& other) noexcept
+    : m_type(std::move(other.m_type)),
+      m_rendererId(std::exchange(other.m_rendererId, 0)),
+      m_state(std::move(other.m_state))
+{}
 
 GLShader& GLShader::operator=(GLShader&& other) {
     if (this == &other) {
         return *this;
     }
+
     if (m_rendererId) {
         glDeleteShader(m_rendererId);
     }
-    m_type = other.m_type;
-    m_rendererId = other.m_rendererId;
-    m_state = other.m_state;
 
-    other.m_rendererId = 0;
+    m_type = std::move(other.m_type);
+    m_rendererId = std::exchange(other.m_rendererId, 0);
+    m_state = std::move(other.m_state);
 
     return *this;
 }

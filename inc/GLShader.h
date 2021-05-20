@@ -21,9 +21,12 @@ public:
     GLShader& operator=(const GLShader& other) = delete;
 
     // do allow move:
-    GLShader(GLShader&& other);
+    GLShader(GLShader&& other) noexcept;
 
     GLShader& operator=(GLShader&& other);
+    //  warning: moved from object must be destroyed or
+    //           assigned to before being used again
+    //  TODO: how to make move-assignment noexcept? (is glDeleteShader(..) noexcept?)
 
     ~GLShader();
 

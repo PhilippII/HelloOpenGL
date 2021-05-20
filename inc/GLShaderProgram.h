@@ -33,9 +33,13 @@ public:
 
     GLShaderProgram& operator=(const GLShaderProgram& other) = delete;
 
-    GLShaderProgram(GLShaderProgram&& other);
+    GLShaderProgram(GLShaderProgram&& other) noexcept;
 
     GLShaderProgram& operator=(GLShaderProgram&& other);
+    //  warning: moved from object must be destroyed or
+    //           assigned to before being used again
+    //  TODO: how to make move-assignment noexcept? (is glDeleteProgram() noexcept?
+    //                                               make isBound() and unbind() noexcept?)
 
     virtual ~GLShaderProgram();
 

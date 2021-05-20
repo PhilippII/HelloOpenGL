@@ -7,6 +7,7 @@
 #include "debug_utils.h"
 #include "stb_image.h"
 
+#include <utility> // std::move(..), std::exchange(..)
 
 namespace texture_sampling_presets {
 const Tex2DSamplingParams noFilter {
@@ -91,13 +92,12 @@ GLTexture::GLTexture(std::filesystem::path filepath, int channels, bool sRGB, co
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-GLTexture::GLTexture(GLTexture &&other)
-    : m_rendererId(other.m_rendererId),
-      m_width(other.m_width), m_height(other.m_height),
-      m_mipLevels(other.m_mipLevels)
-{
-    other.m_rendererId = 0;
-}
+GLTexture::GLTexture(GLTexture &&other) noexcept
+    : m_rendererId(std::exchange(other.m_rendererId, 0)),
+      m_width(std::move(other.m_width)),
+      m_height(std::move(other.m_height)),
+      m_mipLevels(std::move(other.m_mipLevels))
+{}
 
 GLTexture& GLTexture::operator=(GLTexture &&other)
 {
@@ -107,11 +107,11 @@ GLTexture& GLTexture::operator=(GLTexture &&other)
 
     glDeleteTextures(1, &m_rendererId); // docs.gl: "glDeleteTextures(..) silently ignores 0's [...]"
 
-    m_rendererId = other.m_rendererId;
-    other.m_rendererId = 0;
-    m_width = other.m_width;
-    m_height = other.m_height;
-    m_mipLevels = other.m_mipLevels;
+    m_rendererId = std::exchange(other.m_rendererId, 0);
+    m_width = std::move(other.m_width);
+    m_height = std::move(other.m_height);
+    m_mipLevels = std::move(other.m_mipLevels);
+
     return *this;
 }
 

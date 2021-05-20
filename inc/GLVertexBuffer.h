@@ -16,7 +16,7 @@ public:
     GLVertexBuffer(const GLVertexBuffer& other) = delete;
     GLVertexBuffer& operator=(const GLVertexBuffer& other) = delete;
 
-    GLVertexBuffer(GLVertexBuffer&& other)
+    GLVertexBuffer(GLVertexBuffer&& other) noexcept
         : GLBufferObject(std::move(other))
     {}
     GLVertexBuffer& operator=(GLVertexBuffer&& other) {
@@ -27,6 +27,9 @@ public:
         GLBufferObject::operator=(std::move(other));
         return *this;
     }
+    // warning: moved from object (other) should be destroyed
+    //          or assigned to before being used again
+    // TODO: how to make move-assignment noexcept? (how to make parent-class' move-assignment noexcept ?)
 
     ~GLVertexBuffer() {}
 };

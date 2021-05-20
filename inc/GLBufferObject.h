@@ -17,13 +17,14 @@ public:
 
     // do not allow copy-constructor/assignment:
     GLBufferObject(const GLBufferObject& other) = delete;
-
     GLBufferObject& operator=(const GLBufferObject& other) = delete;
 
 	// but do allow moves:
-    GLBufferObject(GLBufferObject&& other);
-
+    GLBufferObject(GLBufferObject&& other) noexcept;
     GLBufferObject& operator=(GLBufferObject&& other);
+    // warning: moved from object (other) should be destroyed
+    //          or assigned to before being used again
+    // TODO: how to make move-assignment noexcept? (is glDeleteBuffers(..) noexcept ?)
 
     virtual ~GLBufferObject();
 

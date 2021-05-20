@@ -1,5 +1,7 @@
 #include "GLBufferObject.h"
 
+#include <utility> // std::move(..), std::exchange(..)
+
 GLBufferObject::GLBufferObject(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage, bool keepBound) {
 	this->m_target = target;
     glGenBuffers(1, &(this->m_rendererId));
@@ -10,11 +12,10 @@ GLBufferObject::GLBufferObject(GLenum target, GLsizeiptr size, const GLvoid* dat
     }
 }
 
-GLBufferObject::GLBufferObject(GLBufferObject&& other) {
-	m_target = other.m_target;
-    m_rendererId = other.m_rendererId;
-    other.m_rendererId = 0;
-}
+GLBufferObject::GLBufferObject(GLBufferObject&& other) noexcept
+    : m_target(std::move(other.m_target)),
+      m_rendererId(std::exchange(other.m_rendererId, 0))
+{}
 
 GLBufferObject& GLBufferObject::operator=(GLBufferObject&& other) {
     if (this == &other) {
@@ -23,9 +24,8 @@ GLBufferObject& GLBufferObject::operator=(GLBufferObject&& other) {
     if (m_rendererId) {
         glDeleteBuffers(1, &m_rendererId);
 	}
-	m_target = other.m_target;
-    m_rendererId = other.m_rendererId;
-    other.m_rendererId = 0;
+    m_target = std::move(other.m_target);
+    m_rendererId = std::exchange(other.m_rendererId, 0);
 	return *this;
 }
 

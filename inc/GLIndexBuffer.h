@@ -38,25 +38,28 @@ public:
     GLIndexBuffer(const GLIndexBuffer& other) = delete;
     GLIndexBuffer& operator=(const GLIndexBuffer& other) = delete;
 
-    GLIndexBuffer(GLIndexBuffer&& other)
+    GLIndexBuffer(GLIndexBuffer&& other) noexcept
         : GLBufferObject(std::move(other)),
-          m_indexType(other.m_indexType),
-          m_count(other.m_count),
-          m_primitiveType(other.m_primitiveType),
-          m_primitiveRestartIndex(other.m_primitiveRestartIndex)
+          m_indexType(std::move(other.m_indexType)),
+          m_count(std::move(other.m_count)),
+          m_primitiveType(std::move(other.m_primitiveType)),
+          m_primitiveRestartIndex(std::move(other.m_primitiveRestartIndex))
     {}
     GLIndexBuffer& operator=(GLIndexBuffer&& other) {
         // if (this == &other) { // not necessary:
         //     return *this;     // - parent-class' move assignment operator will handle self assignment by itself
         // }                     // - self-assigning the child-class' members does no harm
         GLBufferObject::operator=(std::move(other));
-        m_indexType = other.m_indexType;
-        m_count = other.m_count;
-        m_primitiveType = other.m_primitiveType;
-        m_primitiveRestartIndex = other.m_primitiveRestartIndex;
+        m_indexType = std::move(other.m_indexType);
+        m_count = std::move(other.m_count);
+        m_primitiveType = std::move(other.m_primitiveType);
+        m_primitiveRestartIndex = std::move(other.m_primitiveRestartIndex);
 
         return *this;
     }
+    //  warning: moved from object must be destroyed or
+    //           assigned to before being used again
+    //  TODO: how to make move-assignment noexcept? (how to make parent-class' move-assignment noexcept?)
 
     ~GLIndexBuffer() {}
 

@@ -19,9 +19,12 @@ public:
     GLVertexArray& operator=(const GLVertexArray& other) = delete;
 
     // do allow move:
-    GLVertexArray(GLVertexArray&& other);
+    GLVertexArray(GLVertexArray&& other) noexcept;
 
     GLVertexArray& operator=(GLVertexArray&& other);
+    //  warning: moved from object must be destroyed or
+    //           assigned to before being used again
+    //  TODO: how to make move-assignment noexcept? (is glDeleteVertexArrays() noexcept?)
 
     ~GLVertexArray();
 

@@ -40,8 +40,11 @@ public:
     GLTexture(const GLTexture& other) = delete;
     GLTexture& operator=(const GLTexture& other) = delete;
     // do allow moving:
-    GLTexture(GLTexture&& other);
+    GLTexture(GLTexture&& other) noexcept;
     GLTexture& operator=(GLTexture&& other);
+    //  warning: moved from object must be destroyed or
+    //           assigned to before being used again
+    //  TODO: how to make move-assignment noexcept? (is glDeleteTextures(..) noexcept?)
 
     ~GLTexture();
 

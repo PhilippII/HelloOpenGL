@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <utility> // std::move(..), std::exchange(..)
+
 GLVertexArray::GLVertexArray(bool bindNow)
 {
     glGenVertexArrays(1, &m_rendererID);
@@ -10,21 +12,28 @@ GLVertexArray::GLVertexArray(bool bindNow)
     }
 }
 
-GLVertexArray::GLVertexArray(GLVertexArray&& other)
-    : m_rendererID(other.m_rendererID)
-    {
-    other.m_rendererID = 0;
+GLVertexArray::GLVertexArray(GLVertexArray&& other) noexcept
+    : m_rendererID(std::exchange(other.m_rendererID, 0))
+{
+    // glGenVertexArrays(1, &other.m_rendererID);
+        // would put moved from object
+        // into default-constructed state. (would be good)
+        // but problems:
+        //   - unnecessary performance overhead
+        //   - still noexcept?
 }
 
 GLVertexArray& GLVertexArray::operator=(GLVertexArray&& other) {
     if (this == &other) {
         return *this;
     }
+
     if (m_rendererID) {
         glDeleteVertexArrays(1, &m_rendererID);
     }
-    m_rendererID = other.m_rendererID;
-    other.m_rendererID = 0;
+
+    m_rendererID = std::exchange(other.m_rendererID, 0);
+
     return *this;
 }
 

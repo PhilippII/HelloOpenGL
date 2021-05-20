@@ -14,8 +14,12 @@ public:
     GLFramebufferObject(const GLFramebufferObject& other) = delete;
     GLFramebufferObject& operator=(const GLFramebufferObject& other) = delete;
     // do allow move:
-    GLFramebufferObject(GLFramebufferObject&& other);
+    GLFramebufferObject(GLFramebufferObject&& other) noexcept;
     GLFramebufferObject& operator=(GLFramebufferObject&& other);
+    //  warning: moved from object must be destroyed or
+    //           assigned to before being used again
+    //  TODO: how to make move-assignment noexcept? (is glDeleteFramebuffers(..) noexcept?)
+
 
     ~GLFramebufferObject();
 
