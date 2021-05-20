@@ -46,9 +46,9 @@ public:
           m_primitiveRestartIndex(other.m_primitiveRestartIndex)
     {}
     GLIndexBuffer& operator=(GLIndexBuffer&& other) {
-        if (this == &other) {
-            return *this;
-        }
+        // if (this == &other) { // not necessary:
+        //     return *this;     // - parent-class' move assignment operator will handle self assignment by itself
+        // }                     // - self-assigning the child-class' members does no harm
         GLBufferObject::operator=(std::move(other));
         m_indexType = other.m_indexType;
         m_count = other.m_count;
