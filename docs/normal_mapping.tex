@@ -1,0 +1,69 @@
+\documentclass{article}
+
+\usepackage{amsmath} % align*-environment
+\usepackage{amssymb} % e.g. \mathbb{R}
+\usepackage{amsthm} % newtheorem
+
+\newtheorem{lemma}{Lemma}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\vctr}[1]{\mathbf{#1}}
+\newcommand{\point}[1]{\mathbf{#1}}
+
+\newcommand{\mat}[1]{\mathbf{#1}}
+\newcommand{\pMat}[2]{\mat{P_{#1 \leftarrow #2}}}
+\newcommand{\vMat}[2]{\mat{V_{#1 \leftarrow #2}}}
+
+\newcommand{\colvec}[1]{\begin{pmatrix}#1\end{pmatrix}}
+
+\begin{document}
+
+\section{transforming normals}
+
+\begin{lemma}
+Let \(\mat{M} \in \R^{3\times 3}\) be an invertible matrix. And let \(\vctr{a}, \vctr{b} \in \R^3\). Then
+\[
+(\mat{M}\vctr{a})\times(\mat{M}\vctr{b}) = adj(\mat{M}) (\vctr{a} \times \vctr{b})
+\]
+\end{lemma}
+\begin{proof}
+ ...
+\end{proof}
+
+
+
+\section{barycentric coordinates}
+
+\[
+\point{p} = \lambda_0 \point{p_0} + \lambda_1 \point{p_1} + \lambda_2 \point{p_2}
+\]
+where \(\lambda_0 + \lambda_1 + \lambda_2 = 1\).
+
+Plugging in \(\lambda_0 = 1 - \lambda_1 - \lambda_2\):
+\begin{align*}
+%p &= (1 - \lambda_1 - \lambda_2) p_0 + \lambda_1 p_1 + \lambda_2 p_2 \\
+\point{p} &= \point{p_0} - \lambda_1 \point{p_0} - \lambda_2 \point{p_0}  + \lambda_1 \point{p_1} + \lambda_2 \point{p_2} \\
+&= \point{p_0}  + \lambda_1 (\point{p_1}-\point{p_0}) + \lambda_2 (\point{p_2} - \point{p_0})\\
+&= \point{p_0} + \lambda_1 \point{\Delta p_1} + \lambda_2 \point{\Delta p_2}
+\end{align*}
+
+where
+\begin{align*}
+\point{\Delta p_1} &:= \point{p_1} - \point{p_0}\\
+\point{\Delta p_2} &:= \point{p_2} - \point{p_0}
+\end{align*}
+
+Thus
+\[
+ \colvec{\point{p}\\1} = \pMat{oc}{bc} \colvec{\lambda_1 \\ \lambda_2 \\ 1}
+\]
+where
+\[
+ \pMat{oc}{bc} = \begin{pmatrix} 
+                  \point{\Delta p_1} & \point{\Delta p_2} & \point{p_0} \\
+                  0 & 0 & 1
+                 \end{pmatrix}
+\]
+
+
+\end{document}
