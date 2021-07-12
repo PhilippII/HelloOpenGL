@@ -166,8 +166,16 @@ where
                  \end{pmatrix}
 \end{equation}
 
-\begin{equation*}
- \nMat{oc}{tc} := (\vMat{oc}{(bc+d)}^{-1})^T(\vMat{(uv+d)}{(bc+d)}^T) 
-\end{equation*}
+\begin{align*}
+\nMat{oc}{tc} &:= (\vMat{oc}{(bc+d)}^{-1})^T(\vMat{(uv+d)}{(bc+d)}^T) \\
+  &= \frac{1}{(\point{\Delta p_1} \times \point{\Delta p_2)}\cdot \vctr{n}}\begin{pmatrix} 
+        \point{\Delta p_2} \times \vctr{n} & \vctr{n} \times \point{\Delta p_1} & \point{\Delta p_1} \times \point{\Delta p_2}
+     \end{pmatrix}
+     \begin{pmatrix} 
+                  \Delta u_1 & \Delta v_1 & 0 \\
+                  \Delta u_2 & \Delta v_2 & 0 \\
+                  0 & 0 & 1 
+     \end{pmatrix}
+\end{align*}
 
 \end{document}
