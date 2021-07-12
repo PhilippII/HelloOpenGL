@@ -16,6 +16,8 @@
 
 \newcommand{\colvec}[1]{\begin{pmatrix}#1\end{pmatrix}}
 
+\DeclareMathOperator{\adj}{adj}
+
 \begin{document}
 
 \section{transforming normals}
@@ -23,7 +25,7 @@
 \begin{lemma}
 Let \(\mat{M} \in \R^{3\times 3}\) be an invertible matrix. And let \(\vctr{a}, \vctr{b} \in \R^3\). Then
 \[
-(\mat{M}\vctr{a})\times(\mat{M}\vctr{b}) = adj(\mat{M}) (\vctr{a} \times \vctr{b})
+(\mat{M}\vctr{a})\times(\mat{M}\vctr{b}) = \adj(\mat{M}) (\vctr{a} \times \vctr{b})
 \]
 \end{lemma}
 \begin{proof}
