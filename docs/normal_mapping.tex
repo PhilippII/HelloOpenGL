@@ -13,6 +13,7 @@
 \newcommand{\mat}[1]{\mathbf{#1}}
 \newcommand{\pMat}[2]{\mat{P_{#1 \leftarrow #2}}}
 \newcommand{\vMat}[2]{\mat{V_{#1 \leftarrow #2}}}
+\newcommand{\nMat}[2]{\mat{N_{#1 \leftarrow #2}}}
 
 \newcommand{\colvec}[1]{\begin{pmatrix}#1\end{pmatrix}}
 
@@ -60,12 +61,113 @@ Thus
  \colvec{\point{p}\\1} = \pMat{oc}{bc} \colvec{\lambda_1 \\ \lambda_2 \\ 1}
 \]
 where
-\[
- \pMat{oc}{bc} = \begin{pmatrix} 
+\begin{equation}
+\label{eq:mat_oc_from_bc}
+ \pMat{oc}{bc} := \begin{pmatrix} 
                   \point{\Delta p_1} & \point{\Delta p_2} & \point{p_0} \\
                   0 & 0 & 1
                  \end{pmatrix}
-\]
+\end{equation}
 
+
+\section{Transforming from Texture Coordinates to Object Space}
+
+Similar to equation (\ref{eq:mat_oc_from_bc}) we can construct a matrix to transform from (the last two components of) barycentric coordinates to texture coordinates
+\[
+ \colvec{u \\ v \\1} = \pMat{uv}{bc} \colvec{\lambda_1 \\ \lambda_2 \\ 1}
+\]
+where
+\begin{equation}
+ \pMat{uv}{bc} := \begin{pmatrix} 
+                  \Delta u_1 & \Delta u_2 & u_0 \\
+                  \Delta v_1 & \Delta v_2 & v_0 \\
+                  0 & 0 & 1
+                 \end{pmatrix}
+\end{equation}
+where
+\begin{align*}
+ \colvec{\Delta u_1 \\ \Delta v_1} := \colvec{u_1 \\ v_1} - \colvec{u_0 \\ v_0}\\
+ \colvec{\Delta u_2 \\ \Delta v_2} := \colvec{u_2 \\ v_2} - \colvec{u_0 \\ v_0}
+\end{align*}
+
+By taking a detour through barycentric coordinates we can now also transform points from texture coordinates to object coordinates.
+\begin{equation*}
+\colvec{\point{p}\\1} = \pMat{oc}{uv} \colvec{u \\ v \\1} 
+\end{equation*}
+where
+\begin{equation*}
+ \pMat{oc}{uv} := \pMat{oc}{bc}(\pMat{uv}{bc}^{-1}) 
+\end{equation*}
+
+\section{tangent space coordinates}
+For points \(\point{p}\) that are not necessarily located on the surface we want to define tangent space coordinates. Let \(\point{p_\perp}\) be the point that we get by perpendicularly projecting \(\point{p}\) onto the triangle. We define the first two coordinates of the tangent space coordinates of \(\point{p}\) to be the uv-texture coordinates of \(\point{p_\perp}\). And the third tangent space cooordinate of \(\point{p}\) shall be the signed distance \(d\) of \(\point{p}\) from the triangle.
+\begin{equation*}
+ \point{p_{tc}} := \colvec{u \\ v \\ d}
+\end{equation*}
+
+\begin{align*}
+ \point{p} &= \point{p_\perp} + d \vctr{n}\\
+ &= \point{p_0} + \lambda_1 \point{\Delta p_1} + \lambda_2 \point{\Delta p_2} + d \vctr{n}
+\end{align*}
+
+Thus
+\[
+ \colvec{\point{p}\\1} = \pMat{oc}{(bc+d)} \colvec{\lambda_1 \\ \lambda_2 \\ d \\ 1}
+\]
+where
+\begin{equation}
+\label{eq:mat_oc_from_bdc}
+ \pMat{oc}{(bc+d)} := \begin{pmatrix} 
+                  \point{\Delta p_1} & \point{\Delta p_2} & \vctr{n} & \point{p_0} \\
+                  0 & 0 & 0 & 1
+                 \end{pmatrix}
+\end{equation}
+
+\[
+ \colvec{u \\ v \\ d \\1} = \pMat{(uv+d)}{(bc+d)} \colvec{\lambda_1 \\ \lambda_2 \\ d \\ 1}
+\]
+where
+\begin{equation}
+ \pMat{(uv+d)}{(bc+d)} := \begin{pmatrix} 
+                  \Delta u_1 & \Delta u_2 & 0 & u_0 \\
+                  \Delta v_1 & \Delta v_2 & 0 & v_0 \\
+                  0 & 0 & 1 & 0 \\
+                  0 & 0 & 0 & 1
+                 \end{pmatrix}
+\end{equation}
+
+\begin{equation*}
+\colvec{\point{p}\\1} = \pMat{oc}{tc} \colvec{u \\ v \\ d \\ 1} 
+\end{equation*}
+where
+\begin{equation*}
+ \pMat{oc}{tc} := \pMat{oc}{(bc+d)}(\pMat{(uv+d)}{(bc+d)}^{-1}) 
+\end{equation*}
+
+\section{Transforming normals from tangent space to object space}
+
+Lets first see how to transform vectors:
+\begin{equation*}
+ \vMat{oc}{tc} := \vMat{oc}{(bc+d)}(\vMat{(uv+d)}{(bc+d)}^{-1}) 
+\end{equation*}
+where
+\begin{equation}
+\label{eq:vmat_oc_from_bdc}
+ \vMat{oc}{(bc+d)} := \begin{pmatrix} 
+                  \point{\Delta p_1} & \point{\Delta p_2} & \vctr{n} 
+                 \end{pmatrix}
+\end{equation}
+
+\begin{equation}
+ \vMat{(uv+d)}{(bc+d)} := \begin{pmatrix} 
+                  \Delta u_1 & \Delta u_2 & 0 \\
+                  \Delta v_1 & \Delta v_2 & 0 \\
+                  0 & 0 & 1 
+                 \end{pmatrix}
+\end{equation}
+
+\begin{equation*}
+ \nMat{oc}{tc} := (\vMat{oc}{(bc+d)}^{-1})^T(\vMat{(uv+d)}{(bc+d)}^T) 
+\end{equation*}
 
 \end{document}
