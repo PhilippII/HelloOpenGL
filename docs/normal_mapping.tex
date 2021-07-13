@@ -21,6 +21,32 @@
 
 \begin{document}
 
+overview:
+\begin{itemize}
+ \item intro/motivation
+ \item normal matrices in general
+ \begin{itemize}
+ \item why do we need to use the inverse transpose when transforming normals
+ \item how to compute the inverse matrix with the adjoint method and with the cross products
+ \end{itemize}
+ \item how to transform from tangent space to world space
+ \begin{itemize}
+ \item define tangent space coordinates of \(\point{p}\) (and define point \(\point{p_\perp}\))
+ \item barycentric coordinates and how to transform point \(\point{p_\perp}\) from its uv-coordinates to object space
+ \item how to transform points \(\point{p}\) from tangent space to object space
+ \item how to transform vectors and normals from tangent space to object space
+ \item interpolating the normal matrices
+ \end{itemize}
+ \item preprocessing the normals in tangent space: 
+ \begin{itemize}
+  \item unpack normals from \([0, 1]^3\) to \([-1, 1]^3\)
+  \item flip v-axis if necessary (inverse transpose is the same)
+  \item scale tangent space along the normal direction (inverse transpose divides by scale factor)
+ \end{itemize}
+
+\end{itemize}
+
+
 \section{transforming normals}
 
 \begin{lemma}
