@@ -26,8 +26,8 @@ overview:
  \item intro/motivation
  \item normal matrices in general
  \begin{itemize}
- \item why do we need to use the inverse transpose when transforming normals
  \item how to compute the inverse matrix with the adjoint method and with the cross products
+ \item why do we need to use the inverse transpose when transforming normals
  \end{itemize}
  \item how to transform from tangent space to world space
  \begin{itemize}
@@ -46,8 +46,16 @@ overview:
 
 \end{itemize}
 
+\newpage
 
-\section{transforming normals}
+\section{Introduction}
+
+
+\section{Transforming Normals}
+
+\subsection{Matrix Inversion using the Adjugate Matrix and Cross Products}
+
+\subsection{Why Normals should be Transformed with the Inverse Transpose}
 
 \begin{lemma}
 Let \(\mat{M} \in \R^{3\times 3}\) be an invertible matrix. And let \(\vctr{a}, \vctr{b} \in \R^3\). Then
@@ -60,8 +68,15 @@ Let \(\mat{M} \in \R^{3\times 3}\) be an invertible matrix. And let \(\vctr{a}, 
 \end{proof}
 
 
+\section{Transforming from Tangent Space to Object Space}
 
-\section{barycentric coordinates}
+\subsection{Definition of Tangent Space Coordinates}
+For points \(\point{p}\) that are not necessarily located on the surface we want to define tangent space coordinates. Let \(\point{p_\perp}\) be the point that we get by perpendicularly projecting \(\point{p}\) onto the triangle. We define the first two coordinates of the tangent space coordinates of \(\point{p}\) to be the uv-texture coordinates of \(\point{p_\perp}\). And the third tangent space cooordinate of \(\point{p}\) shall be the signed distance \(d\) of \(\point{p}\) from the triangle.
+\begin{equation*}
+ \point{p_{tc}} := \colvec{u \\ v \\ d}
+\end{equation*}
+
+\subsection{barycentric coordinates}
 
 \[
 \point{p} = \lambda_0 \point{p_0} + \lambda_1 \point{p_1} + \lambda_2 \point{p_2}
@@ -96,7 +111,7 @@ where
 \end{equation}
 
 
-\section{Transforming from Texture Coordinates to Object Space}
+\subsection{Transforming from Texture Coordinates to Object Space}
 
 Similar to equation (\ref{eq:mat_oc_from_bc}) we can construct a matrix to transform from (the last two components of) barycentric coordinates to texture coordinates
 \[
@@ -125,12 +140,10 @@ where
  \pMat{oc}{uv} := \pMat{oc}{bc}(\pMat{uv}{bc}^{-1}) 
 \end{equation*}
 
-\section{tangent space coordinates}
-For points \(\point{p}\) that are not necessarily located on the surface we want to define tangent space coordinates. Let \(\point{p_\perp}\) be the point that we get by perpendicularly projecting \(\point{p}\) onto the triangle. We define the first two coordinates of the tangent space coordinates of \(\point{p}\) to be the uv-texture coordinates of \(\point{p_\perp}\). And the third tangent space cooordinate of \(\point{p}\) shall be the signed distance \(d\) of \(\point{p}\) from the triangle.
-\begin{equation*}
- \point{p_{tc}} := \colvec{u \\ v \\ d}
-\end{equation*}
 
+
+
+\subsection{Transforming Points from Tangent Space to Object Space}
 \begin{align*}
  \point{p} &= \point{p_\perp} + d \vctr{n}\\
  &= \point{p_0} + \lambda_1 \point{\Delta p_1} + \lambda_2 \point{\Delta p_2} + d \vctr{n}
@@ -170,7 +183,7 @@ where
  \pMat{oc}{tc} := \pMat{oc}{(bc+d)}(\pMat{(uv+d)}{(bc+d)}^{-1}) 
 \end{equation*}
 
-\section{Transforming normals from tangent space to object space}
+\subsection{Transforming Normals from Tangent Space to Object Space}
 
 Lets first see how to transform vectors:
 \begin{equation*}
@@ -203,5 +216,9 @@ where
                   0 & 0 & 1 
      \end{pmatrix}
 \end{align*}
+
+\subsection{Interpolating the Normal Matrices}
+
+\section{Preprocessing Steps}
 
 \end{document}
