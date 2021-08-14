@@ -9,11 +9,16 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\vctr}[1]{\mathbf{#1}}
 \newcommand{\point}[1]{\mathbf{#1}}
+\newcommand{\nrml}[1]{\mathbf{#1}}
 
 \newcommand{\mat}[1]{\mathbf{#1}}
 \newcommand{\pMat}[2]{\mat{P_{#1 \leftarrow #2}}}
 \newcommand{\vMat}[2]{\mat{V_{#1 \leftarrow #2}}}
 \newcommand{\nMat}[2]{\mat{N_{#1 \leftarrow #2}}}
+
+\newcommand{\tangent}{\vctr{t}}
+\newcommand{\bitangent}{\vctr{b}}
+\newcommand{\normal}{\nrml{n}}
 
 \newcommand{\colvec}[1]{\begin{pmatrix}#1\end{pmatrix}}
 
@@ -55,6 +60,28 @@ in a Mathematically Accurate Way}
 \newpage
 
 \section{Introduction}
+
+As you probably know in computer graphics we often use \(4\times 4\) matrices to describe (affine) transformations. Given such a matrix \(\mat{M} \in \R^{4\times 4}\) we can transform points as:
+\[
+\colvec{\point{q} \\ 1} = \mat{M} \colvec{\point{p} \\ 1}
+\]
+where \(\point{p}\) is the original point and \(\point{q}\) is the transformed point. Vectors can be transformed similarly as 
+\[
+\colvec{\vctr{u} \\ 0} = \mat{M} \colvec{\vctr{v} \\ 0}
+\]
+
+Or alternatively we can just use the upper \(3\times 3\) submatrix \(\mat{\tilde{M}}\) of \(\mat{M}\) as
+\[
+\vctr{u} = \mat{\tilde{M}}\vctr{v}
+\]
+
+However normals need to be handled differently. Instead of this submatrix \(\mat{\tilde{M}}\) \emph{we need to use the inverse transpose of this submatrix \(\mat{\tilde{M}}\) to transform normals}. (Also it may be necessary to renormalize the normal after the transformation, that is to divide it by its length.) Books and tutorials about computer graphics usually mention the fact that normals need to be handled differently this way in the context of the model-view matrix when transforming normals between object space, world space and camera space. \emph{However this fact is often swept under the rug when transforming normals defined in a normal map from tangent space to object space or world space.} 
+
+There is a situation when taking the inverse transpose is not necessary. It is when the columns of \(\mat{M}\) are an ortho\textbf{norm}al basis, that is they are all mutually perpendicular to each other and they each are of length one. Confusingly such a matrix is called an ortho\textbf{gon}al matrix although the expression "ortho\textbf{norm}al matrix" would make more sense. Equivalently we can say a matrix is orthogonal if it contains only rotations and optionally a mirroring transform. If \(\mat{M}\) is an orthogonal matrix then the inverse transpose is equal to \(\mat{M}\) itself. 
+
+So in the defense of those tutorials, that do not mention the inverse transpose in the context of normal mapping, could we assume that the transformation from tangent space to object space is always an orthogonal matrix? No, tangent space is defined by the tangent vector \(\tangent\), bitangent vector \(\bitangent\) and the normal vector \(\normal\). The tangent and bitangent vectors are defined such that they align with the \(u\) and \(v\) axis in texture coordinate space respectively. However how they look in world space depends on the uv-map that is used to wrap the textures around the mesh. However we cannot expect the artist to define the uv-map in a way such that the tangent and bitangent vectors are always normalized and perpendicular to each other. That would mean we cannot allow any stretching, squishing or shearing of the texture by the uv-map. This is un unrealistic restriction. 
+
+For that reason I wanted to discuss in this document how I think that normals from a normal matrix could be transformed in a mathematically accurate way.
 
 
 \section{Transforming Normals}
