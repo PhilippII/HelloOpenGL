@@ -251,7 +251,75 @@ Then we can compute the determinants as:
 \det(\vctr{v_i}, \matCol{2}, \matCol{3}) = \vctr{r_1}^T \vctr{v_i}
 \end{align*}
 
+Having completed this task we may notice that the auxiliary vectors \(\vctr{r_1}^T, \vctr{r_2}^T\) and \(\vctr{r_3}^T\) are useful for another task as well. Namely computing the inverse matrix of \(\mat{A}\). Assume we collect those three auxiliary vectors into a \(3\times 3\) matrix and than multiply this matrix with the original matrix \(\mat{A}\):
 
+
+\begin{align*}
+\begin{pmatrix}
+\vctr{r_1}^T\\
+\vctr{r_2}^T\\
+\vctr{r_3}^T
+\end{pmatrix} 
+\begin{pmatrix}
+\matCol{1} & \matCol{2} & \matCol{3}
+\end{pmatrix}
+&= 
+\begin{pmatrix}
+\vctr{r_1}^T\matCol{1} & \vctr{r_1}^T\matCol{2} & \vctr{r_1}^T\matCol{3}\\
+\vctr{r_2}^T\matCol{1} & \vctr{r_2}^T\matCol{2} & \vctr{r_2}^T\matCol{3}\\
+\vctr{r_3}^T\matCol{1} & \vctr{r_3}^T\matCol{2} & \vctr{r_3}^T\matCol{3}
+\end{pmatrix}\\
+&= 
+\begin{pmatrix}
+\det(\matCol{1}, \matCol{2}, \matCol{3}) & \det(\matCol{2}, \matCol{2}, \matCol{3}) & \det(\matCol{3}, \matCol{2}, \matCol{3})\\
+\det(\matCol{1}, \matCol{1}, \matCol{3}) & \det(\matCol{1}, \matCol{2}, \matCol{3}) & \det(\matCol{1}, \matCol{3}, \matCol{3})\\
+\det(\matCol{1}, \matCol{2}, \matCol{1}) & \det(\matCol{1}, \matCol{2}, \matCol{2}) & \det(\matCol{1}, \matCol{2}, \matCol{3})
+\end{pmatrix}
+\end{align*}
+
+
+
+\begin{align*}
+\begin{pmatrix}
+\vctr{r_1}^T\\
+\vctr{r_2}^T\\
+\vctr{r_3}^T
+\end{pmatrix} \mat{A} &= 
+\begin{pmatrix}
+\det(\mat{A}) & 0 & 0\\
+0 & \det(\mat{A}) & 0\\
+0 & 0 & \det(\mat{A})
+\end{pmatrix}
+\end{align*}
+
+\begin{align*}
+\adj(\mat{A}) := \begin{pmatrix}
+\vctr{r_1}^T\\
+\vctr{r_2}^T\\
+\vctr{r_3}^T
+\end{pmatrix}
+\end{align*}
+
+
+This implies:
+\begin{align*}
+\left(\frac{1}{\det(\mat{A})}\adj(\mat{A})\right)\mat{A} &= \frac{1}{\det(\mat{A})}\left(\adj(\mat{A})\mat{A}\right)\\
+&=\frac{1}{\det(\mat{A})}\begin{pmatrix}
+\det(\mat{A}) & 0 & 0\\
+0 & \det(\mat{A}) & 0\\
+0 & 0 & \det(\mat{A})
+\end{pmatrix}\\
+&= \begin{pmatrix}
+1& 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1
+\end{pmatrix}
+\end{align*}
+
+Thus:
+\begin{align*}
+\frac{1}{\det(\mat{A})}\adj(\mat{A}) = \mat{A}^{-1}
+\end{align*}
 
 \subsection{Why Normals should be Transformed with the Inverse Transpose}
 
