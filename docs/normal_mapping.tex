@@ -21,6 +21,9 @@
 \newcommand{\normal}{\nrml{n}}
 
 \newcommand{\colvec}[1]{\begin{pmatrix}#1\end{pmatrix}}
+\newcommand{\rowvec}[1]{\begin{pmatrix}#1\end{pmatrix}}
+
+\newcommand{\matCol}[1]{\vctr{a_{#1}}}
 
 \DeclareMathOperator{\adj}{adj}
 
@@ -91,6 +94,164 @@ However in practice when using a normal map it is important for compatibility to
 \section{Transforming Normals}
 
 \subsection{Matrix Inversion using the Adjugate Matrix and Cross Products}
+
+Imaginary Task:
+
+Given:
+\begin{itemize}
+\item Matrix: \(\mat{A} := (\matCol{1}, \matCol{2}, \matCol{3}) \in \R^{3\times 3}\)
+\item Vectors: \(\vctr{v_1}:= \colvec{v_{x, 1} \\ v_{y, 1} \\ v_{z, 1}}, \vctr{v_2}:= \colvec{v_{x, 2} \\ v_{y, 2} \\ v_{z, 2}}, \dots, \vctr{v_n}:= \colvec{v_{x, n} \\ v_{y, n} \\ v_{z, n}}\)
+\end{itemize}
+
+Task:
+
+compute \(\det(\matCol{1}, \matCol{2}, \vctr{v_1}), \det(\matCol{1}, \matCol{2}, \vctr{v_2}), \dots, \det(\matCol{1}, \matCol{2}, \vctr{v_n})\)
+
+Solution:
+
+Expand along third column:
+\begin{align*}
+\det(\matCol{1}, \matCol{2}, \vctr{v_i}) &= 
+\begin{vmatrix}
+a_{11} & a_{12} & v_{x, i} \\
+a_{21} & a_{22} & v_{y, i} \\
+a_{3´1} & a_{32} & v_{z, i}
+\end{vmatrix} \\
+&= \begin{vmatrix}
+a_{21} & a_{22} \\
+a_{31} & a_{32}
+\end{vmatrix} v_{x, i}
+- \begin{vmatrix}
+a_{11} & a_{12} \\
+a_{31} & a_{32}
+\end{vmatrix} v_{y, i}
++ \begin{vmatrix}
+a_{11} & a_{12} \\
+a_{21} & a_{22}
+\end{vmatrix} v_{z, i}
+\end{align*}
+
+To speed up the calculation we can precompute the factors that are the same for each \(\vctr{v_i}\) and cache them in a rowvector.
+\begin{align*}
+\vctr{r_3}^T := \rowvec{r_{x, 3} & r_{y, 3} & r_{z, 3}} := 
+\rowvec{
+\begin{vmatrix}
+a_{21} & a_{22} \\
+a_{31} & a_{32}
+\end{vmatrix} &
+- \begin{vmatrix}
+a_{11} & a_{12} \\
+a_{31} & a_{32}
+\end{vmatrix} &
+\begin{vmatrix}
+a_{11} & a_{12} \\
+a_{21} & a_{22}
+\end{vmatrix}}
+\end{align*}
+
+Now each determinant can be computed as:
+\begin{align*}
+\det(\matCol{1}, \matCol{2}, \vctr{v_i}) = \vctr{r_3}^T \vctr{v_i}
+\end{align*}
+
+Now imagine a different task where we want to compute the determinants \(\det(\matCol{1}, \vctr{v_1}, \matCol{3}), \det(\matCol{1}, \vctr{v_2}, \matCol{3}), \dots, \det(\matCol{1}, \vctr{v_n}, \matCol{3})\).
+
+This time we can expand along the second column:
+\begin{align*}
+\det(\matCol{1}, \matCol{2}, \vctr{v_i}) &= 
+\begin{vmatrix}
+a_{11} & v_{x, i} & a_{13} \\
+a_{21} & v_{y, i} & a_{23} \\
+a_{31} & v_{z, i} & a_{33} 
+\end{vmatrix} \\
+&= -\begin{vmatrix}
+a_{21} & a_{23} \\
+a_{31} & a_{33}
+\end{vmatrix} v_{x, i}
++ \begin{vmatrix}
+a_{11} & a_{13} \\
+a_{31} & a_{33}
+\end{vmatrix} v_{y, i}
+- \begin{vmatrix}
+a_{11} & a_{13} \\
+a_{21} & a_{23}
+\end{vmatrix} v_{z, i}
+\end{align*}
+
+Again we can precompute the common factors and cache them in a rowvector:
+\begin{align*}
+\vctr{r_2}^T := \rowvec{r_{x, 2} & r_{y, 2} & r_{z, 2}} := 
+\rowvec{
+-\begin{vmatrix}
+a_{21} & a_{23} \\
+a_{31} & a_{33}
+\end{vmatrix} &
++ \begin{vmatrix}
+a_{11} & a_{13} \\
+a_{31} & a_{33}
+\end{vmatrix}
+- \begin{vmatrix}
+a_{11} & a_{13} \\
+a_{21} & a_{23}
+\end{vmatrix}}
+\end{align*}
+
+Then we can compute the determinants as:
+\begin{align*}
+\det(\matCol{1}, \vctr{v_i}, \matCol{3}) = \vctr{r_2}^T \vctr{v_i}
+\end{align*}
+
+And last but not least assume we want to compute the determinants: 
+
+\(\det(\vctr{v_1}, \matCol{2}, \matCol{3}), \det(\vctr{v_2}, \matCol{2}, \matCol{3}), \dots, \det(\vctr{v_n}, \matCol{2}, \matCol{3})\).
+
+We expand along the first column:
+\begin{align*}
+\det(\matCol{1}, \matCol{2}, \vctr{v_i}) &= 
+\begin{vmatrix}
+v_{x, i} & a_{12} & a_{13} \\
+v_{y, i} & a_{22} & a_{23} \\
+v_{z, i} & a_{32} & a_{33}
+\end{vmatrix} \\
+&= \begin{vmatrix}
+a_{22} & a_{23} \\
+a_{32} & a_{33}
+\end{vmatrix} v_{x, i}
+- \begin{vmatrix}
+a_{12} & a_{13} \\
+a_{32} & a_{33}
+\end{vmatrix} v_{y, i}
++ \begin{vmatrix}
+a_{12} & a_{13} \\
+a_{22} & a_{23}
+\end{vmatrix} v_{z, i}
+\end{align*}
+
+And precompute the common factors and cache them in a rowvector:
+\begin{align*}
+\vctr{r_1}^T &:= \rowvec{r_{x, 1} & r_{y, 1} & r_{z, 1}} \\
+&:= 
+\rowvec{
+\begin{vmatrix}
+a_{22} & a_{23} \\
+a_{32} & a_{33}
+\end{vmatrix} &
+- \begin{vmatrix}
+a_{12} & a_{13} \\
+a_{32} & a_{33}
+\end{vmatrix}
+\begin{vmatrix}
+a_{12} & a_{13} \\
+a_{22} & a_{23}
+\end{vmatrix}}
+\end{align*}
+
+Then we can compute the determinants as:
+\begin{align*}
+\det(\vctr{v_i}, \matCol{2}, \matCol{3}) = \vctr{r_1}^T \vctr{v_i}
+\end{align*}
+
+
 
 \subsection{Why Normals should be Transformed with the Inverse Transpose}
 
