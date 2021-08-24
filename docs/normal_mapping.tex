@@ -4,6 +4,8 @@
 \usepackage{amssymb} % e.g. \mathbb{R}
 \usepackage{amsthm} % newtheorem
 
+\usepackage{hyperref}
+
 \newtheorem{lemma}{Lemma}
 
 \newcommand{\R}{\mathbb{R}}
@@ -320,6 +322,22 @@ Thus:
 \begin{align*}
 \frac{1}{\det(\mat{A})}\adj(\mat{A}) = \mat{A}^{-1}
 \end{align*}
+
+This approach for matrix inversion works for matrices of any size. However for bigger matrices it is probably inefficient in practice. And only in the case of \(3 \times 3\) matrices there is a particularly nice notation for the vectors \(\vctr{r_1}^T, \vctr{r_2}^T, \vctr{r_3}^T\) in terms of the cross product.
+
+For example:
+\begin{align*}
+\vctr{r_3}^T = (\matCol{1} \times \matCol{2})^T
+\end{align*}
+
+This may be surprising because the cross product is usually not introduced as "an auxiliary vector to compute the determinant as a function of the third column". Instead the cross product \(\vctr{u} \times \vctr{v}\) of two vectors \(\vctr{u}\) and \(\vctr{v}\) is usually defined as a vector with the following properties (see \href{http://immersivemath.com/ila/ch04_vectorproduct/ch04.html#sec_vp_definition}{immersive math}):
+\begin{itemize}
+\item \(\vctr{u} \times \vctr{v}\) is orthogonal to the plane spanned by \(\vctr{u}\) and \(\vctr{v}\)
+\item the length of \(\vctr{u} \times \vctr{v}\) is equal to the area of the parellelogram spanned by \(\vctr{u}\) and \(\vctr{v}\)
+\item \(\vctr{u}, \vctr{v}\) and \(\vctr{u} \times \vctr{v}\) form a right handed coordinate system (= are positively oriented)
+\end{itemize}
+
+
 
 \subsection{Why Normals should be Transformed with the Inverse Transpose}
 
