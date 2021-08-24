@@ -337,6 +337,16 @@ This may be surprising because the cross product is usually not introduced as "a
 \item \(\vctr{u}, \vctr{v}\) and \(\vctr{u} \times \vctr{v}\) form a right handed coordinate system (= are positively oriented)
 \end{itemize}
 
+Inspired by \href{https://youtu.be/BaM7OCEm3G0}{this} video on the youtube channel 3b1b we can prove that those two definitions are equivalent.
+The idea is that \(\vctr{r_3}^T\) is a transformation matrix that describes the linear mapping:
+\begin{align*}
+\vctr{v} \mapsto \det(\matCol{1}, \matCol{2}, \vctr{v})
+\end{align*}
+
+Because the result of this mapping is only a one dimensional number the matrix only has only one row. 
+The transformation matrix of a linear mapping is unique (except for a choice of the two coordinate systems in which the input and the output of the mapping are expressed). 
+Thus if we can show that the \(3\times 1\) transformation matrix \((\matCol{1} \times \matCol{2})^T\) describes the same linear mapping as \(\vctr{r_3}^T\) then it follows \(\vctr{r_3}^T = (\matCol{1} \times \matCol{2})^T\).
+
 
 
 \subsection{Why Normals should be Transformed with the Inverse Transpose}
