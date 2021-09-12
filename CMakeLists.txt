@@ -118,22 +118,16 @@ if(WIN32)
     # add aliases so we can use the same names
     # whether we imported the library manually 
     # or via find_package():
-    add_library(glfw_alias ALIAS glfw)
-    add_library(glew_alias ALIAS glew)
+#    add_library(glfw ALIAS glfw)
+    add_library(GLEW::GLEW ALIAS glew)
 else()
     find_package(glfw3 REQUIRED)
     # find_package(glfw3 3.3 REQUIRED)
     find_package(GLEW REQUIRED)
-    
-    # add aliases so we can use the same names
-    # whether we imported the library manually 
-    # or via find_package():
-    add_library(glfw_alias ALIAS glfw)
-    add_library(glew_alias ALIAS GLEW::GLEW)
 endif()
 target_link_libraries(OpenGLDemos 
-                      PUBLIC glfw_alias
-                      PUBLIC glew_alias)
+                      PUBLIC glfw
+                      PUBLIC GLEW::GLEW)
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(OpenGLDemos PUBLIC OpenGL::GL)

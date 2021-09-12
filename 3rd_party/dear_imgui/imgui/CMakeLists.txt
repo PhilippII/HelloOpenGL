@@ -16,7 +16,7 @@ target_include_directories(DearImGui_glfw_opengl3 SYSTEM
 # Also this allows us to control from the main CMakeLists.txt-file 
 # which exact version of glfw and glew we want to use:
 target_link_libraries(DearImGui_glfw_opengl3
-                        PRIVATE glfw_alias
-                        PRIVATE glew_alias
+                        PRIVATE glfw
+                        PRIVATE GLEW::GLEW
                         PRIVATE OpenGL::GL)
 
